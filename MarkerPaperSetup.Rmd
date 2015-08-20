@@ -227,7 +227,7 @@ For greenhouse studies, the columns **Vernalized**, **DaysVern** and **TimesVern
 **Vernalized length** = number of days between when max daily temp started staying below 12.8 to first day started staying above 12.8 based on data from http://www.almanac.com/weather/history/MI/Lansing/ (or Augusta)
 
 
->for i in `cat dates.txt`; do curl http://www.almanac.com/weather/history/MI/Lansing/${i} | grep "Maximum" >> Weatherdata/maxtemps.txt;done
+> for i in `cat dates.txt`; do curl http://www.almanac.com/weather/history/MI/Lansing/${i} | grep "Maximum" >> Weatherdata/maxtemps.txt;done
 
 I opened each of these files in TextWrangler, then did the following grep-based Find & Replace:
 
@@ -439,12 +439,12 @@ s2013sub <- ParseData(s2013sub)
 sum2010sub <- ParseData(sum2010sub)
 ```
 
-```{r Combine}
+```{r Combine, echo=FALSE}
 CombinedDataSet <- data.frame(rbind(cult_2013sub, gh2006sub, IS_2013sub, lalesub, p2012sub, qst2003sub, qst2004sub, s2013sub, sum2010sub))
 ```
 
 To create the **Subspecies**, **Species**, **Geography**, **Taxonomy**, **Habitat**, **SpecificOrigin** and **RegionOrigin** columns, I made a series of assignment lists based on population names, as in:
-```{r Assign1}
+```{r Assign1, echo=FALSE}
 SubSpeciesList <- c(ADOL="sativus", AROL="sativus", CBBG="sativus", COOL="sativus", DAJO="sativus", ESNK="sativus", MABG="sativus", MYJO="sativus", NELO="sativus", OIBG="sativus", RABG="sativus", RACA="sativus", SPEU="sativus", TOBG="sativus", WMBG="sativus", AFFR="raphanistrum", BBCA="CAHybrid", BINY="raphanistrum", GSCA="CAHybrid", MAES="raphanistrum", PBFR="landra", SAES="maritimus", DEES="raphanistrum", GHIL="raphanistrum", HCES="raphanistrum", HMES="raphanistrum", HZIL="raphanistrum", IMES="raphanistrum", ZYIL="raphanistrum", AUFI="raphanistrum", COAU="raphanistrum", KAMI="raphanistrum", AL="raphanistrum", CBES="maritimus", GMIL="rostratus", M3AU="raphanistrum", N3="raphanistrum",  NZIL="confusus", PG6="raphanistrum", REIL="raphanistrum", MAFI="raphanistrum", NAAU="raphanistrum", WEAU="raphanistrum", CGBC="sativus", FGBC="sativus", FRSI="sativus", LBBC="sativus", MBBC="sativus", NTJO="sativus", PABS="sativus", RABS="sativus", RBBC="sativus", SPNK="sativus", TYIL="raphanistrum")
 ```
 
@@ -493,7 +493,7 @@ CombinedDataSet <- droplevels(CombinedDataSet[CombinedDataSet$Pop != "N3",])
 ```
 
 Write to CSV file:
-```{r write}
+```{r write, echo=FALSE}
 write.csv(CombinedDataSet, "CombinedDataSet.csv", quote=F, row.names=F)
 ```
 
@@ -514,7 +514,7 @@ col_pal = c(col_pal1, col_pal2, col_pal3)
 ```
 
 Levels of each factor:
-```{r Levels}
+```{r Levels, echo=FALSE}
 length(levels(Pop))
 levels(Geography)
 levels(Taxonomy)
@@ -526,24 +526,36 @@ levels(RegionOrigin)
 
 ```
 
-```{r}
+Note that the "SurviveGTF" data has a new spike in individuals that flowered around 170 days, which
+is caused by creating flowering dates for plants that didn't flower, but were healthy before they 
+froze to death
+
+```{r, echo=FALSE}
 par(mfrow=c(1,1))
 SGTF <- hist(as.numeric(SurviveGTF), breaks=50, plot = F)
 
-hist(as.numeric(SurviveGTF), breaks=SGTF$breaks)
-hist(as.numeric(GTF), breaks=SGTF$breaks, add=T)
-
-#germination latency
-plot(PTG, pch=16, col=col_pal3[Experiment])
+hist(as.numeric(SurviveGTF), breaks=SGTF$breaks, main = "SurviveGTF vs. GTF", col = rgb(1,0,0, alpha = .3), xlab="DTF")
+hist(as.numeric(GTF), breaks=SGTF$breaks, add=T, col = rgb(0,0,1, alpha = .3))
+legend(400, 800, legend = c("SurviveGTF", "GTF"), pch=16, col = c(rgb(1,0,0, alpha = .3), rgb(0,0,1, alpha = .3)))
 
 
-plot(as.factor(FlowDate[Experiment == "field2013"]))
+#plot(as.factor(FlowDate[Experiment == "field2013"]))
 
 
 ```
 
+Plot showing latency of germination by experiment. Most experiments had several individuals that 
+took a very long time to germinate, so using "Planting to Flowering" in the model instead of 
+"Germination to Flowering" is going to cause serious issues.
 
-```{r Tables}
+```{r, echo=FALSE}
+#germination latency
+plot(PTG, pch=16, col=col_pal3[Experiment], main = "Planting to Germination")
+legend(550, 150, legend = levels(Experiment), ncol = 3, bty = "n", col=col_pal3[], pch = 16)
+
+```
+
+```{r Tables, echo=FALSE}
 table(Pop)
 table(SubSpecies)
 table(Experiment)
@@ -561,9 +573,5 @@ Barplot showing number of individuals per population
 ```{r Plots2, echo=FALSE}
 par(las=2, cex.axis=.6)
 plot(Pop)
-```
-
-```{r}
-
 ```
 
