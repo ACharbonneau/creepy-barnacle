@@ -35,23 +35,23 @@ require(RColorBrewer)
 
 ```{r ReadIN, echo=FALSE}
 
-cult_2013 <- read.csv("OriginalData/Cultivar GH 2013.csv", na.strings=".")
+cult_2013 <- read.csv("../OriginalData/Cultivar GH 2013.csv", na.strings=".")
 
-gh_2006 <- read.csv("OriginalData/2006Greenhouse.csv", na.strings=".")
+gh_2006 <- read.csv("../OriginalData/2006Greenhouse.csv", na.strings=".")
 
-IS_2013 <- read.csv("OriginalData/IsraelSpain Pops 2013 GH.csv", na.strings=".")
+IS_2013 <- read.csv("../OriginalData/IsraelSpain Pops 2013 GH.csv", na.strings=".")
 
-lale2005 <- read.csv("OriginalData/LaleField2005.csv", na.strings=".")
+lale2005 <- read.csv("../OriginalData/LaleField2005.csv", na.strings=".")
 
-plants2012 <- read.csv("OriginalData/2012FieldData.csv", sep=",", na.strings="")
+plants2012 <- read.csv("../OriginalData/2012FieldData.csv", sep=",", na.strings="")
 
-qst_2003 <- read.csv("OriginalData/2003QstParents.csv", na.strings=".")
+qst_2003 <- read.csv("../OriginalData/2003QstParents.csv", na.strings=".")
 
-qst_2004 <- read.csv("OriginalData/2004 QstOffspring.csv", na.strings=".")
+qst_2004 <- read.csv("../OriginalData/2004 QstOffspring.csv", na.strings=".")
 
-spring2013 <- read.csv("OriginalData/2013plantsSpring.csv", sep=",", na.strings="")
+spring2013 <- read.csv("../OriginalData/2013plantsSpring.csv", sep=",", na.strings="")
 
-sum2010 <- read.csv("OriginalData/Summer2010dataSummary.csv", na.strings=".")
+sum2010 <- read.csv("../OriginalData/Summer2010dataSummary.csv", na.strings=".")
 
 markers <- c("ADOL","AFFR","AROL","AUFI","BINY","CBBG","CBES","COAU","COOL","DAJO","DEES","ESNK","GHIL","GMIL","HCES","HMES","HZIL","IMES","MABG","MAES","MYJO","NCDE","NELO","NZIL","PBFR","RA173","RA215","RA219","RA226","RA264","RA265","RA399","RA402","RA432","RA444","RA447","RA475","RA494","RA503","RA761","RA787","RA835","RA837","RA838","RA840","RABG","RACA","REIL","SAES","SPEU","TOBG","TYIL","WEAU","WMBG","ZYIL")
 ```
@@ -238,17 +238,17 @@ I opened each of these files in TextWrangler, then did the following grep-based 
 For each resulting file, I imported it into R, and made a table that labeled each day that had a max temperature below 12.8 as "vern". Since these were all grown in Michigan, where daily temperatures in fall and spring fluxuate wildly, I chose the start and end dates as those where the temperature crossed the 12.8C threshold and then mostly stayed there. They're very subjective.
 
 ```{r Vernalization, echo=FALSE}
-lale_05_06 <- read.csv("Weatherdata/maxtemps_05_06.txt", header=F)
+lale_05_06 <- read.csv(file = "../Weatherdata/maxtemps_05_06.txt", header=F)
 lale_05_06$year <- substr( as.character(lale_05_06$V1), 1, 4 )
 lale_05_06$vern <- ifelse(lale_05_06$V2 < 55, "vern", "")
 
 
-winter_12_13 <- read.csv("Weatherdata/maxtemps_12_13.txt", header=F)
+winter_12_13 <- read.csv("../Weatherdata/maxtemps_12_13.txt", header=F)
 winter_12_13$year <- substr( as.character(winter_12_13$V1), 1, 4 )
 winter_12_13$vern <- ifelse(winter_12_13$V2 < 55, "vern", "")
 
 
-winter_13_14 <- read.csv("Weatherdata/maxtemps_13_14.txt", header=F)
+winter_13_14 <- read.csv("../Weatherdata/maxtemps_13_14.txt", header=F)
 winter_13_14$year <- substr( as.character(winter_13_14$V1), 1, 4 )
 winter_13_14$vern <- ifelse(winter_13_14$V2 < 55, "vern", "")
 
