@@ -494,7 +494,7 @@ CombinedDataSet <- droplevels(CombinedDataSet[CombinedDataSet$Pop != "N3",])
 
 Write to CSV file:
 ```{r write, echo=FALSE}
-write.csv(CombinedDataSet, "CombinedDataSet.csv", quote=F, row.names=F)
+write.csv(CombinedDataSet, "../output/CombinedDataSet.csv", quote=F, row.names=F)
 ```
 
 ###Error Checking
