@@ -1,4 +1,4 @@
-#!usr/bin/env python
+#!/usr/bin/env python
 
 #This script will accept genotype data for microsatellites in the Jeff-count format and output the same data
 # in the (useable) biallelic format of e.g. STRUCTURE.
