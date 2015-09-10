@@ -1,0 +1,126 @@
+---
+title: "PhenotypicAnalysis"
+author: "Amanda Charbonneau"
+date: "September 10, 2015"
+output: 
+  html_document: 
+    fig_height: 10
+    toc: yes
+---
+
+```{r SourcePackages, include=FALSE}
+rm( list=ls())
+source("~/Dropbox/RadishWeedEvolution/MarkerPaperMeta/Functionarium.R")
+source("~/Dropbox/DworkinLabSharedMaterial/scripts/WRP_FUNCTIONS.R")
+require(lme4) #modeling
+#require(car) #ANOVA
+require(RColorBrewer)
+#require(MuMIn) #summary stats for LMER models
+#require(arm) #extractAIC
+require(MCMCglmm)
+```
+
+
+```{r ImportData, echo=FALSE}
+FlowData <- read.csv("../output/CombinedDataSet.csv")
+FlowData$FlowDate <- as.Date(FlowData$FlowDate)
+FlowData$GermDate <- as.Date(FlowData$GermDate)
+FlowData$PlantDate <- as.Date(FlowData$PlantDate)
+FlowData$DOYPS <- ifelse(FlowData$DOYP < 78, FlowData$DOYP + 287, FlowData$DOYP - 78 )
+FlowData$DOYGS <- ifelse(FlowData$DOYG < 78, FlowData$DOYG + 287, FlowData$DOYG - 78 )
+
+```
+
+Global parameters for MCMCglmm
+
+```{r ModelParameters}
+
+nitt <- 100000   # Number of iterations
+thin <- 50       # Thinning interval
+burnin <- 5000   # burnin period
+pr <- TRUE       # save posterior distribution of random effects
+
+```
+
+```{r RrrSubset, echo=FALSE}
+# Data Subset for R.r. raphanistrum analysis
+RrrData <- droplevels(FlowData[FlowData$Taxonomy == "raphanistrum",])
+RrrData <- keepCols(RrrData, c("ID", "GTF", "Geography", "Seedstock", "GrowthEnvironment", "DOYGS", "DaysVernNoNA", "Pop", "Experiment", "Habitat", "PTF", "DOYPS", "Native", "PTG", "SurviveGTF"))
+
+RrrData$ID <- row.names(RrrData)
+RrrData$Geography <- relevel(RrrData$Geography, "west")
+RrrData$Habitat <- relevel(RrrData$Habitat, "natural")
+RrrData$Ag <- RrrData$Habitat
+levels(RrrData$Ag) <- c("nonag", "ag", "nonag")
+RrrData <- RrrData[!is.na(RrrData$SurviveGTF),] #Only keep data for individuals that have a flowering date
+RrrData <- RrrData[!is.na( RrrData$DOYGS ),] #Only keep data for individuals that have a germination date
+```
+
+```{r RrNativeSubset, echo=FALSE}
+# Data Subset for R.raphanistrum natives analysis
+NatData <- droplevels(FlowData[FlowData$Geography != "nonNative" & FlowData$Species != "sativus",])
+NatData <- keepCols(NatData, c("ID", "GTF", "Geography", "Seedstock", "GrowthEnvironment", "DOYGS", "DaysVernNoNA", "Pop", "Experiment", "Habitat", "PTF", "DOYPS", "Native", "Latency", "Species", "SubSpecies", "Taxonomy", "SurviveGTF"))
+
+NatData$ID <- row.names(NatData)
+NatData$Geography <- relevel(NatData$Geography, "west")
+NatData$Habitat <- relevel(NatData$Habitat, "natural")
+NatData$SubSpecies <- relevel(NatData$SubSpecies, "raphanistrum")
+NatData <- NatData[!is.na(NatData$SurviveGTF),] #Only keep data for individuals that have a flowering date
+NatData <- NatData[!is.na(NatData$DOYGS),]  #Only keep data for individuals that have a germination date
+```
+#Modeling
+
+Only *R.r. raphanistrum*
+Response variable: Days from germination to flowering
+Here, I'm using germination to flowering (or last alive date) as the response, which will be more accurate than planting to flowering, but have many more NA's.
+
+```{r RrrModels, echo=TRUE, results="hide"}
+
+Rrr_lmer <- lmer( SurviveGTF ~ Geography + Seedstock + DOYGS + DaysVernNoNA + (1|Experiment) + (1|Geography:Pop), data=RrrData  )
+
+Rrr_glmm <- MCMCglmm( fixed = SurviveGTF ~ Geography  + Seedstock + DOYGS + DaysVernNoNA, 
+                      random = ~ Experiment + Geography:Pop,
+                      nitt = nitt,
+                      thin = thin,
+                      burnin = burnin,
+                      pr = pr, #save posterior distribution of random effects
+                      data = RrrData)
+
+```
+
+
+Only native range *R.raphanistrum*
+#This is the model that is roughly equivalent to the model we used to look at the differences between the ***R.r. raphanistrum*** plants, just using **SubSpecies** instead of **Geography**, and using the **SurviveGTF** response. 
+
+```{r RrNatModels, echo=TRUE, results="hide"}
+
+Nat_lmer <- lmer( SurviveGTF ~ SubSpecies + Seedstock + DaysVernNoNA + (1|Experiment) + (1|SubSpecies:Pop), data=NatData  )
+
+
+Nat_glmm <- MCMCglmm(fixed = SurviveGTF ~ SubSpecies + Seedstock + DaysVernNoNA, 
+                     random = ~ Experiment + SubSpecies:Pop, 
+                     nitt = nitt,
+                     thin = thin,
+                     burnin = burnin,
+                     pr = pr, #save posterior distribution of random effects
+                     data = NatData)
+```
+
+##Model output for just *R.r. raphanistrum*
+```{r ModelStatsRrr, echo=FALSE}
+
+summary( Rrr_glmm )
+plot( Rrr_glmm$Sol )
+acf( Rrr_glmm$VCV )
+
+```
+
+##Model output for just native range *R. raphanistrum*
+```{r ModelStatsNat, echo=FALSE}
+
+summary( Nat_glmm )
+plot( Nat_glmm$Sol )
+acf( Nat_glmm$VCV )
+
+```
+
