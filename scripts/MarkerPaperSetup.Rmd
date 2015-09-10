@@ -1,13 +1,16 @@
 ---
-title: "MarkerPaperMetaSetup"
+title: "Setup for marker paper"
 author: "Amanda Charbonneau"
 date: "December 9, 2014"
-output: html_document
+output:
+  html_document:
+    toc: yes
+    toc_depth: 3
 ---
 
 This script takes nine datasets from varying years and sources, and reformats them into one large csv file that can be used to analyze flowering time. Some data sets have extra datapoints for traits other than flowering time, which are not transfered into the final document.
 
-###Datasets:
+###Datasets
 
 Cultivar GH 2013.csv
 
@@ -55,6 +58,7 @@ sum2010 <- read.csv("../OriginalData/Summer2010dataSummary.csv", na.strings=".")
 
 markers <- c("ADOL","AFFR","AROL","AUFI","BINY","CBBG","CBES","COAU","COOL","DAJO","DEES","ESNK","GHIL","GMIL","HCES","HMES","HZIL","IMES","MABG","MAES","MYJO","NCDE","NELO","NZIL","PBFR","RA173","RA215","RA219","RA226","RA264","RA265","RA399","RA402","RA432","RA444","RA447","RA475","RA494","RA503","RA761","RA787","RA835","RA837","RA838","RA840","RABG","RACA","REIL","SAES","SPEU","TOBG","TYIL","WEAU","WMBG","ZYIL")
 ```
+###Data Munging
 ####Fix dates for each dataset so they are all the same format, as in:
 ```{r Dates1}
 # fix dates for Cultivar GH 2013.csv
@@ -405,6 +409,7 @@ sum2010sub <- data.frame(rep("sum2010", length(sum2010$Pop)),		#Experiment
                          sum2010$NumVernaliz,		#TimesVern
                          round(sum2010$X1stflwr - sum2010$germDate)) #SurviveGTF
 ```
+####Datatype edits
 I ran each subsetted dataset through a custom function that changed all named variables to factors, created several of the "Yes"/"No" columns, rounded numbers in calculations, and assigned **Seedstock** and **GermLocation** data before combining all the datasets into a single dataframe.
 
 ```{r Parsing, echo=FALSE}
@@ -442,9 +447,9 @@ sum2010sub <- ParseData(sum2010sub)
 ```{r Combine, echo=FALSE}
 CombinedDataSet <- data.frame(rbind(cult_2013sub, gh2006sub, IS_2013sub, lalesub, p2012sub, qst2003sub, qst2004sub, s2013sub, sum2010sub))
 ```
-
+####Adding Biological Information
 To create the **Subspecies**, **Species**, **Geography**, **Taxonomy**, **Habitat**, **SpecificOrigin** and **RegionOrigin** columns, I made a series of assignment lists based on population names, as in:
-```{r Assign1, echo=FALSE}
+```{r Assign1, echo=TRUE}
 SubSpeciesList <- c(ADOL="sativus", AROL="sativus", CBBG="sativus", COOL="sativus", DAJO="sativus", ESNK="sativus", MABG="sativus", MYJO="sativus", NELO="sativus", OIBG="sativus", RABG="sativus", RACA="sativus", SPEU="sativus", TOBG="sativus", WMBG="sativus", AFFR="raphanistrum", BBCA="CAHybrid", BINY="raphanistrum", GSCA="CAHybrid", MAES="raphanistrum", PBFR="landra", SAES="maritimus", DEES="raphanistrum", GHIL="raphanistrum", HCES="raphanistrum", HMES="raphanistrum", HZIL="raphanistrum", IMES="raphanistrum", ZYIL="raphanistrum", AUFI="raphanistrum", COAU="raphanistrum", KAMI="raphanistrum", AL="raphanistrum", CBES="maritimus", GMIL="rostratus", M3AU="raphanistrum", N3="raphanistrum",  NZIL="confusus", PG6="raphanistrum", REIL="raphanistrum", MAFI="raphanistrum", NAAU="raphanistrum", WEAU="raphanistrum", CGBC="sativus", FGBC="sativus", FRSI="sativus", LBBC="sativus", MBBC="sativus", NTJO="sativus", PABS="sativus", RABS="sativus", RBBC="sativus", SPNK="sativus", TYIL="raphanistrum")
 ```
 
@@ -490,18 +495,27 @@ CombinedDataSet$SurviveGTF <- round(CombinedDataSet$SurviveGTF)
 CombinedDataSet$PTG <- round(CombinedDataSet$GermDate - CombinedDataSet$PlantDate)
 
 CombinedDataSet <- droplevels(CombinedDataSet[CombinedDataSet$Pop != "N3",])
+CombinedDataSet$Pop <- revalue(CombinedDataSet$Pop, c("COAU" = "UKAU", 
+                               "M3AU" = "UKAU", 
+                               "AL"   = "UKAU", 
+                               "PG6"  = "UKAU", 
+                               "NAAU" = "UKAU",
+                               "WEAU" = "UKAU"))
+
+CombinedDataSet <- droplevels(CombinedDataSet)
+
 ```
 
-Write to CSV file:
+
 ```{r write, echo=FALSE}
 write.csv(CombinedDataSet, "../output/CombinedDataSet.csv", quote=F, row.names=F)
 ```
 
 ###Error Checking
-```{r Attach, echo=FALSE}
+####Data Integrity
+```{r Structure, echo=FALSE}
 str(CombinedDataSet)
 
-attach(CombinedDataSet)
 ```
 
 ```{r Colors, echo=FALSE}
@@ -515,27 +529,34 @@ col_pal = c(col_pal1, col_pal2, col_pal3)
 
 Levels of each factor:
 ```{r Levels, echo=FALSE}
-length(levels(Pop))
-levels(Geography)
-levels(Taxonomy)
-levels(SubSpecies)
-levels(Species)
-levels(Habitat)
-levels(SpecificOrigin)
-levels(RegionOrigin)
+length(levels(CombinedDataSet$Pop))
+levels(CombinedDataSet$Geography)
+levels(CombinedDataSet$Taxonomy)
+levels(CombinedDataSet$SubSpecies)
+levels(CombinedDataSet$Species)
+levels(CombinedDataSet$Habitat)
+levels(CombinedDataSet$SpecificOrigin)
+levels(CombinedDataSet$RegionOrigin)
 
 ```
 
+```{r Tables, echo=FALSE}
+table(CombinedDataSet$Pop)
+table(CombinedDataSet$SubSpecies)
+table(CombinedDataSet$Experiment)
+```
+
+####Plots of pivitol data
 Note that the "SurviveGTF" data has a new spike in individuals that flowered around 170 days, which
 is caused by creating flowering dates for plants that didn't flower, but were healthy before they 
 froze to death
 
 ```{r, echo=FALSE}
 par(mfrow=c(1,1))
-SGTF <- hist(as.numeric(SurviveGTF), breaks=50, plot = F)
+SGTF <- hist(as.numeric(CombinedDataSet$SurviveGTF), breaks=50, plot = F)
 
-hist(as.numeric(SurviveGTF), breaks=SGTF$breaks, main = "SurviveGTF vs. GTF", col = rgb(1,0,0, alpha = .3), xlab="DTF")
-hist(as.numeric(GTF), breaks=SGTF$breaks, add=T, col = rgb(0,0,1, alpha = .3))
+hist(as.numeric(CombinedDataSet$SurviveGTF), breaks=SGTF$breaks, main = "SurviveGTF vs. GTF", col = rgb(1,0,0, alpha = .3), xlab="DTF")
+hist(as.numeric(CombinedDataSet$GTF), breaks=SGTF$breaks, add=T, col = rgb(0,0,1, alpha = .3))
 legend(400, 800, legend = c("SurviveGTF", "GTF"), pch=16, col = c(rgb(1,0,0, alpha = .3), rgb(0,0,1, alpha = .3)))
 
 
@@ -550,28 +571,22 @@ took a very long time to germinate, so using "Planting to Flowering" in the mode
 
 ```{r, echo=FALSE}
 #germination latency
-plot(PTG, pch=16, col=col_pal3[Experiment], main = "Planting to Germination")
-legend(550, 150, legend = levels(Experiment), ncol = 3, bty = "n", col=col_pal3[], pch = 16)
+plot(CombinedDataSet$PTG, pch=16, col=col_pal3[CombinedDataSet$Experiment], main = "Planting to Germination")
+legend(550, 150, legend = levels(CombinedDataSet$Experiment), ncol = 3, bty = "n", col=col_pal3[], pch = 16)
 
-```
-
-```{r Tables, echo=FALSE}
-table(Pop)
-table(SubSpecies)
-table(Experiment)
 ```
 
 Boxplot of days from planting to flowering of each population
 
 ```{r Plots1, echo=FALSE}
 par(las=2, cex.axis=.7)
-plot(Pop, PTF)
+plot(CombinedDataSet$Pop, CombinedDataSet$PTF)
 ```
 
 Barplot showing number of individuals per population
 
 ```{r Plots2, echo=FALSE}
 par(las=2, cex.axis=.6)
-plot(Pop)
+plot(CombinedDataSet$Pop)
 ```
 
