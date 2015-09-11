@@ -5,10 +5,11 @@
 
 Usage = "\nCall with the pattern: 'biallele.py your_input_filename.csv your_output_filename.csv"
 
-import sys
-import pandas as pa
-import numpy as np
-from collections import Counter
+try:
+    import sys, pandas as pa, numpy as np, collections
+except ImportError:
+    sys.exit( "You appear to be missing a required python module. Please run `pip install pandas numpy` at the shell" )
+
 
 # grab in & out filenames from command line
 if len(sys.argv) != 3:
@@ -53,6 +54,7 @@ for i in range( 0, nloci ):
 
 # biallele_out
 
-biallele_out.to_csv( "/Users/willpitchers/Desktop/" + OutFileName, float_format=int() )
+Location=sys.path[0]
+biallele_out.to_csv( Location + OutFileName, float_format=int() )
 
 sys.stderr.write( "Mischief Managed!\n" )
