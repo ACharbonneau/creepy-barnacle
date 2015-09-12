@@ -1,10 +1,10 @@
 ---
-title: "PhenotypicAnalysis"
+title: "Phenotypic Analysis"
 author: "Amanda Charbonneau"
 date: "September 10, 2015"
 output: 
   html_document: 
-    fig_height: 10
+    number_sections: yes
     toc: yes
 ---
 
@@ -35,7 +35,7 @@ Global parameters for MCMCglmm
 
 ```{r ModelParameters}
 
-nitt <- 10000#100000   # Number of iterations
+nitt <- 100000   # Number of iterations
 thin <- 50       # Thinning interval
 burnin <- 5000   # burnin period
 pr <- TRUE       # save posterior distribution of random effects
@@ -68,6 +68,19 @@ NatData$SubSpecies <- relevel(NatData$SubSpecies, "raphanistrum")
 NatData <- NatData[!is.na(NatData$SurviveGTF),] #Only keep data for individuals that have a flowering date
 NatData <- NatData[!is.na(NatData$DOYGS),]  #Only keep data for individuals that have a germination date
 ```
+
+```{r SativeSubset, echo=FALSE}
+# Data Subset for sativus analysis
+SatData <- droplevels(FlowData[FlowData$Species == "sativus",])
+SatData <- keepCols(SatData, c("ID", "GTF", "Geography", "Seedstock", "GrowthEnvironment", "DOYGS", "DaysVernNoNA", "Pop", "Experiment", "Habitat", "PTF", "DOYPS", "Sative", "Latency", "Species", "SubSpecies", "Taxonomy", "SurviveGTF"))
+
+SatData$ID <- row.names(SatData)
+SatData$Taxonomy <- relevel(SatData$Taxonomy, "european")
+SatData <- SatData[!is.na(SatData$SurviveGTF),] #Only keep data for individuals that have a flowering date
+SatData <- SatData[!is.na(SatData$DOYGS),]  #Only keep data for individuals that have a germiSation date
+```
+
+
 #Modeling
 
 Only *R.r. raphanistrum*
@@ -75,7 +88,7 @@ Response variable: Days from germination to flowering
 Here, I'm using germination to flowering (or last alive date) as the response, which will be more accurate than planting to flowering, but have many more NA's.
 
 ```{r RrrModels, echo=TRUE, results="hide"}
-R
+
 Rrr_lmer <- lmer( SurviveGTF ~ Geography + Seedstock + DOYGS + DaysVernNoNA + (1|Experiment) + (1|Geography:Pop), data=RrrData  )
 
 Rrr_glmm <- MCMCglmm( fixed = SurviveGTF ~ Geography  + Seedstock + DOYGS + DaysVernNoNA, 
@@ -106,28 +119,142 @@ Nat_glmm <- MCMCglmm(fixed = SurviveGTF ~ SubSpecies + Seedstock + DaysVernNoNA,
                      data = NatData)
 ```
 
+```{r SatModels, echo=TRUE, results="hide"}
+
+Sat_lmer <- lmer( SurviveGTF ~ Taxonomy + (1|Experiment) + (1|Taxonomy:Pop), data=SatData  )
+
+
+Sat_glmm <- MCMCglmm(fixed = SurviveGTF ~ Taxonomy, 
+                     random = ~ Experiment + Taxonomy:Pop, 
+                     nitt = nitt,
+                     thin = thin,
+                     burnin = burnin,
+                     pr = pr, #save posterior distribution of random effects
+                     data = SatData)
+```
+
 ##Model output for just *R.r. raphanistrum*
 ```{r ModelStatsRrr, echo=FALSE}
-
 summary( Rrr_glmm )
-plot( Rrr_glmm$Sol )
-acf( Rrr_glmm$VCV )
 
+```
+
+```{r, echo=FALSE, fig.height=5, include=FALSE}
+plot( Rrr_glmm$Sol )
+
+acf( Rrr_glmm$VCV )
 ```
 
 ##Model output for just native range *R. raphanistrum*
 ```{r ModelStatsNat, echo=FALSE}
 
 summary( Nat_glmm )
+
+```
+```{r, echo=FALSE, fig.height=5, include=FALSE}
 plot( Nat_glmm$Sol )
 acf( Nat_glmm$VCV )
+```
+
+##Model output for just *R.r. sativus*
+```{r ModelStatsSat, echo=FALSE}
+summary( Sat_glmm )
 
 ```
 
-pop_chains <- Rrr_glmm$Sol[, 14:29] + Rrr_glmm$Sol[,1]
-colMeans(pop_chains)
-HPDinterval(pop_chains)
+```{r, echo=FALSE, fig.height=8 }
+plot( Sat_glmm$Sol )
+
+acf( Sat_glmm$VCV )
+```
 
 
+```{r ModelMeans, echo=FALSE}
+Rrr_pop_chains <- Rrr_glmm$Sol[ , 14:29 ] + Rrr_glmm$Sol[ , 1 ]
+Rrr_pop_means <- colMeans( Rrr_pop_chains )
+Rrr_pop_HPD <- as.data.frame( HPDinterval( Rrr_pop_chains ) )
+Rrr_pop_names <- substr( colnames( Rrr_glmm$Sol )[14:29], 
+                        nchar( colnames( Rrr_glmm$Sol )[14:29] ) -3, 
+                        nchar( colnames( Rrr_glmm$Sol )[14:29] ) )
+
+Nat_pop_chains <- Nat_glmm$Sol[, 14:29] + Nat_glmm$Sol[ , 1 ]
+Nat_pop_means <- colMeans( Nat_pop_chains )
+Nat_pop_HPD <- as.data.frame( HPDinterval( Nat_pop_chains ) )
+Nat_pop_names <- substr(colnames( Nat_glmm$Sol )[15:30], 
+                        nchar( colnames( Nat_glmm$Sol )[15:30] ) -3, 
+                        nchar(colnames(Nat_glmm$Sol)[15:30]))
+
+Sat_pop_chains <- Sat_glmm$Sol[, 8:32] + Sat_glmm$Sol[ , 1 ]
+Sat_pop_means <- colMeans( Sat_pop_chains )
+Sat_pop_HPD <- as.data.frame( HPDinterval( Sat_pop_chains ) )
+Sat_pop_names <- substr(colnames( Sat_glmm$Sol )[8:32], 
+                        nchar( colnames( Sat_glmm$Sol )[8:32] ) -3, 
+                        nchar(colnames(Sat_glmm$Sol)[8:32]))
+```
+#Plotting
+
+##All *R.r. raphanistrum*
+```{r PlotRrrMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+par( mar = c( 5, 5, 3, 2 ) )
+plot( Rrr_pop_means, 
+      pch = 16, 
+      ylim = c(20, 120),
+      xlab = "Populations",
+      ylab = "Population means as \ndays from germination to flower",
+      xaxt = "n",
+      main = expression("All"~italic( "R.r. raphanistrum" ) ) ) 
+
+axis( 1, at = 1:length(Rrr_pop_names), labels = Rrr_pop_names, las = 2)
+arrows( x0 = 1:length(Rrr_pop_names),
+        y0 = Rrr_pop_HPD$lower,
+        y1 = Rrr_pop_HPD$upper, 
+        angle = 90, 
+        length = 0.1, 
+        code = 3 ) #arrow on both ends of line
+```
+
+##Only Native range *R.r. raphanistrum*
+```{r PlotNatMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+
+par( mar = c( 5, 5, 3, 2 ) )
+plot( Nat_pop_means, 
+      pch = 16, 
+      ylim = c(0, 150),
+      xlab = "Populations",
+      ylab = "Population means as \ndays from germination to flower",
+      xaxt = "n",
+      main = expression("Only Native-range"~italic( "R.r. raphanistrum" ) ) ) 
+
+axis( 1, at = 1:length(Nat_pop_names), labels = Nat_pop_names, las = 2)
+arrows( x0 = 1:length(Nat_pop_names),
+        y0 = Nat_pop_HPD$lower,
+        y1 = Nat_pop_HPD$upper, 
+        angle = 90, 
+        length = 0.1, 
+        code = 3 ) #arrow on both ends of line
+
+```
+
+##Only crops *R. sativus*
+```{r PlotSatMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+
+par( mar = c( 5, 5, 3, 2 ) )
+plot( Sat_pop_means, 
+      pch = 16, 
+      ylim = c(0, 250),
+      xlab = "Populations",
+      ylab = "Population means as \ndays from germination to flower",
+      xaxt = "n",
+      main = expression("Only crops"~italic( "R. sativus" ) ) ) 
+
+axis( 1, at = 1:length(Sat_pop_names), labels = Sat_pop_names, las = 2)
+arrows( x0 = 1:length(Sat_pop_names),
+        y0 = Sat_pop_HPD$lower,
+        y1 = Sat_pop_HPD$upper, 
+        angle = 90, 
+        length = 0.1, 
+        code = 3 ) #arrow on both ends of line
+
+```
 
 
