@@ -57,6 +57,8 @@ spring2013 <- read.csv("../OriginalData/2013plantsSpring.csv", sep=",", na.strin
 sum2010 <- read.csv("../OriginalData/Summer2010dataSummary.csv", na.strings=".")
 
 markers <- c("ADOL","AFFR","AROL","AUFI","BINY","CBBG","CBES","COAU","COOL","DAJO","DEES","ESNK","GHIL","GMIL","HCES","HMES","HZIL","IMES","MABG","MAES","MYJO","NCDE","NELO","NZIL","PBFR","RA173","RA215","RA219","RA226","RA264","RA265","RA399","RA402","RA432","RA444","RA447","RA475","RA494","RA503","RA761","RA787","RA835","RA837","RA838","RA840","RABG","RACA","REIL","SAES","SPEU","TOBG","TYIL","WEAU","WMBG","ZYIL")
+
+Genotypes <- read.csv("../OriginalData/GenotypicData.csv", sep = ",", na.strings = c("NA", "", "."))
 ```
 ###Data Munging
 ####Fix dates for each dataset so they are all the same format, as in:
@@ -506,9 +508,24 @@ CombinedDataSet <- droplevels(CombinedDataSet)
 
 ```
 
+```{r splitGenotypes, echo=FALSE}
+JustSNPs <- Genotypes[,c(1:19)]
+JustSSR <- Genotypes[c(22:25)]
+write.csv(JustSSR, "../output/JustSSR.csv")
+system("python biallele.py ../output/JustSSR.csv ../output/BiSSR.csv")
+read.csv("../output/BiSSR.csv", header = T)
+
+
+#JustSSR <- as.data.frame(cbind(paste(Genotypes$SSR.ID, Genotypes$Pop, sep = ""),  
+#                               Genotypes[, c(20:length(colnames(Genotypes)))])
+#colnames(JustSSR) <- c("Name", colnames(JustSSR[2:17]))
+
+```
+
 
 ```{r write, echo=FALSE}
 write.csv(CombinedDataSet, "../output/CombinedDataSet.csv", quote=F, row.names=F)
+
 ```
 
 ###Error Checking

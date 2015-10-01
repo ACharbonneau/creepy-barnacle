@@ -35,8 +35,8 @@ Global parameters for MCMCglmm
 
 ```{r ModelParameters}
 
-nitt <- 100000   # Number of iterations
-thin <- 50       # Thinning interval
+nitt <- 1000000   # Number of iterations
+thin <- 100       # Thinning interval
 burnin <- 5000   # burnin period
 pr <- TRUE       # save posterior distribution of random effects
 
@@ -245,6 +245,7 @@ plot( Sat_pop_means,
       xlab = "Populations",
       ylab = "Population means as \ndays from germination to flower",
       xaxt = "n",
+      col = Sat_pop
       main = expression("Only crops"~italic( "R. sativus" ) ) ) 
 
 axis( 1, at = 1:length(Sat_pop_names), labels = Sat_pop_names, las = 2)
