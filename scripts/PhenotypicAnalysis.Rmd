@@ -18,6 +18,7 @@ require(RColorBrewer)
 #require(MuMIn) #summary stats for LMER models
 #require(arm) #extractAIC
 require(MCMCglmm)
+require(ggplot2)
 ```
 
 
@@ -39,6 +40,20 @@ nitt <- 1000000   # Number of iterations
 thin <- 100       # Thinning interval
 burnin <- 5000   # burnin period
 pr <- TRUE       # save posterior distribution of random effects
+
+```
+
+```{r ColorSettings, echo=FALSE}
+col_pal1 = brewer.pal(12, "Set3")
+col_pal2 = brewer.pal(8, "Dark2")
+col_pal3 = brewer.pal(12, "Paired")
+col_pal = c(col_pal1, col_pal2, col_pal3)
+
+
+caudatus <- col_pal1[1]
+daikon <- col_pal1[2]   
+european <- col_pal1[3] 
+oleifera <- col_pal1[4]
 
 ```
 
@@ -171,91 +186,77 @@ acf( Sat_glmm$VCV )
 
 ```{r ModelMeans, echo=FALSE}
 Rrr_pop_chains <- Rrr_glmm$Sol[ , 14:29 ] + Rrr_glmm$Sol[ , 1 ]
-Rrr_pop_means <- colMeans( Rrr_pop_chains )
-Rrr_pop_HPD <- as.data.frame( HPDinterval( Rrr_pop_chains ) )
-Rrr_pop_names <- substr( colnames( Rrr_glmm$Sol )[14:29], 
-                        nchar( colnames( Rrr_glmm$Sol )[14:29] ) -3, 
-                        nchar( colnames( Rrr_glmm$Sol )[14:29] ) )
+Rrr_pop <- as.data.frame( cbind(colMeans( Rrr_pop_chains ), 
+                          as.data.frame(HPDinterval( Rrr_pop_chains ) ) ))
+Rrr_pop[,4:6] <- data.frame( matrix( 
+                  unlist( strsplit( rownames( Rrr_pop ), split=".", fixed=TRUE ) ),
+                  nrow=16, byrow=T ) )
+colnames(Rrr_pop) <- c("Mean", "Lower", "Upper", "Group", "Geography", "Pop")
+Rrr_pop <- Rrr_pop[order( Rrr_pop$Geography, partial=Rrr_pop$Pop ), ]
 
-Nat_pop_chains <- Nat_glmm$Sol[, 14:29] + Nat_glmm$Sol[ , 1 ]
-Nat_pop_means <- colMeans( Nat_pop_chains )
-Nat_pop_HPD <- as.data.frame( HPDinterval( Nat_pop_chains ) )
-Nat_pop_names <- substr(colnames( Nat_glmm$Sol )[15:30], 
-                        nchar( colnames( Nat_glmm$Sol )[15:30] ) -3, 
-                        nchar(colnames(Nat_glmm$Sol)[15:30]))
+
+Nat_pop_chains <- Nat_glmm$Sol[, 15:30] + Nat_glmm$Sol[ , 1 ]
+Nat_pop <- as.data.frame( cbind(colMeans( Nat_pop_chains ), 
+                          as.data.frame(HPDinterval( Nat_pop_chains ) ) ))
+Nat_pop[,4:6] <- data.frame( matrix( 
+                  unlist( strsplit( rownames( Nat_pop ), split=".", fixed=TRUE ) ),
+                  nrow=16, byrow=T ) )
+colnames(Nat_pop) <- c("Mean", "Lower", "Upper", "Group", "SubSp", "Pop")
+Nat_pop <- Nat_pop[order( Nat_pop$SubSp, partial=Nat_pop$Pop ), ]
 
 Sat_pop_chains <- Sat_glmm$Sol[, 8:32] + Sat_glmm$Sol[ , 1 ]
-Sat_pop_means <- colMeans( Sat_pop_chains )
-Sat_pop_HPD <- as.data.frame( HPDinterval( Sat_pop_chains ) )
-Sat_pop_names <- substr(colnames( Sat_glmm$Sol )[8:32], 
-                        nchar( colnames( Sat_glmm$Sol )[8:32] ) -3, 
-                        nchar(colnames(Sat_glmm$Sol)[8:32]))
+Sat_pop <- as.data.frame( cbind(colMeans( Sat_pop_chains ), 
+                          as.data.frame(HPDinterval( Sat_pop_chains ) ) ))
+Sat_pop[ ,4:6 ] <- data.frame( matrix( 
+                  unlist( strsplit( rownames( Sat_pop ), split=".", fixed=TRUE ) ),
+                  nrow=25, byrow=T ) )
+colnames( Sat_pop ) <- c("Mean", "Lower", "Upper", "Group", "Variety", "Pop")
+Sat_pop <- Sat_pop[order( Sat_pop$Variety, partial=Sat_pop$Pop ), ]
 ```
 #Plotting
 
-##All *R.r. raphanistrum*
-```{r PlotRrrMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
-par( mar = c( 5, 5, 3, 2 ) )
-plot( Rrr_pop_means, 
-      pch = 16, 
-      ylim = c(20, 120),
-      xlab = "Populations",
-      ylab = "Population means as \ndays from germination to flower",
-      xaxt = "n",
-      main = expression("All"~italic( "R.r. raphanistrum" ) ) ) 
+##Only Native range *R. raphanistrum*
+```{r PlotNatMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+NatPlot <- ggplot( Nat_pop, aes( x=Pop, y=Mean) ) + 
+              geom_point() + 
+              geom_errorbar(aes( y=Mean, max=Upper, min=Lower)) + 
+              facet_grid(~SubSp, scales = "free", space = "free", ) +
+              xlab("Population") + 
+              ylab("Population means as \ndays from germination to flower") + 
+              ggtitle(expression("Only Native-range"~italic( "R. raphanistrum" ) ) ) 
 
-axis( 1, at = 1:length(Rrr_pop_names), labels = Rrr_pop_names, las = 2)
-arrows( x0 = 1:length(Rrr_pop_names),
-        y0 = Rrr_pop_HPD$lower,
-        y1 = Rrr_pop_HPD$upper, 
-        angle = 90, 
-        length = 0.1, 
-        code = 3 ) #arrow on both ends of line
+NatPlot + theme_light() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
 ```
 
-##Only Native range *R.r. raphanistrum*
-```{r PlotNatMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+##All *R.r. raphanistrum*
+```{r PlotRrrMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+RrrPlot <- ggplot( Rrr_pop, aes( x=Pop, y=Mean) ) + 
+              geom_point() + 
+              geom_errorbar(aes( y=Mean, max=Upper, min=Lower)) + 
+              facet_grid(~Geography, scales = "free", space = "free", ) +
+              xlab("Population") + 
+              ylab("Population means as \ndays from germination to flower") + 
+              ggtitle(expression("All"~italic( "R.r. raphanistrum" ) ) ) 
 
-par( mar = c( 5, 5, 3, 2 ) )
-plot( Nat_pop_means, 
-      pch = 16, 
-      ylim = c(0, 150),
-      xlab = "Populations",
-      ylab = "Population means as \ndays from germination to flower",
-      xaxt = "n",
-      main = expression("Only Native-range"~italic( "R.r. raphanistrum" ) ) ) 
+RrrPlot + theme_light() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
-axis( 1, at = 1:length(Nat_pop_names), labels = Nat_pop_names, las = 2)
-arrows( x0 = 1:length(Nat_pop_names),
-        y0 = Nat_pop_HPD$lower,
-        y1 = Nat_pop_HPD$upper, 
-        angle = 90, 
-        length = 0.1, 
-        code = 3 ) #arrow on both ends of line
 
 ```
 
 ##Only crops *R. sativus*
 ```{r PlotSatMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
 
-par( mar = c( 5, 5, 3, 2 ) )
-plot( Sat_pop_means, 
-      pch = 16, 
-      ylim = c(0, 250),
-      xlab = "Populations",
-      ylab = "Population means as \ndays from germination to flower",
-      xaxt = "n",
-      col = Sat_pop
-      main = expression("Only crops"~italic( "R. sativus" ) ) ) 
+SatPlot <- ggplot( Sat_pop, aes( x=Pop, y=Mean) ) + 
+              geom_point() + 
+              geom_errorbar(aes( y=Mean, max=Upper, min=Lower)) + 
+              facet_grid(~Variety, scales = "free", space = "free", ) +
+              xlab("Population") + 
+              ylab("Population means as \ndays from germination to flower") + 
+              ggtitle(expression("Only crops"~(italic( "R. sativus" ) ) ) ) 
 
-axis( 1, at = 1:length(Sat_pop_names), labels = Sat_pop_names, las = 2)
-arrows( x0 = 1:length(Sat_pop_names),
-        y0 = Sat_pop_HPD$lower,
-        y1 = Sat_pop_HPD$upper, 
-        angle = 90, 
-        length = 0.1, 
-        code = 3 ) #arrow on both ends of line
+SatPlot + theme_light() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 ```
-
 
