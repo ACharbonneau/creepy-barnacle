@@ -9,27 +9,25 @@ output:
 ---
 
 ```{r SourcePackages, include=FALSE}
-rm( list=ls())
-source("~/Dropbox/RadishWeedEvolution/MarkerPaperMeta/Functionarium.R")
-source("~/Dropbox/DworkinLabSharedMaterial/scripts/WRP_FUNCTIONS.R")
-require(lme4) #modeling
-#require(car) #ANOVA
-require(RColorBrewer)
-#require(MuMIn) #summary stats for LMER models
-#require(arm) #extractAIC
-require(MCMCglmm)
-require(ggplot2)
+rm( list=ls() )
+source( "~/Dropbox/RadishWeedEvolution/MarkerPaperMeta/Functionarium.R")
+source( "~/Dropbox/DworkinLabSharedMaterial/scripts/WRP_FUNCTIONS.R")
+require( lme4 ) #modeling
+require( MCMCglmm ) #modeling
+require( ggplot2 ) #plotting
+require( dplyr ) #munging
+require( reshape2 ) #munging
 ```
 
 
 ```{r ImportData, echo=FALSE}
-FlowData <- read.csv("../output/CombinedDataSet.csv")
-FlowData$FlowDate <- as.Date(FlowData$FlowDate)
-FlowData$GermDate <- as.Date(FlowData$GermDate)
-FlowData$PlantDate <- as.Date(FlowData$PlantDate)
-FlowData$DOYPS <- ifelse(FlowData$DOYP < 78, FlowData$DOYP + 287, FlowData$DOYP - 78 )
-FlowData$DOYGS <- ifelse(FlowData$DOYG < 78, FlowData$DOYG + 287, FlowData$DOYG - 78 )
-
+FlowData <- read.csv( "../output/CombinedDataSet.csv" )
+FlowData$FlowDate <- as.Date( FlowData$FlowDate )
+FlowData$GermDate <- as.Date( FlowData$GermDate )
+FlowData$PlantDate <- as.Date( FlowData$PlantDate )
+FlowData$DOYPS <- ifelse( FlowData$DOYP < 78, FlowData$DOYP + 287, FlowData$DOYP - 78 )
+FlowData$DOYGS <- ifelse( FlowData$DOYG < 78, FlowData$DOYG + 287, FlowData$DOYG - 78 )
+FlowData <- tbl_df( FlowData )
 ```
 
 Global parameters for MCMCglmm
@@ -43,56 +41,51 @@ pr <- TRUE       # save posterior distribution of random effects
 
 ```
 
-```{r ColorSettings, echo=FALSE}
-col_pal1 = brewer.pal(12, "Set3")
-col_pal2 = brewer.pal(8, "Dark2")
-col_pal3 = brewer.pal(12, "Paired")
-col_pal = c(col_pal1, col_pal2, col_pal3)
-
-
-caudatus <- col_pal1[1]
-daikon <- col_pal1[2]   
-european <- col_pal1[3] 
-oleifera <- col_pal1[4]
-
-```
-
 ```{r RrrSubset, echo=FALSE}
 # Data Subset for R.r. raphanistrum analysis
-RrrData <- droplevels(FlowData[FlowData$Taxonomy == "raphanistrum",])
-RrrData <- keepCols(RrrData, c("ID", "GTF", "Geography", "Seedstock", "GrowthEnvironment", "DOYGS", "DaysVernNoNA", "Pop", "Experiment", "Habitat", "PTF", "DOYPS", "Native", "PTG", "SurviveGTF"))
+#Only keep data for individuals that are Rrr, have a flowering date and germination date
+RrrData <- filter( FlowData, Taxonomy == "raphanistrum" & 
+                             !is.na( SurviveGTF) & 
+                             !is.na( DOYGS )  ) %>% 
+           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, DOYGS, 
+                   DaysVernNoNA, Pop, Experiment, Habitat, PTF, DOYPS, PTG, SurviveGTF )
+    
 
-RrrData$ID <- row.names(RrrData)
-RrrData$Geography <- relevel(RrrData$Geography, "west")
-RrrData$Habitat <- relevel(RrrData$Habitat, "natural")
+RrrData$Geography <- relevel( RrrData$Geography, "west" )
+RrrData$Habitat <- relevel( RrrData$Habitat, "natural" )
 RrrData$Ag <- RrrData$Habitat
-levels(RrrData$Ag) <- c("nonag", "ag", "nonag")
-RrrData <- RrrData[!is.na(RrrData$SurviveGTF),] #Only keep data for individuals that have a flowering date
-RrrData <- RrrData[!is.na( RrrData$DOYGS ),] #Only keep data for individuals that have a germination date
+levels(RrrData$Ag) <- c("nonag", "ag", "nonag", "nonag" )
+
 ```
 
 ```{r RrNativeSubset, echo=FALSE}
-# Data Subset for R.raphanistrum natives analysis
-NatData <- droplevels(FlowData[FlowData$Geography != "nonNative" & FlowData$Species != "sativus",])
-NatData <- keepCols(NatData, c("ID", "GTF", "Geography", "Seedstock", "GrowthEnvironment", "DOYGS", "DaysVernNoNA", "Pop", "Experiment", "Habitat", "PTF", "DOYPS", "Native", "Latency", "Species", "SubSpecies", "Taxonomy", "SurviveGTF"))
+# Data Subset for Raphanus natives analysis
+#Only keep data for individuals that are natives, have a flowering date and germination date
+NatData <- filter( FlowData, Geography != "nonNative" & 
+                             Species != "sativus" & 
+                             !is.na( SurviveGTF) & 
+                             !is.na( DOYGS )  ) %>% 
+           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, DOYGS, 
+                   DaysVernNoNA, Pop, Experiment, Habitat, PTF, DOYPS, 
+                   Species, SubSpecies, Taxonomy, SurviveGTF )
 
-NatData$ID <- row.names(NatData)
-NatData$Geography <- relevel(NatData$Geography, "west")
-NatData$Habitat <- relevel(NatData$Habitat, "natural")
-NatData$SubSpecies <- relevel(NatData$SubSpecies, "raphanistrum")
-NatData <- NatData[!is.na(NatData$SurviveGTF),] #Only keep data for individuals that have a flowering date
-NatData <- NatData[!is.na(NatData$DOYGS),]  #Only keep data for individuals that have a germination date
+NatData$ID <- row.names( NatData )
+NatData$Geography <- relevel( NatData$Geography, "west" )
+NatData$Habitat <- relevel( NatData$Habitat, "natural" )
+NatData$SubSpecies <- relevel( NatData$SubSpecies, "raphanistrum" )
 ```
 
 ```{r SativeSubset, echo=FALSE}
 # Data Subset for sativus analysis
-SatData <- droplevels(FlowData[FlowData$Species == "sativus",])
-SatData <- keepCols(SatData, c("ID", "GTF", "Geography", "Seedstock", "GrowthEnvironment", "DOYGS", "DaysVernNoNA", "Pop", "Experiment", "Habitat", "PTF", "DOYPS", "Sative", "Latency", "Species", "SubSpecies", "Taxonomy", "SurviveGTF"))
+#Only keep data for individuals that are sativus, have a flowering date and germination date
+SatData <- filter( FlowData, Species == "sativus" & 
+                             !is.na( SurviveGTF) & 
+                             !is.na( DOYGS )  ) %>% 
+           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, DOYGS, 
+                   DaysVernNoNA, Pop, Experiment, Habitat, PTF, DOYPS, 
+                   Species, SubSpecies, Taxonomy, SurviveGTF )
 
-SatData$ID <- row.names(SatData)
 SatData$Taxonomy <- relevel(SatData$Taxonomy, "european")
-SatData <- SatData[!is.na(SatData$SurviveGTF),] #Only keep data for individuals that have a flowering date
-SatData <- SatData[!is.na(SatData$DOYGS),]  #Only keep data for individuals that have a germiSation date
 ```
 
 
@@ -122,16 +115,16 @@ Only native range *R.raphanistrum*
 
 ```{r RrNatModels, echo=TRUE, results="hide"}
 
-Nat_lmer <- lmer( SurviveGTF ~ SubSpecies + Seedstock + DaysVernNoNA + (1|Experiment) + (1|SubSpecies:Pop), data=NatData  )
+Nat_lmer <- lmer( SurviveGTF ~ SubSpecies + Seedstock + DaysVernNoNA + (1|Experiment) + (1|SubSpecies:Pop), data = NatData  )
 
 
-Nat_glmm <- MCMCglmm(fixed = SurviveGTF ~ SubSpecies + Seedstock + DaysVernNoNA, 
-                     random = ~ Experiment + SubSpecies:Pop, 
-                     nitt = nitt,
-                     thin = thin,
-                     burnin = burnin,
-                     pr = pr, #save posterior distribution of random effects
-                     data = NatData)
+Nat_glmm <- MCMCglmm( fixed = SurviveGTF ~ SubSpecies + Seedstock + DaysVernNoNA, 
+                      random = ~ Experiment + SubSpecies:Pop, 
+                      nitt = nitt,
+                      thin = thin,
+                      burnin = burnin,
+                      pr = pr, #save posterior distribution of random effects
+                      data = NatData)
 ```
 
 ```{r SatModels, echo=TRUE, results="hide"}
@@ -139,13 +132,13 @@ Nat_glmm <- MCMCglmm(fixed = SurviveGTF ~ SubSpecies + Seedstock + DaysVernNoNA,
 Sat_lmer <- lmer( SurviveGTF ~ Taxonomy + (1|Experiment) + (1|Taxonomy:Pop), data=SatData  )
 
 
-Sat_glmm <- MCMCglmm(fixed = SurviveGTF ~ Taxonomy, 
-                     random = ~ Experiment + Taxonomy:Pop, 
-                     nitt = nitt,
-                     thin = thin,
-                     burnin = burnin,
-                     pr = pr, #save posterior distribution of random effects
-                     data = SatData)
+Sat_glmm <- MCMCglmm( fixed = SurviveGTF ~ Taxonomy, 
+                      random = ~ Experiment + Taxonomy:Pop, 
+                      nitt = nitt,
+                      thin = thin,
+                      burnin = burnin,
+                      pr = pr, #save posterior distribution of random effects
+                      data = SatData)
 ```
 
 ##Model output for just *R.r. raphanistrum*
@@ -184,79 +177,220 @@ acf( Sat_glmm$VCV )
 ```
 
 
-```{r ModelMeans, echo=FALSE}
+```{r RrrModelMeans, echo=FALSE}
 Rrr_pop_chains <- Rrr_glmm$Sol[ , 14:29 ] + Rrr_glmm$Sol[ , 1 ]
-Rrr_pop <- as.data.frame( cbind(colMeans( Rrr_pop_chains ), 
-                          as.data.frame(HPDinterval( Rrr_pop_chains ) ) ))
+Rrr_pop <- as.data.frame( cbind( colMeans( Rrr_pop_chains ), 
+                          as.data.frame( HPDinterval( Rrr_pop_chains ) ) ))
 Rrr_pop[,4:6] <- data.frame( matrix( 
-                  unlist( strsplit( rownames( Rrr_pop ), split=".", fixed=TRUE ) ),
+                  unlist( strsplit( rownames( Rrr_pop ), split = ".", fixed = TRUE ) ),
                   nrow=16, byrow=T ) )
-colnames(Rrr_pop) <- c("Mean", "Lower", "Upper", "Group", "Geography", "Pop")
-Rrr_pop <- Rrr_pop[order( Rrr_pop$Geography, partial=Rrr_pop$Pop ), ]
+colnames(Rrr_pop) <- c( "Mean", "Lower", "Upper", "Group", "Geography", "Pop" )
+Rrr_pop <- arrange( Rrr_pop, Geography )
 
+Rrr_fixed_chains <- mutate( data.frame( Rrr_glmm$Sol ),
+                            west = X.Intercept., 
+                            east = X.Intercept. + Geographyeast, 
+                            nonNative = X.Intercept. + GeographynonNative ) %>%
+                    select( west, east, nonNative )
 
-Nat_pop_chains <- Nat_glmm$Sol[, 15:30] + Nat_glmm$Sol[ , 1 ]
-Nat_pop <- as.data.frame( cbind(colMeans( Nat_pop_chains ), 
-                          as.data.frame(HPDinterval( Nat_pop_chains ) ) ))
+Rrr_fixed <- data.frame( cbind( colMeans( Rrr_fixed_chains ), 
+                         data.frame( HPDinterval( as.mcmc(Rrr_fixed_chains) ) ) ) )
+Rrr_fixed <- mutate(Rrr_fixed, species = rownames(Rrr_fixed), Mean = colMeans.Rrr_fixed_chains.)
+
+```
+
+```{r NatModelMeans, echo=FALSE}
+
+Nat_pop_chains <- Nat_glmm$Sol[ , 15:30 ] + Nat_glmm$Sol[ , 1 ]
+Nat_pop <- as.data.frame( cbind( colMeans( Nat_pop_chains ), 
+                          as.data.frame( HPDinterval( Nat_pop_chains ) ) ))
 Nat_pop[,4:6] <- data.frame( matrix( 
-                  unlist( strsplit( rownames( Nat_pop ), split=".", fixed=TRUE ) ),
-                  nrow=16, byrow=T ) )
-colnames(Nat_pop) <- c("Mean", "Lower", "Upper", "Group", "SubSp", "Pop")
-Nat_pop <- Nat_pop[order( Nat_pop$SubSp, partial=Nat_pop$Pop ), ]
+                  unlist( strsplit( rownames( Nat_pop ), split = ".", fixed = TRUE ) ),
+                  nrow = 16, byrow = T ) )
+colnames( Nat_pop ) <- c( "Mean", "Lower", "Upper", "Group", "SubSp", "Pop" )
+Nat_pop <- arrange( Nat_pop, SubSp ) 
+
+Nat_fixed_chains <- mutate( data.frame( Nat_glmm$Sol ),
+                            raphanistrum = X.Intercept., 
+                            confusus = (X.Intercept. + SubSpeciesconfusus),
+                            landra = X.Intercept. + SubSpecieslandra,
+                            maritimus = X.Intercept. + SubSpeciesmaritimus,
+                            rostratus = X.Intercept. + SubSpeciesrostratus ) %>%
+                    select( raphanistrum, confusus, landra, maritimus, rostratus)
+
+Nat_fixed <- data.frame( cbind( colMeans( Nat_fixed_chains ), 
+                         data.frame( HPDinterval( as.mcmc( Nat_fixed_chains ) ) ) ) )
+Nat_fixed <- mutate(Nat_fixed, species = rownames(Nat_fixed), Mean = colMeans.Nat_fixed_chains.)
+
+
+```
+
+```{r SatModelMeans, echo=FALSE}
 
 Sat_pop_chains <- Sat_glmm$Sol[, 8:32] + Sat_glmm$Sol[ , 1 ]
-Sat_pop <- as.data.frame( cbind(colMeans( Sat_pop_chains ), 
-                          as.data.frame(HPDinterval( Sat_pop_chains ) ) ))
+Sat_pop <- as.data.frame( cbind( colMeans( Sat_pop_chains ), 
+                          as.data.frame( HPDinterval( Sat_pop_chains ) ) ))
 Sat_pop[ ,4:6 ] <- data.frame( matrix( 
-                  unlist( strsplit( rownames( Sat_pop ), split=".", fixed=TRUE ) ),
-                  nrow=25, byrow=T ) )
-colnames( Sat_pop ) <- c("Mean", "Lower", "Upper", "Group", "Variety", "Pop")
-Sat_pop <- Sat_pop[order( Sat_pop$Variety, partial=Sat_pop$Pop ), ]
+                  unlist( strsplit( rownames( Sat_pop ), split = ".", fixed = TRUE ) ),
+                  nrow = 25, byrow = T ) )
+colnames( Sat_pop ) <- c( "Mean", "Lower", "Upper", "Group", "Variety", "Pop" )
+levels( Sat_pop$Variety ) <- c( "Rat-tail", "Daikon", "European", "Oil-seed" )
+Sat_pop <- arrange( Sat_pop, Variety )
+
+Sat_fixed_chains <- mutate( data.frame( Sat_glmm$Sol ),
+                            european = X.Intercept.,
+                            caudatus = X.Intercept. + Taxonomycaudatus,
+                            daikon = X.Intercept. + Taxonomydaikon,
+                            oleifera = X.Intercept. + Taxonomyoleifera ) %>%
+                    select( european, caudatus, daikon, oleifera )
+
+Sat_fixed <- data.frame( cbind( colMeans( Sat_fixed_chains ), 
+                         data.frame( HPDinterval( as.mcmc( Sat_fixed_chains ) ) ) ) )
+Sat_fixed <- mutate(Sat_fixed, species = rownames(Sat_fixed), Mean = colMeans.Sat_fixed_chains.)
 ```
+
 #Plotting
 
 ##Only Native range *R. raphanistrum*
-```{r PlotNatMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
-NatPlot <- ggplot( Nat_pop, aes( x=Pop, y=Mean) ) + 
-              geom_point() + 
-              geom_errorbar(aes( y=Mean, max=Upper, min=Lower)) + 
-              facet_grid(~SubSp, scales = "free", space = "free", ) +
-              xlab("Population") + 
-              ylab("Population means as \ndays from germination to flower") + 
-              ggtitle(expression("Only Native-range"~italic( "R. raphanistrum" ) ) ) 
+```{r PlotNatPopMeans, echo=FALSE, fig.path="../figures/", fig.keep="last", fig.width=11}
+NatPlot <- ggplot( Nat_pop, aes( y = Mean, x = Pop ) ) + 
+              geom_point( cex = 2.5) + 
+              geom_errorbar( aes( y = Mean, max = Upper, min = Lower), col = "gray40", width = .4, cex = .5) + 
+              facet_grid( ~ SubSp, scales = "free", space = "free") +
+              xlab( "Population" ) + 
+              ylab( "Population means as \ndays from germination to flower" ) + 
+              ggtitle( expression( "Only Native-range"~italic( "Raphanus" ) ) ) 
 
-NatPlot + theme_light() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+NatPlot + theme_light() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
+                                 axis.text.y = element_text( size = 14 ),
+                                 axis.title.y = element_text( size = 14 ),
+                                 strip.text.x = element_text( angle = 0, size = 10, face = "italic" ) ) 
+
+
+```
+
+```{r PlotNatMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+NatPlot <- ggplot( Nat_fixed, aes(y = Mean, x = species)) + 
+              geom_point( cex = 2.5) + 
+              geom_errorbar( aes( y = Mean, max = upper, min = lower), col = "gray40", width = .4, cex = .5) + 
+              xlab( "Species or Sub-Species" ) + 
+              ylab( "Means as \ndays from germination to flower" ) + 
+              ggtitle( expression( "Mean days to flower for all"~italic( "Raphanus" ) ) ) 
+
+NatPlot + theme_light() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05, face = "italic" ),
+                                 axis.text.y = element_text( size = 14 ),
+                                 axis.title.y = element_text( size = 14 ),
+                                 strip.text.x = element_text( angle = 0, size = 10, face = "italic" ) ) 
 
 
 ```
 
 ##All *R.r. raphanistrum*
+```{r PlotRrrPopMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+RrrPlot <- ggplot( Rrr_pop, aes( x = Pop, y = Mean ) ) + 
+              geom_point( cex = 2.5 ) + 
+              geom_errorbar( aes( y = Mean, max = Upper, min = Lower), col = "gray40", width = .4, cex = .5 ) +  
+              facet_grid( ~Geography, scales = "free", space = "free" ) +
+              xlab( "Population" ) + 
+              ylab( "Population means as \ndays from germination to flower" ) + 
+              ggtitle( expression( "All" ~ italic( "R.r. raphanistrum" ) ) ) 
+
+RrrPlot + theme_light() + theme( axis.text.x = element_text( angle = -50, size=14, hjust = -.05 ),
+                                 axis.text.y = element_text( size = 14 ),
+                                 axis.title.y = element_text( size = 14 ),
+                                 strip.text.x = element_text( angle = 0, size = 10 ) ) 
+
+```
+
 ```{r PlotRrrMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
-RrrPlot <- ggplot( Rrr_pop, aes( x=Pop, y=Mean) ) + 
-              geom_point() + 
-              geom_errorbar(aes( y=Mean, max=Upper, min=Lower)) + 
-              facet_grid(~Geography, scales = "free", space = "free", ) +
-              xlab("Population") + 
-              ylab("Population means as \ndays from germination to flower") + 
-              ggtitle(expression("All"~italic( "R.r. raphanistrum" ) ) ) 
+RrrPlot <- ggplot( Rrr_fixed, aes( x = species, y = Mean ) ) + 
+              geom_point( cex = 2.5 ) + 
+              geom_errorbar( aes( y = Mean, max = upper, min = lower), col = "gray40", width = .4, cex = .5 ) +  
+              xlab( "Geographic Origin" ) + 
+              ylab( "Means as \ndays from germination to flower" ) + 
+              ggtitle( expression( "Geographic means of" ~ italic( "R.r. raphanistrum" ) ) ) 
 
-RrrPlot + theme_light() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+RrrPlot + theme_light() + theme( axis.text.x = element_text( angle = -50, size=14, hjust = -.05 ),
+                                 axis.text.y = element_text( size = 14 ),
+                                 axis.title.y = element_text( size = 14 ),
+                                 strip.text.x = element_text( angle = 0, size = 10 ) ) 
 
+```
+
+##Only crops *R. sativus*
+```{r PlotSatPopMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+
+SatPlot <- ggplot( Sat_pop, aes( x = Pop, y = Mean) ) + 
+              geom_point( cex = 2.5 ) + 
+              geom_errorbar( aes( y = Mean, max = Upper, min = Lower ), col = "gray40", width=.4, cex=.5 ) +  
+              facet_grid( ~ Variety, scales = "free", space = "free" ) +
+              xlab( "Population" ) + 
+              ylab( "Population means as \ndays from germination to flower" ) + 
+              ggtitle( expression( "Only crops" ~ ( italic( "R. sativus" ) ) ) ) 
+
+SatPlot + theme_light() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
+                                 axis.text.y = element_text( size = 14 ),
+                                 axis.title.y = element_text( size = 14 ),
+                                 strip.text.x = element_text( angle = 0, size = 10 ) )
 
 ```
 
 ##Only crops *R. sativus*
 ```{r PlotSatMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
 
-SatPlot <- ggplot( Sat_pop, aes( x=Pop, y=Mean) ) + 
-              geom_point() + 
-              geom_errorbar(aes( y=Mean, max=Upper, min=Lower)) + 
-              facet_grid(~Variety, scales = "free", space = "free", ) +
-              xlab("Population") + 
-              ylab("Population means as \ndays from germination to flower") + 
-              ggtitle(expression("Only crops"~(italic( "R. sativus" ) ) ) ) 
+SatPlot <- ggplot( Sat_fixed, aes( x = species, y = Mean) ) + 
+              geom_point( cex = 2.5 ) + 
+              geom_errorbar( aes( y = Mean, max = upper, min = lower ), col = "gray40", width=.4, cex=.5 ) +  
+              xlab( "Crop variety" ) + 
+              ylab( "Means as \ndays from germination to flower" ) + 
+              ggtitle( expression( "Crop" ~ ( italic( "R. sativus" ) ) ~ "variety means" ) ) 
 
-SatPlot + theme_light() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+SatPlot + theme_light() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
+                                 axis.text.y = element_text( size = 14 ),
+                                 axis.title.y = element_text( size = 14 ),
+                                 strip.text.x = element_text( angle = 0, size = 10 ) )
 
 ```
 
+```{r PhenotypeScatter, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+
+PS_data <- select( FlowData, FlowWoVern, Pop) 
+PS_table <- data.frame( cbind( "No" = table(PS_data, useNA = "no")[1,],
+                               "Yes" = table(PS_data, useNA = "no")[2,] ) ) 
+
+MD_table <- select( FlowData, Pop, Taxonomy, Geography, GTF) %>%
+            group_by( Taxonomy, Geography, Pop) %>%
+            summarize(mean(GTF))
+
+
+PS_table <- tbl_df( mutate( PS_table, PnoVern = ( Yes / (Yes + No) ) * 100,
+                      pSD
+                      N = Yes + No, 
+                      Pop = factor(rownames(PS_table) ) ) )
+
+PS_table <- full_join( PS_table, MD_table )
+
+DTF_table <- rbind( mutate( select( Nat_pop, Pop, Mean, Lower, Upper), model = "Nat_pop" ), 
+                    mutate( select( Sat_pop, Pop, Mean, Lower, Upper), model = "Sat_pop" ),
+                    mutate( select( Rrr_pop, Pop, Mean, Lower, Upper), model = "Rrr_pop" ) )
+
+PS_final <- full_join( PS_table, DTF_table)
+
+PS_final <- PS_final %>% mutate( PnoVern=replace(PnoVern, is.na(PnoVern)==T, 0))
+
+
+
+PS_figure <- ggplot( PS_final, aes(x = PnoVern, y = Mean) ) +
+                     geom_point() + aes( color = Taxonomy) +
+                     geom_errorbar( aes( y = Mean, max = Upper, min = Lower)) +
+                     geom_errorbarh( aes( x = PnoVern, ))
+                     xlab( "% Flowered W/O \nVernalization" ) + 
+                     ylab( "Mean days to flowering")
+                    
+PS_figure + theme_light()
+
+
+```
+
+
+proportions$SE <- SEP(proportions$prop, proportions$N)
