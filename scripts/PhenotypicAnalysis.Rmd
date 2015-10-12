@@ -17,6 +17,7 @@ require( MCMCglmm ) #modeling
 require( ggplot2 ) #plotting
 require( dplyr ) #munging
 require( reshape2 ) #munging
+require( ggthemes )
 ```
 
 
@@ -354,43 +355,59 @@ SatPlot + theme_light() + theme( axis.text.x = element_text( angle = -50, size =
 
 ```{r PhenotypeScatter, echo=FALSE, fig.path="../figures/", fig.keep="last"}
 
-PS_data <- select( FlowData, FlowWoVern, Pop) 
+PS_data <- select( FlowData, FlowWoVern, Pop) %>% 
+           mutate( FlowWoVern = replace( FlowWoVern, is.na( FlowWoVern ) == T, "No")) 
+
+
 PS_table <- data.frame( cbind( "No" = table(PS_data, useNA = "no")[1,],
                                "Yes" = table(PS_data, useNA = "no")[2,] ) ) 
 
 MD_table <- select( FlowData, Pop, Taxonomy, Geography, GTF) %>%
             group_by( Taxonomy, Geography, Pop) %>%
-            summarize(mean(GTF))
+            summarize(mean(GTF)) 
 
 
 PS_table <- tbl_df( mutate( PS_table, PnoVern = ( Yes / (Yes + No) ) * 100,
-                      pSD
                       N = Yes + No, 
-                      Pop = factor(rownames(PS_table) ) ) )
+                      Pop = factor(rownames(PS_table) ),
+                      SEPnoVern = SEP( PnoVern/100, N )))
 
-PS_table <- full_join( PS_table, MD_table )
+PS_table <- full_join( PS_table, MD_table ) %>%
+            mutate( FixGeography = replace( as.character(Geography), is.na( Geography ) == T, "Crop") )
 
 DTF_table <- rbind( mutate( select( Nat_pop, Pop, Mean, Lower, Upper), model = "Nat_pop" ), 
                     mutate( select( Sat_pop, Pop, Mean, Lower, Upper), model = "Sat_pop" ),
                     mutate( select( Rrr_pop, Pop, Mean, Lower, Upper), model = "Rrr_pop" ) )
 
-PS_final <- full_join( PS_table, DTF_table)
+PS_final <- mutate( filter( full_join( PS_table, DTF_table ), Pop != "BBCA", Pop != "GSCA" ), 
+                    SEPupper = ( PnoVern + SEPnoVern ),
+                    SEPlower = ( PnoVern - SEPnoVern ),
+                    FixGeography = as.factor( FixGeography ),
+                    Taxonomy = factor( Taxonomy, levels = c( "landra", "maritimus",
+                                                             "raphanistrum", "rostratus",
+                                                             "confusus", "caudatus", 
+                                                             "daikon", "european", 
+                                                             "oleifera", "CAHybrid" )),
+                    FixGeography = factor( FixGeography, levels = c( "west", "east",
+                                                                     "nonNative", "rostratus",
+                                                                     "confusus", "Crop")))
+ 
 
-PS_final <- PS_final %>% mutate( PnoVern=replace(PnoVern, is.na(PnoVern)==T, 0))
-
-
-
-PS_figure <- ggplot( PS_final, aes(x = PnoVern, y = Mean) ) +
-                     geom_point() + aes( color = Taxonomy) +
-                     geom_errorbar( aes( y = Mean, max = Upper, min = Lower)) +
-                     geom_errorbarh( aes( x = PnoVern, ))
+PS_figure <- ggplot( PS_final, aes( x = PnoVern, y = Mean ) ) +
+                     geom_point( cex = 2 ) + aes( color = Taxonomy ) +
+                     geom_errorbar( aes( y = Mean, ymax = Upper, ymin = Lower)) +
+                     geom_errorbarh( aes( x = PnoVern, y = Mean, 
+                                          xmax = SEPupper, xmin = SEPlower)) +
+                     #facet_grid( ~ FixGeography, space = "free") +
+                     facet_wrap( ~ FixGeography) +
                      xlab( "% Flowered W/O \nVernalization" ) + 
                      ylab( "Mean days to flowering")
+                     
                     
-PS_figure + theme_light()
+PS_figure + theme_light() + scale_colour_tableau()
 
 
 ```
 
 
-proportions$SE <- SEP(proportions$prop, proportions$N)
+
