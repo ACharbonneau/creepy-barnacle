@@ -56,6 +56,7 @@ RrrData$Geography <- relevel( RrrData$Geography, "west" )
 RrrData$Habitat <- relevel( RrrData$Habitat, "natural" )
 RrrData$Ag <- RrrData$Habitat
 levels(RrrData$Ag) <- c("nonag", "ag", "nonag", "nonag" )
+RrrData <- droplevels( RrrData )
 
 ```
 
@@ -74,6 +75,7 @@ NatData$ID <- row.names( NatData )
 NatData$Geography <- relevel( NatData$Geography, "west" )
 NatData$Habitat <- relevel( NatData$Habitat, "natural" )
 NatData$SubSpecies <- relevel( NatData$SubSpecies, "raphanistrum" )
+NatData <- droplevels( NatData )
 ```
 
 ```{r SativeSubset, echo=FALSE}
@@ -87,6 +89,7 @@ SatData <- filter( FlowData, Species == "sativus" &
                    Species, SubSpecies, Taxonomy, SurviveGTF )
 
 SatData$Taxonomy <- relevel(SatData$Taxonomy, "european")
+SatData <- droplevels( SatData )
 ```
 
 
