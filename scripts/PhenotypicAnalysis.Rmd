@@ -92,7 +92,8 @@ SatData$Taxonomy <- relevel(SatData$Taxonomy, "european")
 
 #Modeling
 
-Only *R.r. raphanistrum*
+##Model for just *R.r. raphanistrum*
+
 Response variable: Days from germination to flowering
 Here, I'm using germination to flowering (or last alive date) as the response, which will be more accurate than planting to flowering, but have many more NA's.
 
@@ -110,9 +111,9 @@ Rrr_glmm <- MCMCglmm( fixed = SurviveGTF ~ Geography  + Seedstock + DOYGS + Days
 
 ```
 
+##Model for just native-range *Raphanus*
 
-Only native range *R.raphanistrum*
-#This is the model that is roughly equivalent to the model we used to look at the differences between the ***R.r. raphanistrum*** plants, just using **SubSpecies** instead of **Geography**, and using the **SurviveGTF** response. 
+This is the model that is roughly equivalent to the model we used to look at the differences between the ***R.r. raphanistrum*** plants, just using **SubSpecies** instead of **Geography**. 
 
 ```{r RrNatModels, echo=TRUE, results="hide"}
 
@@ -128,6 +129,9 @@ Nat_glmm <- MCMCglmm( fixed = SurviveGTF ~ SubSpecies + Seedstock + DaysVernNoNA
                       data = NatData)
 ```
 
+##Model for just crops
+This is the model that is roughly equivalent to the model we used to look at the differences between the ***R.r. raphanistrum*** plants, just using **Variety** instead of **Geography**.
+
 ```{r SatModels, echo=TRUE, results="hide"}
 
 Sat_lmer <- lmer( SurviveGTF ~ Taxonomy + (1|Experiment) + (1|Taxonomy:Pop), data=SatData  )
@@ -142,7 +146,7 @@ Sat_glmm <- MCMCglmm( fixed = SurviveGTF ~ Taxonomy,
                       data = SatData)
 ```
 
-##Model output for just *R.r. raphanistrum*
+###Model output for just *R.r. raphanistrum*
 ```{r ModelStatsRrr, echo=FALSE}
 summary( Rrr_glmm )
 
@@ -154,7 +158,7 @@ plot( Rrr_glmm$Sol )
 acf( Rrr_glmm$VCV )
 ```
 
-##Model output for just native range *R. raphanistrum*
+###Model output for just native range *R. raphanus*
 ```{r ModelStatsNat, echo=FALSE}
 
 summary( Nat_glmm )
@@ -165,7 +169,7 @@ plot( Nat_glmm$Sol )
 acf( Nat_glmm$VCV )
 ```
 
-##Model output for just *R.r. sativus*
+###Model output for just *R.r. sativus*
 ```{r ModelStatsSat, echo=FALSE}
 summary( Sat_glmm )
 
@@ -180,6 +184,13 @@ acf( Sat_glmm$VCV )
 
 ```{r RrrModelMeans, echo=FALSE}
 Rrr_pop_chains <- Rrr_glmm$Sol[ , 14:29 ] + Rrr_glmm$Sol[ , 1 ]
+
+# east effect
+Rrr_pop_chains[ ,c(5, 8, 13, 14, 16) ] <- Rrr_pop_chains[ ,c(5, 8, 13, 14, 16) ] + Rrr_glmm$Sol[, 2]
+
+#nonNative effect
+Rrr_pop_chains[ , c( 2, 3, 10, 12, 15 ) ] <- Rrr_pop_chains[ , c( 2, 3, 10, 12, 15 ) ] + Rrr_glmm$Sol[, 3]
+
 Rrr_pop <- as.data.frame( cbind( colMeans( Rrr_pop_chains ), 
                           as.data.frame( HPDinterval( Rrr_pop_chains ) ) ))
 Rrr_pop[,4:6] <- data.frame( matrix( 
@@ -203,6 +214,20 @@ Rrr_fixed <- mutate(Rrr_fixed, species = rownames(Rrr_fixed), Mean = colMeans.Rr
 ```{r NatModelMeans, echo=FALSE}
 
 Nat_pop_chains <- Nat_glmm$Sol[ , 15:30 ] + Nat_glmm$Sol[ , 1 ]
+
+# confusus effect
+Nat_pop_chains[ , 11 ] <- Nat_pop_chains[ , 11 ] + Nat_glmm$Sol[, 2]
+
+# landra effect
+Nat_pop_chains[ , 12 ] <- Nat_pop_chains[ , 12 ] + Nat_glmm$Sol[, 3]
+
+# maritimus effect
+Nat_pop_chains[ , c( 2, 14 ) ] <- Nat_pop_chains[ , c( 2, 14 ) ] + Nat_glmm$Sol[, 4]
+
+# rostratus effect
+Nat_pop_chains[ , 5 ] <- Nat_pop_chains[ , 5 ] + Nat_glmm$Sol[, 5]
+
+
 Nat_pop <- as.data.frame( cbind( colMeans( Nat_pop_chains ), 
                           as.data.frame( HPDinterval( Nat_pop_chains ) ) ))
 Nat_pop[,4:6] <- data.frame( matrix( 
@@ -228,7 +253,17 @@ Nat_fixed <- mutate(Nat_fixed, species = rownames(Nat_fixed), Mean = colMeans.Na
 
 ```{r SatModelMeans, echo=FALSE}
 
-Sat_pop_chains <- Sat_glmm$Sol[, 8:32] + Sat_glmm$Sol[ , 1 ]
+Sat_pop_chains <- Sat_glmm$Sol[ , 8:32 ] + Sat_glmm$Sol[ , 1 ]
+
+# caudatus effect
+Sat_pop_chains[ , c( 11, 18, 20 ) ] <- Sat_pop_chains[ , c( 11, 18, 20 ) ] + Sat_glmm$Sol[ , 2 ]
+
+# daikon effect
+Sat_pop_chains[ , c( 4, 8, 13, 14, 24, 25 ) ] <- Sat_pop_chains[ , c( 4, 8, 13, 14, 24, 25 ) ] + Sat_glmm$Sol[ , 3 ]
+
+# oleifera effect
+Sat_pop_chains[ , c( 1, 2, 5, 16 ) ] <- Sat_pop_chains[ , c( 1, 2, 5, 16 ) ] + Sat_glmm$Sol[ , 4 ]
+
 Sat_pop <- as.data.frame( cbind( colMeans( Sat_pop_chains ), 
                           as.data.frame( HPDinterval( Sat_pop_chains ) ) ))
 Sat_pop[ ,4:6 ] <- data.frame( matrix( 
@@ -252,7 +287,7 @@ Sat_fixed <- mutate(Sat_fixed, species = rownames(Sat_fixed), Mean = colMeans.Sa
 
 #Plotting
 
-##Only Native range *R. raphanistrum*
+##Only Native range *R. raphanus*
 ```{r PlotNatPopMeans, echo=FALSE, fig.path="../figures/", fig.keep="last", fig.width=11}
 NatPlot <- ggplot( Nat_pop, aes( y = Mean, x = Pop ) ) + 
               geom_point( cex = 2.5) + 
@@ -353,7 +388,7 @@ SatPlot + theme_light() + theme( axis.text.x = element_text( angle = -50, size =
 
 ```
 
-```{r PhenotypeScatter, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+```{r PhenotypeScatter, echo=FALSE, fig.path="../figures/", fig.keep="last", message=FALSE, warning=FALSE}
 
 PS_data <- select( FlowData, FlowWoVern, Pop) %>% 
            mutate( FlowWoVern = replace( FlowWoVern, is.na( FlowWoVern ) == T, "No")) 
@@ -400,6 +435,7 @@ PS_figure <- ggplot( PS_final, aes( x = PnoVern, y = Mean ) ) +
                                           xmax = SEPupper, xmin = SEPlower)) +
                      #facet_grid( ~ FixGeography, space = "free") +
                      facet_wrap( ~ FixGeography) +
+                     ggtitle( "DTF vs Vernalization" ) +
                      xlab( "% Flowered W/O \nVernalization" ) + 
                      ylab( "Mean days to flowering")
                      
