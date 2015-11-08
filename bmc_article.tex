@@ -345,26 +345,82 @@ To meet this goal, we have greatly expanded both the number of genetic markers a
 % ^.
 
 \section*{Methods}
+% * <willpitchers@gmail.com> 2015-11-08T23:51:42.612Z:
+%
+% > Methods
+%
+% in answer to your query, I don't think that the methods are overly long -- I'd suggest that it'd be more honest to include a section explicitly explaining how the dataset was human-centipede-ed  together from piles of dross, but I know that JC won't have it...
+%
+% ^.
 
 \subsection*{Populations}
 
 To examine genotypic and phenotypic divergence among and between populations, we analyzed \textit{raphanus} seed from 43 populations from around the world, including five of the eight populations of \textit{R. r. raphanistrum} from (2008). In addition, the data set contains 24 commercially available crop varieties, two wild collected populations that are thought to be hybrid or escaped crops, and one population of \textit{Quidproquo confusum} (formerly \textit{Raphanus confusus}), for a total of 69 populations/varieties [Figure:Supp\_Populations].
+% * <willpitchers@gmail.com> 2015-11-08T23:34:41.896Z:
+%
+% > 2008
+%
+% cite?
+%
+% ^.
 
 Of the 70 total populations, a subset of 45 were used in the this analysis [Figure: Populations]. These populations were chosen because we have detailed information about the locations and habitats where each of these samples was collected or purchased. Wild populations were split into two categories: “non-native range \textit{R.r. raphanistrum}” or “native range \textit{R.raphanistrum spp.},” based on country of origin and taxon.
+% * <willpitchers@gmail.com> 2015-11-08T23:37:22.279Z:
+%
+% > 70 total populations
+%
+% 70 pops or 69?
+%
+% ^.
 
 Any population collected from an agricultural field outside the Mediterranean basin was considered to be non-native (6 total). Native range plants were found exclusively in the Mediterranean region, and were collected and assigned to their species and subspecies by experienced taxonomists (15 total). Crop seed was purchased from online retailers with the exception of the three oilseed crops, which were supplied by (a dude from KBS) where they were being grown as a cover crop (24 total).
+% * <willpitchers@gmail.com> 2015-11-08T23:38:25.719Z:
+%
+% > a dude from KBS
+%
+% PLS CAN HAZ FIX?
+%
+% ^.
 
-The remaining populations were either of uncertain genetic origin, were shown to be polyphyletic {ZifferBerger:2014dq}, or were obtained from the Institute for Plant Genetics Crop Plant Research, which does not provide detailed collection notes, only the country of origin for each seed stock. Since we could not determine whether these plants came from agricultural or unexploited land, and our aim was to explore the relationship of weedy (non-native) radish to other radish varieties, these populations were excluded from our analysis. However polymorphism and phenotypic data for these is available in the complete data set on Dryad[website]. Population information for the subset of data used in this study can be found in [Figure: Populations].
+The remaining populations were either of uncertain genetic origin, were shown to be polyphyletic {ZifferBerger:2014dq}, or were obtained from the Institute for Plant Genetics Crop Plant Research, which does not provide detailed collection notes, only the country of origin for each seed stock. Since we could not determine whether these plants came from agricultural or unexploited land, and our aim was to explore the relationship of weedy (non-native) radish to other radish varieties, these populations were excluded from our analysis. However polymorphism and phenotypic data for these is available in the complete data set on Dryad [<datadryad.org/resource/DOI:xxxxx>]. Population information for the subset of data used in this study can be found in [Figure: Populations].
 
 \subsection*{Genotyping}
 
-To determine patterns of genetic differentiation among populations of both weedy and native R. raphanistrum and the major groups of crop radish (\textit{R. sativus}) we used a panel of SNP and SSR markers. To create this panel, an initial sequencing of several lines of \textit{R. raphanistrum} was used to assembled and align line-specific contigs against each other. These aligned contigs were then surveyed for line specific SNPS with a custom Python script to allow RFLP markers to be designed around NsiI, PstI, HindIII, EcoRI, BclII, EvoRV, KPNI, and NDEI[Figure: Supp\_Markers]. In addition, the eight SSR markers from Sahli et al. (2008) were also scored on all samples, for a total of 21 markers. Genotyping was completed on 8-10 plants from each of the 54 populations for a total of 543 individuals. However only a subset of 338 individuals from 34 populations were used in the final analyses.
+To assay patterns of genetic differentiation among populations of both weedy and native R. raphanistrum and the major groups of crop radish (\textit{R. sativus}), we used a panel of SNP and SSR (microsatellite) markers. To create this panel, an initial sequencing of several lines of \textit{R. raphanistrum} was used to assembled and align line-specific contigs against each other. These aligned contigs were then surveyed for line specific SNPS with a custom Python script to allow RFLP markers to be designed around NsiI, PstI, HindIII, EcoRI, BclII, EvoRV, KPNI, and NDEI [Figure: Supp\_Markers]. In addition, the eight SSR markers from Sahli et al. (2008) were also scored on all samples, for a total of 21 markers. Genotyping was completed on 8-10 plants from each of the 54 populations for a total of 543 individuals. However only a subset of 338 individuals from 34 populations were used in the final analyses.
+% * <willpitchers@gmail.com> 2015-11-08T23:43:17.878Z:
+%
+% > 2008
+%
+% citekey?
+%
+% ^.
+% * <willpitchers@gmail.com> 2015-11-08T23:42:50.284Z:
+%
+% > NsiI, PstI, HindIII, EcoRI, BclII, EvoRV, KPNI, and NDEI
+%
+% Do plant genes get italicised?
+%
+% ^.
+% * <willpitchers@gmail.com> 2015-11-08T23:42:14.613Z:
+%
+% > custom Python script
+%
+% Tack? has he made it available?
+%
+% ^.
 
-We used two complementary approaches to examine population structure. First we used STRUCTURE {Pritchard:2000uv}using an analysis allowing for admixture with correlated allele frequencies, also called the “F” model, which computes values similar to Fst to model genetic similarities. Our second approach–SmartPCA{Patterson:2006va} –- uses an eigendecomposition optimized for genomic data to reduce the dimensionality of the dataset to orthogonal axes with the most variation. Although this method merely rotates, rather than clusters the data, it can have the effect of revealing structure that was already present, by making it easier to visualize.
+We used two complementary approaches to examine population structure. First we used STRUCTURE {Pritchard:2000uv} using an analysis allowing for admixture with correlated allele frequencies, also called the “F” model, which computes values similar to Fst to model genetic similarities. Our second approach–SmartPCA{Patterson:2006va} –- uses an eigendecomposition optimized for genomic data to reduce the dimensionality of the dataset to orthogonal axes encompassing the most variation. Although this method merely rotates, rather than clusters the data, it can have the effect of revealing structure that was already present, by making it easier to visualize.
 
 \subsection*{STRUCTURE}
 
-We used STRUCTURE {Pritchard:2000uv} version 2.3.4 to cluster individuals by their genetic architecture. Our STRUCTURE analysis was completed using the command line version (v2.3.4), with a burn in of 500,000 cycles followed by one million Markov Chain Monte Carlo (MCMC) iterations. For each potential value of K, we ran 20 separate iterations of the program, each with a different randomization of the data input order. We used the admixture model, which does not require genetic linkage information. As we expected differentiation between populations at neutral markers to be both small and recent, we used the correlated allele frequencies (or F) model, which has more power to detect subtle structure. Our populations were not constrained to a single Fst, and alpha (the degree of admixture) was inferred for the dataset, but not allowed to vary by population, as suggested in the manual. We used the default settings for all priors. We calculated optimal values for K using both the mean log probability of K as in {Pritchard:2000uv} and the largest delta K as described in {EVANNO:2005ga}. The calculations following Evanno were run using the web-based version of Structure Harvester {Earl:2011cn}.
+We used STRUCTURE {Pritchard:2000uv} version 2.3.4 to cluster individuals by their genetic architecture. Our STRUCTURE analysis was completed using the command line version (v2.3.4), with a burn in of 500,000 cycles followed by one million Markov Chain Monte Carlo (MCMC) iterations. For each potential value of K, we ran 20 separate iterations of the program, each with a different randomization of the data input order. We used the admixture model, which does not require genetic linkage information. As we expected differentiation between populations at neutral markers to be both small and recent, we used the correlated allele frequencies (or F) model, which has more power to detect subtle structure. Our populations were not constrained to a single Fst, and alpha (the degree of admixture) was inferred for the dataset, but not allowed to vary by population, as suggested in the manual. We used the default settings for all priors. We calculated optimal values for K using both the mean log probability of K as in {Pritchard:2000uv} and the largest delta K as described in {EVANNO:2005ga}. The calculations (following Evanno) were run using the web-based version of Structure Harvester {Earl:2011cn}.
+% * <willpitchers@gmail.com> 2015-11-08T23:45:35.056Z:
+%
+% > different randomization of the data input order.
+%
+% I think that here would be a good place for a quick parenthetical explanation of why you needed to do that.
+%
+% ^.
 
 \subsection*{SmartPCA}
 
@@ -383,6 +439,13 @@ In all experiments, locations of individual plants were randomized with respect 
 \subsection*{Modeling}
 
 Phenotypic data from all eight experiments were concatenated for analysis as a single dataset. All models were run using the lme4 package (version 1.1-7) in R (version 3.1.2). Graphs were produced using custom scripts and ColorBrewer (version 1.1-2.) 
+% * <willpitchers@gmail.com> 2015-11-08T23:49:47.460Z:
+%
+% > lme4 package
+%
+% I thought you'd gone MCMCglmm on this?
+%
+% ^.
 To verify the differences in flowering time between native and non-native \textit{R.r. raphanistrum} populations (as presented in {Sahli:2008kh}), and also look for differences between native populations east and west of the Mediterranean Sea, we modeled a subset of the data that only included \textit{R.r. raphanistrum} populations [Figure: Populations]. This model took the form of:
 
 \begin{gather*}
@@ -399,7 +462,7 @@ F \sim G + S + D + V + \epsilon\\
 
 Where F is the number of whole days from germination to flowering, if available, and the number of whole days from germination until the last day of the experiment, plus one, for plants that survived the duration of the experiment but still hadn’t flowered. G is the geographic region of origin (western or eastern side of Mediterranean, or outside this region). S is a factor representing whether that individuals mother was grown under field or greenhouse conditions. D is the day of year that the plant germinated (1-365) scaled such that 1 is the spring equinox in the northern hemisphere. V is the number of days each plant was vernalized, if any.  The random effect X is the experiment that each plant was in, and accounts for year-to-year variation as well as field vs. greenhouse and other variation in experimental protocols, which are confounded in this study. The random effect GxP accounts for variance among population means within geographic regions.
 
-To look for differences in flowering time among textit{R. raphanistrum} sub-species from within the Mediterranean – whether the \textit{R. raphanistrum} sub-species are more similar to each other, or to other co-localized Raphanus species – we used a subset of the data that included only populations collected from within the Mediterranean region. This model took the form of:
+To look for differences in flowering time among \textit{R. raphanistrum} sub-species from within the Mediterranean – whether the \textit{R. raphanistrum} sub-species are more similar to each other, or to other co-localized Raphanus species – we used a subset of the data that included only populations collected from within the Mediterranean region. This model took the form of:
 
 \begin{gather*}
 	F \sim U + S + V + \epsilon \\
@@ -407,7 +470,7 @@ To look for differences in flowering time among textit{R. raphanistrum} sub-spec
 \end{gather*}
 
 
-Where U is a factor representing species or sub-species designation (R.r. raphanistrum, \textit{R.r. landra}, \textit{R.r. maritimus}, \textit{R. pugioniformis} or \textit{R. confusus}), and the other terms are as in the previous model.
+Where U is a factor representing species or sub-species designation (\textit{R.r. raphanistrum}, \textit{R.r. landra}, \textit{R.r. maritimus}, \textit{R. pugioniformis} or \textit{R. confusus}), and the other terms are as in the previous model.
 To look for differences in flowering time between radish varieties, we used a subset of the data that only included cultivars and used the model:
 
 \begin{gather*}
@@ -444,31 +507,67 @@ In model two, examining variation between the species and sub-species of the \te
 
 \subsection*{Crop varieties are genetically distinct from both natives and weeds, but show some phenotypic similarity}
 
-All the radish convarieties appeared to cluster together but not with any of the native or non-native radish species and sub-species based on the genetic data. However, while both genetic clustering algorithms separate the crops from all the other populations, results from STRUCTURE [Figure: STRUCTURE579] suggest that the major crop varieties are distinct from each other genetically, while SmartPCA shows that all crop varieties are more closely related to each other than to any of our other radish germplasm. This apparent discrepancy is likely because STRUCTURE uses no measure of genetic distance; groups may thus be separable, but far from equally distant. When the SmartPCA data is plotted to show major crop groups, Daikons form a somewhat distinct subset from the European and other varieties [Figure: Supp\_SmartPCA].
+All the radish varieties appeared to cluster together but not with any of the native or non-native radish species and sub-species based on the genetic data. However, while both genetic clustering algorithms separate the crops from all the other populations, results from STRUCTURE [Figure: STRUCTURE579] suggest that the major crop varieties are distinct from each other genetically, while SmartPCA shows that all crop varieties are more closely related to each other than to any of our other radish germplasm. This apparent discrepancy is likely because STRUCTURE uses no measure of genetic distance; groups may thus be separable, but far from equally distant. When the SmartPCA data is plotted to show major crop groups, Daikons form a somewhat distinct subset from the European and other varieties [Figure: Supp\_SmartPCA].
 
 \section*{Discussion}
+% * <willpitchers@gmail.com> 2015-11-08T23:31:52.848Z:
+%
+% > Discussion
+%
+% In answer to one of your queries, I do think that you've done a good job getting the introduction to 'match up' with the discussion -- they read like parts of the same story to me.
+%
+% ^.
 
-\textit{Raphanus raphanistrum spp. raphanistrum} is an agricultural weed of small grains with a worldwide distribution, and the genus contains a number of non-weedy congeners and crops. However, the origin and presumed adaptive shift in life-history for the weed is unknown. There are two interconnected questions we wanted to address concerning the origins of weedy radish. First, what are its phylogenetic origins: is it a wild invader, a crop-wild hybrid, an escaped crop or something else; and second how did it acquire weedy traits: was it pre-adapted, or did these traits evolve in situ? We assayed a diverse set of populations of \textit{R.r. raphanistrum}, and its close relatives, to determine how the population structure correlates with two major phenotypes that distinguish weedy radish from non-weedy: days to onset of flowering, and vernalization requirement. 
+\textit{Raphanus raphanistrum spp. raphanistrum} is an agricultural weed of small grains with a worldwide distribution, and the genus contains a number of non-weedy congeners and crops. However, the origin and presumed adaptive shift in life-history for the weed is unknown. There are two interconnected questions we wanted to address concerning the origins of weedy radish. First, what are its phylogenetic origins: is it a wild invader, a crop-wild hybrid, an escaped crop or something else; and second how did it acquire weedy traits: was it pre-adapted, or did these traits evolve \textit{in situ}? We assayed a diverse set of populations of \textit{R.r. raphanistrum}, and its close relatives, to determine how the population structure correlates with two major phenotypes that distinguish weedy radish from non-weedy: days to onset of flowering, and vernalization requirement. 
 
 To determine the phylogenetic origins we constructed a tree using chloroplast sequences. Unfortunately, our phylogenetic analysis could not resolve any relationships below that of the genus, and paralleled the results recently published in {ZifferBerger:2014dq}. From these analyses it is clear that phylogenetic data from more numerous and more variable regions will be necessary to resolve relationships among these closely related taxa. Furthermore, because molecular evolutionary processes including both introgression and incomplete lineage sorting are likely occurring in this recent radiation, it is likely that we will need to analyze sequencing data from multiple individuals of many of these populations in a coalescent framework to resolve a clear species tree (reviewed in Knowles and Kubatko 2010).
 
 Because such a large scale dataset is not yet available, we employed two complementary analyses, STRUCTURE and SmartPCA, to cluster \textit{Raphanus} at presumed neutral markers as an alternative to phylogenetic analysis. There are three commonly accepted possibilities for agricultural weed origins {DeWet:1975tv}, each of which should leave a distinct genetic signature at neutral markers. Weeds could be escaped crops, or wild (native) plants invading a new environment, in which case the weeds should be genetically similar at neutral markers to the crop or native plants respectively. Alternatively, the weeds could be crop-wild hybrids, in which case we would expect the weeds to be somewhat intermediate. In most cases where the origin of agricultural weeds are known, researchers have found them to be escaped crops [refs: sunflower, red rice] or wild-crop hybrids [refs: CA radish, others].
 
+
 Taken on its own, our SmartPCA results could be interpreted as indicative that the non-native \textit{R.r. raphanistrum} are intermediate between the crops and one (or more) of the native \textit{R. raphanus} sub-species, however the STRUCTURE results do not support this, and the non-native \textit{R.r. raphanistrum} do not appear to share ancestry with the crops at any K from K=3 to K=24. Both STRUCTURE and SmartPCA are unsupervised methods, and both found biologically plausible, and largely congruent, structure; however neither method offers completely unambiguous support for a given hypotheses. Despite this caveat, our results are largely inconsistent with a clear crop-native hybrid or “escaped crop” origins for the weeds.
 
 Instead, both analyses suggest that our agricultural weed samples are genetically intermediate between the native range \textit{R.r. spp. raphanistrum} and \textit{R.r. spp landra/maritimus}, which is consistent with a sub-species hybridization origin for the weeds. This finding is surprising for two reasons. First, these sub-species have over-lapping ranges throughout Spain and France, and are completely inter-fertile [citation], which suggests that hybrids should be widespread. However, local researchers report few or no problems with weedy radish in the region [personal comm.] Second, although the non-native \textit{R.r. raphanistrum} is genetically intermediate, phenotypically it is (uni-directionally) transgressive, with much shorter mean flowering times ( < 20 days) than either of the possible parental \textit{R. raphanistrum} sub-species and no vernalization requirement [Figure: PhenotypeScatter]. Thus, if it did originate as a result of sub-species hybridization, there was likely considerable adaptive evolution in its progenitor for it to become a “true” weed.
+% * <willpitchers@gmail.com> 2015-11-08T22:59:09.594Z:
+%
+% > citation
+%
+% JC? ID?
+%
+% ^.
 
-The non-native \textit{R.r. raphanistrum} populations are also strikingly similar to each other both phenotypically and genetically; which is especially surprising given the temporal and geographic distribution of our samples. Although this study has only five non-native \textit{R.r. raphanistrum} populations, they were collected as active agricultural weeds from three continents over a span of at least seventeen years; which would suggest that they capture most of the available diversity in weedy radish. However, these populations have a mean pairwise Fst of only .11, barely higher than the mean pairwise Fst of the eleven native \textit{R.r. raphanistrum} (.09), which were all collected in Spain, France and Israel, and were collected over a period of only twelve years. Similarly, in the two axes of greatest differentiation at neutral markers [Figure: SmartPCA] non-native \textit{R.r. raphanistrum} occupies a genetic sub-space nearly identical in extent to that of native \textit{R.r. raphanistrum}. 
+The non-native \textit{R.r. raphanistrum} populations are also strikingly similar to each other both phenotypically and genetically; which is especially surprising given the temporal and geographic distribution of our samples. Although this study has only five non-native \textit{R.r. raphanistrum} populations, they were collected as active agricultural weeds from three continents over a span of at least seventeen years; which would suggest that they capture most of the available diversity in weedy radish. However, these populations have a mean pairwise Fst of only 0.11, barely higher than the mean pairwise Fst of the eleven native \textit{R.r. raphanistrum} (.09), which were all collected in Spain, France and Israel, and were collected over a period of only twelve years. Similarly, in the genetic sub-space defined by the two axes of greatest differentiation at neutral markers [Figure: SmartPCA], non-native \textit{R.r. raphanistrum} occupies an area nearly identical in extent to that of native \textit{R.r. raphanistrum}. 
 
-Taken together, these data suggest a sub-species hybridization event followed either by recent, long-range dispersal into many sub-populations, or by weed populations interbreeding at relatively high levels despite their geographic distance (as discussed in {Kercher:1996vd}). Our current data cannot conclusively distinguish between these two possibilities. At neutral markers, there is no evident loss of genetic diversity or decrease in heterozygosity among non-native \textit{R.r. raphanistrum} populations as compared to any of the native types, which is a relatively common, if unintuitive feature of invasive species, and may be due to repeated introductions{Blackburn:2015cr}. There is also no appreciable isolation by distance as measured by Fst (data not shown), however, of the fifty-three possible microsatellite alleles, thirteen are found only in single weedy populations, often at high frequency [data not shown – a table for the supplement maybe?]. This may suggest that the weedy meta-population – rather than continuing to interbreed – is more likely to be a group of expanding bottlenecked sub-populations, and sufficient time has not passed for them to diverge as much as far their geographic distance would lead us to expect. 
+Taken together, these data suggest a sub-species hybridization event followed either by recent, long-range dispersal into many sub-populations, or by weed populations interbreeding at relatively high levels despite their geographic distance (as discussed in {Kercher:1996vd}). Our current data cannot conclusively distinguish between these two possibilities. At neutral markers, there is no evident loss of genetic diversity or decrease in heterozygosity among non-native \textit{R.r. raphanistrum} populations as compared to any of the native types, which is a relatively common, if nonintuitive feature of invasive species, and may be due to repeated introductions {Blackburn:2015cr}. There is also no appreciable isolation by distance as measured by Fst (data not shown), however, of the fifty-three possible microsatellite alleles, thirteen are found only in single weedy populations, often at high frequency [data not shown – a table for the supplement maybe?]. This may suggest that the weedy meta-population – rather than continuing to interbreed – is more likely to be a group of expanding bottlenecked sub-populations, and sufficient time has not passed for them to diverge as much as far their geographic distance would lead us to expect. 
 
-Interestingly, the clustering patterns suggested for \textit{Raphanus} populations by geographic, genetic, taxonomic and phenotypic data are discordant in a number of instances. For instance, both \textit{R.r. landra} and \textit{R.r. maritimus} are very similar in terms of rosette morphology, are adapted for water-borne seed dispersal {Warwick:2005fm}and are found in the same habitats: primarily in coastal dunes, which would suggest that any flowering time differences should be due to drift. However, \textit{R.r. landra} and \textit{R.r. maritimus} cluster genetically at neutral markers [Figures: SmartPCA and STRUCTURE579], as well as geographically, and in the taxonomic literature {Warwick:2005fm}, which suggests that any phenotypic differences should be due to selection, and that perhaps these are true sub-species. Similarly, native \textit{R.r. raphanistrum} collected from opposite ends of the Mediterranean ocean, with no geographic overlap, are indistinguishable at neutral markers. Why these three sub-species have such phenotypic and genetic incongruities, is unknown, and may be simple drift or indicative of the as-of-yet unresolved phylogenetic relationships of these populations. 
+Interestingly, the clustering patterns suggested for \textit{Raphanus} populations by geographic, genetic, taxonomic and phenotypic data are discordant in a number of instances. For instance, both \textit{R.r. landra} and \textit{R.r. maritimus} are very similar in terms of rosette morphology, are adapted for water-borne seed dispersal {Warwick:2005fm} and are found in the same habitats: primarily in coastal dunes, which would suggest that any flowering time differences should be due to drift. However, \textit{R.r. landra} and \textit{R.r. maritimus} cluster genetically at neutral markers [Figures: SmartPCA and STRUCTURE579] as well as geographically, and in the taxonomic literature {Warwick:2005fm}, which suggests that any phenotypic differences should be due to selection, and that perhaps these are true sub-species. Similarly, native \textit{R.r. raphanistrum} collected from opposite ends of the Mediterranean ocean, with no geographic overlap, are indistinguishable at neutral markers. Why these three sub-species have such phenotypic and genetic incongruities is unknown, and may be simple drift or indicative of the as-of-yet unresolved phylogenetic relationships of these populations. 
+% * <willpitchers@gmail.com> 2015-11-08T23:20:01.258Z:
+%
+% > For instance, both \textit{R.r. landra} and \textit{R.r. maritimus} are very similar in terms of rosette morphology, are adapted for water-borne seed dispersal {Warwick:2005fm} and are found in the same habitats: primarily in coastal dunes, which would suggest that any flowering time differences should be due to drift. However, \textit{R.r. landra} and \textit{R.r. maritimus} cluster genetically at neutral markers [Figures: SmartPCA and STRUCTURE579] as well as geographically, and in the taxonomic literature {Warwick:2005fm}, which suggests that any phenotypic differences should be due to selection, and that perhaps these are true sub-species.
+%
+% this sentence might be easier on the reader if you split it in two...
+%
+% ^.
+% * <willpitchers@gmail.com> 2015-11-08T23:19:08.003Z:
+%
+% > STRUCTURE579
+%
+% 579?
+%
+% ^.
 
-Another situation occurs in the crops (\textit{R. sativus}), which are phenotypically diverse both in our measurements and most cropping traits, but genetically quite closely related [Figure: SmartPCA] at neutral markers. This genetic similarity is at odds with many authors {Yamane:2009ug, Yamagishi:2003jo, Yamane:2005bd, Lu:2008wk, Kong:2010gd, Muminovic:2005uz } who have found considerable diversity among cultivars, and have suggested that there have been multiple origins of crop radish. This difference is likely largely due to sampling. Most of these authors used PCA methods similar to ours, but included only crop cultivars in their analysis, and so have sampled only a fraction of the genetic sub-space of \textit{Raphanus}. Because their data had no (or very few) outgroups, the between group differences are exaggerated. Our SmartPCA analysis actually does show some separation between cultivar types [Figure: Supp\_SmartPCA], these differences are just dwarfed by the variation between crops and the rest of \textit{Raphanus}. Similarly, our own STRUCTURE analysis finds clear divisions between cultivar types using the same data as SmartPCA. However, whereas the graph of SmartPCA clusters maintains some measure of genetic distance, STRUCTURE shows only statistically significant groupings. This means that although the crop groupings in STRUCTURE are equally distinguishable, they are not necessarily equally divergent from each other. Taken together, these data strongly suggest a single origin for \textit{R. sativus}.
+Another situation occurs in the crops (\textit{R. sativus}), which are phenotypically diverse both in our measurements and most cropping traits, but genetically quite closely related [Figure: SmartPCA] at neutral markers. This genetic similarity is at odds with the findings of authors {Yamane:2009ug, Yamagishi:2003jo, Yamane:2005bd, Lu:2008wk, Kong:2010gd, Muminovic:2005uz } who have found considerable diversity among cultivars, and have suggested that there have been multiple origins of crop radish. This difference is likely largely due to sampling. Most of these authors used PCA methods similar to ours, but included only crop cultivars in their analysis, and so have sampled only a fraction of the genetic sub-space of \textit{Raphanus}. Because their data had no (or very few) outgroups, the between group differences are exaggerated. Our SmartPCA analysis actually does show some separation between cultivar types [Figure: Supp\_SmartPCA], these differences are just dwarfed by the variation between crops and the rest of \textit{Raphanus}. Similarly, our own STRUCTURE analysis finds clear divisions between cultivar types using the same data as SmartPCA. However, whereas the graph of SmartPCA clusters maintains some measure of genetic distance, STRUCTURE shows only statistically significant groupings. This means that although the crop groupings in STRUCTURE are equally distinguishable, they are not necessarily equally divergent from each other. Taken together, these data strongly suggest a single origin for \textit{R. sativus}, followed by later radiation.
 
-The relationship of \textit{R. pugioniformis} to the rest of Raphanus is similarly complex. Originally classified as another sub-species of raphanistrum (then \textit{R.r. rostratus} {Warwick:2005fm}), \textit{R. pugioniformis} {ZifferBerger:2014dq} does not cluster genetically with any of the \textit{raphanistrum} sub-species. In all runs where K is at least 3, STRUCTURE gives \textit{R. pugioniformis} a distinct group, and it falls into an intermediate region between native \textit{R.r. raphanistrum} and the crops [Figure: SmartPCA]. However, it does cluster with native \textit{R.r. raphanistrum} and \textit{R.r. maritimus} in terms of average days to flower and vernalization requirement. Perhaps most strikingly, \textit{R. pugioniformis} is the only wild species to have purple flowers, a trait that otherwise characterizes the crop plants (\textit{R. sativus}). This introduces the possibility that \textit{R. sativus} was originally domesticated from \textit{R. pugioniformis}, although our data cannot distinguish between this scenario and one where \textit{R. pugioniformis} is a crop-native hybrid.
+The relationship of \textit{R. pugioniformis} to the rest of Raphanus is similarly complex. Originally classified as another sub-species of \textit{raphanistrum} (then \textit{R.r. rostratus} {Warwick:2005fm}), \textit{R. pugioniformis} {ZifferBerger:2014dq} does not cluster genetically with any of the \textit{raphanistrum} sub-species. In all runs where K is at least 3, STRUCTURE gives \textit{R. pugioniformis} a distinct group, and it falls into an intermediate region between native \textit{R.r. raphanistrum} and the crops in genetic space [Figure: SmartPCA]. However, it does cluster with native \textit{R.r. raphanistrum} and \textit{R.r. maritimus} in terms of average no. days to flower and vernalization requirement. Perhaps most strikingly, \textit{R. pugioniformis} is the only wild species to have purple flowers, a trait that otherwise characterizes the crop plants (\textit{R. sativus}). This introduces the possibility that \textit{R. sativus} was originally domesticated from \textit{R. pugioniformis}, although our data cannot distinguish between this scenario and one where \textit{R. pugioniformis} is a crop-native hybrid.
 
 Regardless of questions of phylogenetic origin, it is clear that the evolution of rapid flowering and loss of a vernalization requirement in non-native \textit{R.r. raphanistrum} and the European crops, are both rapid and recent. Although phylogenetic analysis has not yet resolved relationships within the genus, it appears that \textit{Raphanus} is a monophyletic group. That this group is difficult to resolve suggests that observed phenotypic differences have evolved faster than the lineages have split. Similarly, in a series of common garden experiments, non-native \textit{R.r. raphanistrum} takes only 20 days to flower on average, and never requires vernalization, but both the SmartPCA and STRUCTURE analysis find that it is genetically intermediate between two groups with much longer flowering times. This discrepancy between genetic background and phenotype suggests that longer flowering times and a vernalization are the ancestral state, and supports the idea that there has been rapid, recent evolution of these two weed phenotypes. 
+% * <willpitchers@gmail.com> 2015-11-08T23:30:24.920Z:
+%
+% > it appears
+%
+% "our data is consistent with"? or "our findings suggest that"?
+%
+% ^.
 
 
 
