@@ -78,12 +78,12 @@ NatData$SubSpecies <- relevel( NatData$SubSpecies, "raphanistrum" )
 NatData <- droplevels( NatData )
 ```
 
-```{r SativeSubset, echo=FALSE}
+```{r SativusSubset, echo=FALSE}
 # Data Subset for sativus analysis
 #Only keep data for individuals that are sativus, have a flowering date and germination date
 SatData <- filter( FlowData, Species == "sativus" & 
                              !is.na( SurviveGTF) & 
-                             !is.na( DOYGS )  ) %>% 
+                             !is.na( DOYGS ) ) %>% 
            select( ID, GTF, Geography, Seedstock, GrowthEnvironment, DOYGS, 
                    DaysVernNoNA, Pop, Experiment, Habitat, PTF, DOYPS, 
                    Species, SubSpecies, Taxonomy, SurviveGTF )
@@ -92,6 +92,33 @@ SatData$Taxonomy <- relevel(SatData$Taxonomy, "european")
 SatData <- droplevels( SatData )
 ```
 
+```{r JeffSativusSubset, echo=FALSE}
+# Data Subset for sativus analysis
+#Only keep data for individuals that are sativus, have a flowering date and germination date
+JeffSatData <- filter( FlowData, Species == "sativus" & 
+                             !is.na( SurviveGTF) & 
+                             !is.na( DOYGS )  &
+                             ( Pop == "MABG" |
+                               Pop == "RABG" |
+                               Pop == "RACA" |
+                               Pop == "ADOL" |
+                               Pop == "AROL" |
+                               Pop == "COOL" |
+                               Pop == "CBBG" |
+                               Pop == "DAJO" |
+                               Pop == "ESNK" |
+                               Pop == "MYJO" |
+                               Pop == "NELO" |
+                               Pop == "SPNK" |
+                               Pop == "TOBG" |
+                               Pop == "WMBG" )) %>% 
+           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, DOYGS, 
+                   DaysVernNoNA, Pop, Experiment, Habitat, PTF, DOYPS, 
+                   Species, SubSpecies, Taxonomy, SurviveGTF )
+
+JeffSatData$Taxonomy <- relevel(JeffSatData$Taxonomy, "european")
+JeffSatData <- droplevels( JeffSatData )
+```
 
 #Modeling
 
@@ -147,6 +174,15 @@ Sat_glmm <- MCMCglmm( fixed = SurviveGTF ~ Taxonomy,
                       burnin = burnin,
                       pr = pr, #save posterior distribution of random effects
                       data = SatData)
+
+JeffSat_glmm <- MCMCglmm( fixed = SurviveGTF ~ Taxonomy, 
+                      random = ~ Experiment + Taxonomy:Pop, 
+                      nitt = nitt,
+                      thin = thin,
+                      burnin = burnin,
+                      pr = pr, #save posterior distribution of random effects
+                      data = JeffSatData)
+
 ```
 
 ###Model output for just *R.r. raphanistrum*
@@ -175,6 +211,12 @@ acf( Nat_glmm$VCV )
 ###Model output for just *R.r. sativus*
 ```{r ModelStatsSat, echo=FALSE}
 summary( Sat_glmm )
+
+```
+
+###Model output for just genotyped subset of *R.r. sativus*
+```{r JeffModelStatsSat, echo=FALSE}
+summary( JeffSat_glmm )
 
 ```
 
@@ -288,6 +330,40 @@ Sat_fixed <- data.frame( cbind( colMeans( Sat_fixed_chains ),
 Sat_fixed <- mutate(Sat_fixed, species = rownames(Sat_fixed), Mean = colMeans.Sat_fixed_chains.)
 ```
 
+```{r JeffSatModelMeans, echo=FALSE}
+
+JeffSat_pop_chains <- JeffSat_glmm$Sol[ , 8:21 ] + JeffSat_glmm$Sol[ , 1 ]
+
+# caudatus effect
+JeffSat_pop_chains[ , c( 7, 10, 11 ) ] <- JeffSat_pop_chains[ , c( 7, 10, 11 ) ] + JeffSat_glmm$Sol[ , 2 ]
+
+# daikon effect
+JeffSat_pop_chains[ , c( 8, 9, 13, 14 ) ] <- JeffSat_pop_chains[ , c( 8, 9, 13, 14 ) ] + JeffSat_glmm$Sol[ , 3 ]
+
+# oleifera effect
+JeffSat_pop_chains[ , c( 1, 2, 4 ) ] <- JeffSat_pop_chains[ , c( 1, 2, 4 ) ] + JeffSat_glmm$Sol[ , 4 ]
+
+JeffSat_pop <- as.data.frame( cbind( colMeans( JeffSat_pop_chains ), 
+                          as.data.frame( HPDinterval( JeffSat_pop_chains ) ) ))
+JeffSat_pop[ ,4:6 ] <- data.frame( matrix( 
+                  unlist( strsplit( rownames( JeffSat_pop ), split = ".", fixed = TRUE ) ),
+                  nrow = 14, byrow = T ) )
+colnames( JeffSat_pop ) <- c( "Mean", "Lower", "Upper", "Group", "Variety", "Pop" )
+levels( JeffSat_pop$Variety ) <- c( "Rat-tail", "Daikon", "European", "Oil-seed" )
+JeffSat_pop <- arrange( JeffSat_pop, Variety )
+
+JeffSat_fixed_chains <- mutate( data.frame( JeffSat_glmm$Sol ),
+                            european = X.Intercept.,
+                            caudatus = X.Intercept. + Taxonomycaudatus,
+                            daikon = X.Intercept. + Taxonomydaikon,
+                            oleifera = X.Intercept. + Taxonomyoleifera ) %>%
+                    select( european, caudatus, daikon, oleifera )
+
+JeffSat_fixed <- data.frame( cbind( colMeans( JeffSat_fixed_chains ), 
+                         data.frame( HPDinterval( as.mcmc( JeffSat_fixed_chains ) ) ) ) )
+JeffSat_fixed <- mutate(JeffSat_fixed, species = rownames(JeffSat_fixed), Mean = colMeans.JeffSat_fixed_chains.)
+```
+
 #Plotting
 
 ##Only Native range *R. raphanus*
@@ -374,7 +450,6 @@ SatPlot + theme_light() + theme( axis.text.x = element_text( angle = -50, size =
 
 ```
 
-##Only crops *R. sativus*
 ```{r PlotSatMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
 
 SatPlot <- ggplot( Sat_fixed, aes( x = species, y = Mean) ) + 
@@ -385,6 +460,40 @@ SatPlot <- ggplot( Sat_fixed, aes( x = species, y = Mean) ) +
               ggtitle( expression( "Crop" ~ ( italic( "R. sativus" ) ) ~ "variety means" ) ) 
 
 SatPlot + theme_light() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
+                                 axis.text.y = element_text( size = 14 ),
+                                 axis.title.y = element_text( size = 14 ),
+                                 strip.text.x = element_text( angle = 0, size = 10 ) )
+
+```
+
+##Only crops genotyped subset *R. sativus*
+```{r PlotJeffSatPopMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+
+JeffSatPlot <- ggplot( JeffSat_pop, aes( x = Pop, y = Mean) ) + 
+              geom_point( cex = 2.5 ) + 
+              geom_errorbar( aes( y = Mean, max = Upper, min = Lower ), col = "gray40", width=.4, cex=.5 ) +  
+              facet_grid( ~ Variety, scales = "free", space = "free" ) +
+              xlab( "Population" ) + 
+              ylab( "Population means as \ndays from germination to flower" ) + 
+              ggtitle( expression( "Only crops" ~ ( italic( "R. sativus" ) ) ) ) 
+
+JeffSatPlot + theme_light() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
+                                 axis.text.y = element_text( size = 14 ),
+                                 axis.title.y = element_text( size = 14 ),
+                                 strip.text.x = element_text( angle = 0, size = 10 ) )
+
+```
+
+```{r PlotJeffSatMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+
+JeffSatPlot <- ggplot( JeffSat_fixed, aes( x = species, y = Mean) ) + 
+              geom_point( cex = 2.5 ) + 
+              geom_errorbar( aes( y = Mean, max = upper, min = lower ), col = "gray40", width=.4, cex=.5 ) +  
+              xlab( "Crop variety" ) + 
+              ylab( "Means as \ndays from germination to flower" ) + 
+              ggtitle( expression( "Crop" ~ ( italic( "R. sativus" ) ) ~ "variety means" ) ) 
+
+JeffSatPlot + theme_light() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
                                  axis.text.y = element_text( size = 14 ),
                                  axis.title.y = element_text( size = 14 ),
                                  strip.text.x = element_text( angle = 0, size = 10 ) )
