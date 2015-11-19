@@ -26,7 +26,7 @@ pca.lab <- data.frame(PCA.dat, labels.dat[grep("RA\\d\\d\\d", labels.dat$Pop, in
 
 #pca.lab <- pca.lab[(row.names(pca.lab)!="345"),] #This plant has all "0" values from SmartPCA
 
-pca.lab$new.name <- factor( paste(pca.lab$Species, pca.lab$Pop, sep="," ) )
+pca.lab$new.name <- factor( paste( pca.lab$Name, " (", pca.lab$Pop, ")", sep="" ) )
 pca.lab <- droplevels(pca.lab)
 Crop.col <- "gray0"
 lanmar.col <- "dodgerblue4"
@@ -70,8 +70,12 @@ rost.sym <- c(1:length(levels(droplevels(rost.data$Pop))))
 raphNat.sym <- c(1:length(levels(droplevels(raphNat.data$Pop))))
 conf.sym <- c(1:length(levels(droplevels(conf.data$Pop))))
 
-#pdf(file="squareNoRA_2014DTF_pca_All_FT_rost.pdf", width=8.5, height=8.5)
-pdf(file="squareNoRA_pca_CropColors.pdf", width=8.5, height=8.5)
+tempar <- par()$mar
+
+pdf(file="squareNoRA_2014DTF_pca_All_FT_rost.pdf", width=9.5, height=8.5)
+#pdf(file="squareNoRA_pca_CropColors.pdf", width=8.5, height=8.5)
+
+par( xpd=TRUE, mar=c(5.1, 4.1, 4.1, 9))
 
 plot((species.order$V1 * -1), 
 	(species.order$V2 * -1),
@@ -116,9 +120,9 @@ par(new=TRUE)
 plot((Crop.data$V1 * -1), 
 	(Crop.data$V2 * -1), 
 	pch=Crop.sym[droplevels(Crop.data$new.name)], 
-	col=cropspec_col[droplevels(Crop.data$locals)],
+	#col=cropspec_col[droplevels(Crop.data$locals)],
   lwd=2,
-  #col=Crop.col, 
+  col=Crop.col, 
 	#pch=3,
 	#col=dtf_col[Crop.data$Bins],
 	#xlim=c(-0.1, 0.2), ylim=c(-0.1, 0.2),
@@ -190,24 +194,34 @@ plot((conf.data$V1 * -1),
 #rect(0.035, -0.128, 0.064, -0.09)
 
 ############## Adding New populations without NZIL ################
-legend(-0.004, 0.21, legend=levels(droplevels(raphNN.data$new.name)), 
-	pch=raphNN.sym, col=raphNN.col, title="Non-native RRR", cex=1)
+# legend(-0.004, 0.203, legend=levels(droplevels(raphNN.data$new.name)), 
+# 	pch=raphNN.sym, col=raphNN.col, title = "", cex=.9, bty="n")
+legend(0.11, 0.21, legend=levels(droplevels(lanmar.data$new.name)), 
+       pch=lanmar.sym, col=lanmar.col, title=expression(italic("R.r. landra & maritimus")), cex=.9, bty="n")
 
-legend(-0.107, 0.21, legend=levels(droplevels(Crop.data$new.name)), 
-#	pch=Crop.sym, col=Crop.col, title="Crop", cex=1)  
-pch=Crop.sym, col=c(rep(cropspec_col[1], 4), rep(cropspec_col[2], 4), rep(cropspec_col[3], 3), rep(cropspec_col[4], 3)), 
-title="Crop", cex=1) 
+rect(.11, 0.168, 0.16, 0.212)
 
-legend(0.055, 0.21, legend=levels(droplevels(lanmar.data$new.name)), 
-	pch=lanmar.sym, col=lanmar.col, title="landra & maritimus", cex=1, bty="n")
+legend( 0.11, 0.158, legend=levels(droplevels(raphNN.data$new.name)), 
+       pch=raphNN.sym, col=raphNN.col, 
+       title = expression( italic("R.r. raphanistrum")), cex=.9, bty="n")
 
-rect(0.054, 0.162, 0.1065, 0.21)
-	
-legend(0.079, 0.16, legend=levels(droplevels(raphNat.data$Pop)), 
-	pch=raphNat.sym, col=raphNat.col, title="native RRR", cex=1)
+text(0.135, 0.161, "Non-native" , cex=.9)
+rect(.11, 0.1, 0.16, 0.166)
 
-legend(0.054, 0.16, legend=levels(droplevels(rost.data$Pop)), 
-	pch=rost.sym, col=rost.col, title="rostratus", cex=1)
+legend(0.115, 0.087, legend=levels(droplevels(raphNat.data$new.name)), 
+       pch=raphNat.sym, col=raphNat.col, title=expression(italic("R.r. raphanistrum")), cex=.9, bty="n")
+text(0.135, 0.09, expression( "Native" ), cex=.9)
+rect(0.11, -0.023, 0.16, 0.098)
+
+legend(0.115, -0.025, legend=levels(droplevels(rost.data$new.name)), 
+       pch=rost.sym, col=rost.col, title=expression(italic("R. pugioniformis")), cex=.9, bty = "n")
+rect(0.11, -0.05, 0.16, -0.025)
+
+
+legend(0.036, 0.21, legend=levels(droplevels(Crop.data$new.name)), 
+pch=Crop.sym, col=Crop.col, title="Crop", cex=.9)  
+#pch=Crop.sym, col=c(rep(cropspec_col[1], 4), rep(cropspec_col[2], 4), rep(cropspec_col[3], 3), rep(cropspec_col[4], 3)), 
+#title="Crop", cex=1) 
 
 
 ########################## DTF color Coding #########################
@@ -238,6 +252,8 @@ legend(0.054, 0.16, legend=levels(droplevels(rost.data$Pop)),
 	
 
 dev.off()
+
+par <- tempar
 
 #Just Crops
 plot((Crop.data$V1 * -1), 
