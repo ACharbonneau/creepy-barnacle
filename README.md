@@ -1,4 +1,6 @@
 # creepy-barnacle
+Script repository for 2015 paper about raphanus population structure.
+
 ##Scripts
 ####General Scripts
 
