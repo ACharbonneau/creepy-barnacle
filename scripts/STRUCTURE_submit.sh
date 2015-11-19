@@ -5,6 +5,6 @@
 for i in `seq 1 20`
     do less nacho.qsub | sed s/nacho/${i}rand.txt/ > withtemp.qsub
     
-    qsub withtemp.qsub -N ${i}_NZIL_alpha -t 1-24
+    qsub withtemp.qsub -N ${i}_STRUCTURE -t 1-24
 
 done
