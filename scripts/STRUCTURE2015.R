@@ -1,15 +1,17 @@
 source('/Volumes/Storage/RadishData/Scripts/Misc_scripts/AmandaSource.R', chdir = TRUE)
+require(ggplot2)
+require(dplyr)
 require(RColorBrewer)
 #dataset <- "NoRACoNo-5_f.txt"
 
 ########################################################
 
 
-setwd("/Volumes/Storage/RadishData/21MarkersData/Analysis/STRUCTURE/RedoneStructure/EstimateK/Corrfreq/NewPops2013/parsed_data/")
 
-pdf(file="/Volumes/Storage/RadishData/21MarkersData/Analysis/STRUCTURE/RedoneStructure/EstimateK/Corrfreq/NewPops2013/RanalphaNewPops.pdf", height=9.3, width=15.3)
+pdf(file="../figures/RanalphaNewPops.pdf", height=9.3, width=15.3)
 
-
+ghost_count <- c(0,0,0) #c("K", "Run", "Ghosts")
+pop_ghost_count <- c(0,0,0)
 
 ########################################################
 
@@ -19,7 +21,7 @@ pdf(file="/Volumes/Storage/RadishData/21MarkersData/Analysis/STRUCTURE/RedoneStr
 ##Get all the files from this directory to put into a single PDF
 #Sort the filelist into numerical order by K instead of order from filesystem
 
-ALLTHEFILES <- dir()
+ALLTHEFILES <- dir("../OriginalData/parsed_data/")
 
 File_Num <- length(ALLTHEFILES) #+1
 
@@ -63,7 +65,7 @@ for(run_num in c(1:metadata[1])){
     
     dataset <- File_list[File_list[,1]==i & File_list[,2]==run_num,3]
     str.data <- 0
-    str.data <- read.csv(dataset, header=F)
+    str.data <- read.csv(paste("../OriginalData/parsed_data/",dataset, sep=""), header=F)
     str.to.sort <- order(str.data$V2)
     str.sorted <- str.data[str.to.sort,] 
     str.sorted <- str.sorted[,c(3,5:ncol(str.data-3))]
@@ -72,7 +74,7 @@ for(run_num in c(1:metadata[1])){
     
 #Get the label/metadata about each individual from a seperate file. Remove all the "RA" and "NZIL" individuals
     
-    labels <- read.csv("/Volumes/Storage/RadishData/21MarkersData/Analysis/MarkerPopEditOrder2014.csv", header=F, col.names=c("Individual", "Type", "Pop", "Order", "Name", "Species", "Color", "Vernalization", "DTF", "Bins", "locals"))
+    labels <- read.csv("../OriginalData/MarkerPopEditOrder2014.csv", header=F, col.names=c("Individual", "Type", "Pop", "Order", "Name", "Species", "Color", "Vernalization", "DTF", "Bins", "locals"))
     
     labels <- labels[labels$Type!="UnknownType",]
     labels <- labels[labels$Pop!="NZIL",]
@@ -83,12 +85,23 @@ for(run_num in c(1:metadata[1])){
     all.data <- cbind(labels.sorted[,2:length(names(labels.sorted))],str.sorted)
     row.names(all.data) <- labels.sorted$Individual
     
+
+    if (i > 1) {ghosts <- apply(all.data[,12:ncol(all.data)], 2, max)
+                newghost <- c(i, run_num, sum(ghosts < .5))
+                ghost_count <- rbind(ghost_count, newghost)}
+    
+    if (i > 1) { popghosts <- aggregate(all.data, by=list(all.data$Pop), FUN=mean)[12:ncol(all.data)+1]
+                 popghosts <- apply(popghosts, 2, max)
+                 newpopghost <- c(i, run_num, sum(popghosts < .5))
+                 pop_ghost_count <- rbind(pop_ghost_count, newpopghost)}
+    
 #For prettier plotting, lump all of the different species together. Later you'll plot each
 #species seperately in a divided plotting screen
     crop.data <- all.data[all.data$Type=="Crop",]
     weed.data <- all.data[all.data$locals=="raphNN",]
     native.data <- all.data[all.data$locals=="lanmar" | all.data$locals=="rostratus",]
-    raphNat.data <- all.data[all.data$locals=="raphNat",]
+    raphNatW.data <- all.data[all.data$locals=="raphNatW",]
+    raphNatE.data <- all.data[all.data$locals=="raphNatE",]
     daikon.data <- all.data[all.data$Species=="Daikon",]
     european.data <- all.data[all.data$Species=="European",]
     oilrat.data <- all.data[all.data$Species=="Rattail" | all.data$Species=="Oilseed",]
@@ -96,14 +109,16 @@ for(run_num in c(1:metadata[1])){
     daikon.table <- t(daikon.data[12:length(daikon.data[1,])][order(daikon.data$Order),])
     weed.table <- t(weed.data[12:length(weed.data[1,])][order(weed.data$Order),])
     native.table <- t(native.data[12:length(native.data[1,])][order(native.data$Order),])
-    raphNat.table <- t(raphNat.data[12:length(raphNat.data[1,])][order(raphNat.data$Order),])
+    raphNatW.table <- t(raphNatW.data[12:length(raphNatW.data[1,])][order(raphNatW.data$Order),])
+    raphNatE.table <- t(raphNatE.data[12:length(raphNatE.data[1,])][order(raphNatE.data$Order),])
     european.table <- t(european.data[12:length(european.data[1,])][order(european.data$Order),])
     oilrat.table <- t(oilrat.data[12:length(oilrat.data[1,])][order(oilrat.data$Order),])
     
     
     colnames(native.table) <- native.data$Pop[order(native.data$Order)]
     colnames(weed.table) <- weed.data$Pop[order(weed.data$Order)]
-    colnames(raphNat.table) <- raphNat.data$Pop[order(raphNat.data$Order)]
+    colnames(raphNatW.table) <- raphNatW.data$Pop[order(raphNatW.data$Order)]
+    colnames(raphNatE.table) <- raphNatE.data$Pop[order(raphNatE.data$Order)]
     colnames(daikon.table) <- daikon.data$Pop[order(daikon.data$Order)]
     colnames(european.table) <- european.data$Pop[order(european.data$Order)]
     colnames(oilrat.table) <- oilrat.data$Pop[order(oilrat.data$Order)]
@@ -115,7 +130,7 @@ for(run_num in c(1:metadata[1])){
     col_pal = c(col_pal1, col_pal2, col_pal3)
     
     K_text <- paste("STRUCTURE Plot K=", K, sep="")
-    
+    #SPEU is now SPNK; NELO now NEJS; RACA now RAJS. -JKC 
     par(mfrow=c(1,1), mar=c(0,0,0,0))
     par(fig=c(0,1,.8,.9)) #new=TRUE)
     barplot(native.table, col=col_pal[1:K], cex.names=1.2, xaxt="n", yaxt="n", 
@@ -129,38 +144,44 @@ for(run_num in c(1:metadata[1])){
                                             "France (PBFR)", 
                                             "Israel (GMIL)"), tick=F, line=-1)
     
-    par(fig=c(0,1,.63,.73), new=TRUE)
+    par(fig=c(0,1,.46,.56), new=TRUE)
     barplot(weed.table, col=col_pal[1:K], cex.names=1.2, xaxt="n", yaxt="n", 
             space=c(rep(0,10), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9)))
     axis(side=3, at=27, labels=expression(paste(italic("R.r. raphanistrum")," outside native range")), cex=1.2, tick=F, line=-1)
     axis(side=1, at=c(5,16,27,38,49), tick=F, labels=c("Germany (NCDE)", 
                                                        "Finland (AUFI)", 
                                                        "New York (BINY)", 
-                                                       "Australia 1 (UKAU)",
-                                                       "Australia 2 (UKAU)"), line=-1)
+                                                       "Australia 1 (COAU)",
+                                                       "Australia 2 (WEAU)"), line=-1)
     
-    par(fig=c(0,1,.46,.56), new=TRUE)
-    barplot(raphNat.table, col=col_pal[1:K], cex.names=1.2, xaxt="n", yaxt="n", 
-            space=c(rep(0,10), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9), 1,rep(0,9), 1,rep(0,9), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9)))
-    axis(side=3, at=60, labels=expression(paste(italic("R.r. raphanistrum")," inside native range")), cex=1.2, tick=F, line=-1)
-    axis(side=1, at=c(5,16,27,38,49,60,71,82,93,103,115), tick=F, labels=c("France (AFFR)", 
-                                                                           "Spain (MAES)",
-                                                                           "Spain (DEES)",
-                                                                           "Spain (HCES)",
-                                                                           "Spain (HMES)",
-                                                                           "Spain (IMES)",
-                                                                           "Israel (TYIL)",
-                                                                           "Israel (REIL)",
-                                                                           "Israel (GHIL)",
-                                                                           "Israel (HZIL)",
-                                                                           "Israel (ZYIL)"), line=-1)
+    
+    par(fig=c(0,.5,.63,.73), new=TRUE)
+    barplot(raphNatW.table, col=col_pal[1:K], cex.names=1.2, xaxt="n", yaxt="n", 
+            space=c(rep(0,10), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9)))
+    axis(side=3, at=27, labels=expression(paste(italic("Western R.r. raphanistrum")," inside native range")), cex=1.2, tick=F, line=-1)
+    axis(side=1, at=c(4.5,16,27,38,49,60), tick=F, labels=c("France (AFFR)", 
+                                                            "Spain (MAES)",
+                                                            "Spain (DEES)",
+                                                            "Spain (HCES)",
+                                                            "Spain (HMES)",
+                                                            "Spain (IMES)"), line=-1)
+    par(fig=c(.5,1,.63,.73), new=TRUE)
+    barplot(raphNatE.table, col=col_pal[1:K], cex.names=1.2, xaxt="n", yaxt="n", 
+            space=c(rep(0,10), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9)))
+    axis(side=3, at=27, labels=expression(paste(italic("Eastern R.r. raphanistrum")," inside native range")), cex=1.2, tick=F, line=-1)
+    axis(side=1, at=c(5,16,27,38,49), tick=F, labels=c("Israel (TYIL)",
+                                                       "Israel (REIL)",
+                                                       "Israel (GHIL)",
+                                                       "Israel (HZIL)",
+                                                       "Israel (ZYIL)"), line=-1)
+    
     
     par(fig=c(0,.5,.29,.39), new=TRUE)
     barplot(daikon.table, col=col_pal[1:K], cex.names=1.2, xaxt="n", yaxt="n",
             space=c(rep(0,10), 1, rep(0,9), 1, rep(0,9), 1,rep(0,9)) )
     axis(side=3, at=22, labels="Daikon Crops", cex=1.2, tick=F, line=-1)
     axis(side=1, at=c(5,16,27,38), tick=F, labels=c("Miyashige (MYJO)", 
-                                                    "New Crown (NELO)", 
+                                                    "New Crown (NEJS)", 
                                                     "Tokinashi (TOBG)", 
                                                     "Watermelon (WMBG)"), line=-1)
     
@@ -172,7 +193,7 @@ for(run_num in c(1:metadata[1])){
     axis(side=1, at=c(5,16,27,37), tick=F, labels=c("Cherry Belle (CBBG)", 
                                                     "D'avignon (DAJO)", 
                                                     "Early S.G. (ESNK)", 
-                                                    "Sparkler (SPEU)" ), line=-1)
+                                                    "Sparkler (SPNK)" ), line=-1)
     
     par(fig=c(0,1,.12,.22), new=TRUE)
     barplot(oilrat.table, col=col_pal[1:K], cex.names=1.2, xaxt="n", yaxt="n", 
@@ -183,9 +204,34 @@ for(run_num in c(1:metadata[1])){
                                                           "Adagio (ADOL)", 
                                                           "Madras podding (MABG)", 
                                                           "Rattail (RABG)", 
-                                                          "Rattail (RACA)"), line=-1)
+                                                          "Rattail (RAJS)"), line=-1)
     
   }    
 }
 
 dev.off()
+
+ghost_count <- data.frame(ghost_count)
+colnames(ghost_count) <- c("K", "Run", "Ghosts")
+ghost_count <- ghost_count[2:nrow(ghost_count), ]
+
+pdf(file="../figures/GhostInd.pdf", height=9.3, width=15.3)
+
+arrange( ghost_count, K) %>% ggplot( aes(K, Ghosts)) + geom_point() + geom_jitter(height = 0)
+
+dev.off()
+
+write.csv(ghost_count, "../output/ghosts.csv")
+
+pop_ghost_count <- data.frame(pop_ghost_count)
+
+colnames(pop_ghost_count) <- c("K", "Run", "Ghosts")
+pop_ghost_count <- pop_ghost_count[2:nrow(pop_ghost_count), ]
+
+pdf(file="../figures/GhostPops.pdf", height=9.3, width=15.3)
+
+arrange( pop_ghost_count, K) %>% ggplot( aes(K, Ghosts)) + geom_point() + geom_jitter(height = 0)
+
+dev.off()
+
+write.csv(pop_ghost_count, "../output/PopGhosts.csv")

@@ -32,8 +32,9 @@ Summer2010dataSummary.csv
 
 ```{r Settings, echo=FALSE, message=FALSE}
 rm( list=ls())
-require(plyr)
 require(RColorBrewer)
+require(plyr)
+
 ```
 
 ```{r ReadIN, echo=FALSE}
@@ -58,8 +59,8 @@ sum2010 <- read.csv("../OriginalData/Summer2010dataSummary.csv", na.strings=".")
 
 Genotypes <- read.csv("../OriginalData/GenotypicData.csv", sep = ",", na.strings = c("NA", "", "."))
 
-Genotypes$ComPops <- Genotypes$Pop
-levels(Genotypes$ComPops) <- c("ADOL","AFFR","AROL","AUFI","BINY","CBBG","CBES","UKAU","COOL","DAJO","DEES","ESNK","GHIL","GMIL","HCES","HMES","HZIL","IMES","MABG","MAES","MYJO","NCDE","NELO","NZIL","PBFR","RA173","RA215","RA219","RA226","RA264","RA265","RA399","RA402","RA432","RA444","RA447","RA475","RA494","RA503","RA761","RA787","RA835","RA837","RA838","RA840","RABG","RACA","REIL","SAES","SPEU","TOBG","TYIL","UKAU","WMBG","ZYIL")
+#Genotypes$ComPops <- Genotypes$Pop
+#levels(Genotypes$ComPops) <- c("ADOL","AFFR","AROL","AUFI","BINY","CBBG","CBES","UKAU","COOL","DAJO","DEES","ESNK","GHIL","GMIL","HCES","HMES","HZIL","IMES","MABG","MAES","MYJO","NCDE","NELO","NZIL","PBFR","RA173","RA215","RA219","RA226","RA264","RA265","RA399","RA402","RA432","RA444","RA447","RA475","RA494","RA503","RA761","RA787","RA835","RA837","RA838","RA840","RABG","RACA","REIL","SAES","SPEU","TOBG","TYIL","UKAU","WMBG","ZYIL")
 ```
 ###Data Munging
 ####Fix dates for each dataset so they are all the same format, as in:
@@ -469,6 +470,17 @@ HabitatList <- c(ADOL="cultivar", AROL="cultivar", CBBG="cultivar", COOL="cultiv
 SpecificOriginList <- c(ADOL="MSU", AROL="MSU", CBBG="BountifulGardens", COOL="MSU", DAJO="JohnScheepers", ESNK="NKLawn", MABG="BountifulGardens", MYJO="JohnScheepers", NELO="JohnScheepers", OIBG="BountifulGardens", RABG="BountifulGardens", RACA="California", SPEU="unknown", TOBG="BountifulGardens", WMBG="BountifulGardens", AFFR="France", BBCA="California", BINY="NewYork", GSCA="California", MAES="Spain", PBFR="France", SAES="Spain", DEES="Spain", GHIL="Israel", HCES="Spain", HMES="Spain", HZIL="Israel", IMES="Spain", ZYIL="Israel", AUFI="Finland", COAU="Australia", KAMI="Michigan", AL="Australia", CBES="Spain", GMIL="Israel", M3AU="Australia", N3="Australia", NZIL="Israel", PG6="Australia", REIL="Israel", MAFI="Finland", NAAU="Australia", WEAU="Australia", CGBC="BakersCreek", FGBC="BakersCreek", FRSI="SeedsItaly", LBBC="BakersCreek", MBBC="BakersCreek", NTJO="JohnScheepers", PABS="Burpees", RABS="Burpees", RBBC="BakersCreek", SPNK="NKLawn", TYIL="Israel")
 
 RegionOriginList <- c(ADOL="oleifera", AROL="oleifera", CBBG="european", COOL="oleifera", DAJO="european", ESNK="european", MABG="caudatus", MYJO="daikon", NELO="daikon", OIBG="oleifera", RABG="caudatus", RACA="caudatus", SPEU="european", TOBG="daikon", WMBG="daikon", AFFR="France", BBCA="California", BINY="NewYork", GSCA="California", MAES="Spain", PBFR="France", SAES="Spain", DEES="Spain", GHIL="Israel", HCES="Spain", HMES="Spain", HZIL="Israel", IMES="Spain", ZYIL="Israel", AUFI="Finland", COAU="Australia", KAMI="Michigan", AL="Australia", CBES="Spain", GMIL="Israel", M3AU="Australia", N3="Australia", NZIL="Israel", PG6="Australia", REIL="Israel", MAFI="Finland", NAAU="Australia", WEAU="Australia", CGBC="daikon", FGBC="daikon", FRSI="european", LBBC="european", MBBC="european", NTJO="european", PABS="european", RABS="european", RBBC="european", SPNK="european", TYIL="Israel")
+
+LocationList <- c(ADOL="oleifera", AROL="oleifera", CBBG="european", COOL="oleifera", DAJO="european", ESNK="european", MABG="caudatus", MYJO="daikon", NELO="daikon", OIBG="oleifera", RABG="caudatus", RACA="caudatus", SPEU="european", TOBG="daikon", WMBG="daikon", AFFR="raphNatW", BBCA="California", BINY="raphNN", GSCA="California", MAES="raphNatW", PBFR="lanmar", SAES="lanmar", DEES="raphNatW", GHIL="raphNatE", HCES="raphNatW", HMES="raphNatW", HZIL="raphNatE", IMES="raphNatW", ZYIL="raphNatE", AUFI="raphNN", COAU="raphNN", KAMI="raphNN", AL="raphNN", CBES="lanmar", GMIL="rostratus", M3AU="raphNN", N3="raphNN", NZIL="none", PG6="raphNN", REIL="raphNatE", MAFI="raphNN", NAAU="raphNN", WEAU="raphNN", CGBC="daikon", FGBC="daikon", FRSI="european", LBBC="european", MBBC="european", NTJO="european", PABS="european", RABS="european", RBBC="european", SPNK="european", TYIL="raphNatE")
+
+OrderList <- c(ADOL=19, AROL=20, CBBG=7, COOL=21, DAJO=8, ESNK=9, MABG=22, MYJO=3, NELO=4,
+               OIBG=23, RABG=24, RACA=25, SPEU=17, TOBG=5, WMBG=6, AFFR=4, BBCA=30, BINY=3,
+               GSCA=30, MAES=9, PBFR=1, SAES=3, DEES=5, GHIL=10, HCES=6, HMES=7, HZIL=11,
+               IMES=8, ZYIL=14, AUFI=1, COAU=4, KAMI=8, AL=7, CBES=2, GMIL=15, M3AU=7,
+               N3=7, NZIL=16, PG6=7, REIL=12, MAFI=2, NAAU=6, WEAU=5, CGBC=1,
+               FGBC=2, FRSI=10, LBBC=11, MBBC=12, NTJO=13, PABS=14, RABS=15, RBBC=16,
+               SPNK=18, TYIL=13) 
+
 ```
 
 ```{r Assign3, echo=FALSE}
@@ -481,6 +493,9 @@ CombinedDataSet$Species <- as.factor(SpeciesList[CombinedDataSet$Pop])
 CombinedDataSet$Habitat <- as.factor(HabitatList[CombinedDataSet$Pop])
 CombinedDataSet$SpecificOrigin <- as.factor(SpecificOriginList[CombinedDataSet$Pop])
 CombinedDataSet$RegionOrigin <- as.factor(RegionOriginList[CombinedDataSet$Pop])
+CombinedDataSet$locals <- as.factor(LocationList[CombinedDataSet$Pop])
+CombinedDataSet$Order <- as.factor(OrderList[CombinedDataSet$Pop])
+CombinedDataSet$Order <- as.numeric(CombinedDataSet$Order)
 CombinedDataSet$Seedstock[CombinedDataSet$SubSpecies == "sativus"] <- "Nursery"
 CombinedDataSet$SubSpecies <- as.factor(CombinedDataSet$SubSpecies)
 CombinedDataSet$Seedstock <- as.factor(CombinedDataSet$Seedstock)
@@ -498,28 +513,33 @@ CombinedDataSet$SurviveGTF <- round(CombinedDataSet$SurviveGTF)
 CombinedDataSet$PTG <- round(CombinedDataSet$GermDate - CombinedDataSet$PlantDate)
 
 CombinedDataSet <- droplevels(CombinedDataSet[CombinedDataSet$Pop != "N3",])
-CombinedDataSet$Pop <- revalue(CombinedDataSet$Pop, c("COAU" = "UKAU", 
+CombinedDataSet$Pop <- revalue(CombinedDataSet$Pop, c(
+                              # "COAU" = "UKAU", 
                                "M3AU" = "UKAU", 
                                "AL"   = "UKAU", 
-                               "PG6"  = "UKAU", 
-                               "NAAU" = "UKAU",
-                               "WEAU" = "UKAU"))
+                               "PG6"  = "UKAU" 
+                              # "NAAU" = "UKAU",
+                              # "WEAU" = "UKAU"
+                              ))
 
 CombinedDataSet <- droplevels(CombinedDataSet)
 
 ```
 
 ```{r splitGenotypes, echo=FALSE}
+
 JustSNPs <- Genotypes[,c(1:19)]
 JustSSR <- Genotypes[c(1, 20:35)]
+
 write.csv(JustSSR, "../output/JustSSR.csv", row.names = F, quote=F)
 system("python biallele.py ../output/JustSSR.csv ../output/BiSSR.csv")
+
 JustSSRFix <- read.csv("../output/BiSSR.csv", header = T)
 colnames(JustSSRFix) <- c("SSR.ID", colnames(JustSSRFix[2:113]))
 
-BialleleGene <- join( JustSNPs, JustSSRFix )
+BialleleGene <- dplyr::full_join( JustSNPs, JustSSRFix )
 
-SubsetBialleleGene <- droplevels( filter( BialleleGene, 
+SubsetBialleleGene <- droplevels( dplyr::filter( BialleleGene, 
                                           LocData != "UKspecies" &
                                           Pop != "NZIL"))
 
@@ -530,7 +550,7 @@ SubsetBialleleGene <- droplevels( filter( BialleleGene,
 ```{r write, echo=FALSE}
 write.csv(CombinedDataSet, "../output/CombinedDataSet.csv", quote=F, row.names=F)
 write.csv(BialleleGene, "../output/AllBialleleGeno.csv", row.names = F)
-write.csv(BialleleGene[c(2:nrow(BialleleGene)), c(2:ncol(BialleleGene))], "../output/Marker.geno", row.names = F, sep = "")
+write.csv(BialleleGene[c(2:nrow(BialleleGene)), c(2:ncol(BialleleGene))], "../output/Marker.geno", row.names = F, sep=",")
 write.csv(BialleleGene, "../output/Marker.ind", row.names = F)
 
 ```
