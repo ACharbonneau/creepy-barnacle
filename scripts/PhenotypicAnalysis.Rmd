@@ -2,7 +2,7 @@
 title: "Phenotypic Analysis"
 author: "Amanda Charbonneau"
 date: "September 10, 2015"
-output: 
+output:
   html_document: 
     number_sections: yes
     toc: yes
@@ -10,18 +10,21 @@ output:
 
 ```{r SourcePackages, include=FALSE}
 rm( list=ls() )
-source( "~/Dropbox/RadishWeedEvolution/MarkerPaperMeta/Functionarium.R")
-source( "~/Dropbox/DworkinLabSharedMaterial/scripts/WRP_FUNCTIONS.R")
-require(plotrix) #shading
+#source( "~/Dropbox/DworkinLabSharedMaterial/scripts/WRP_FUNCTIONS.R")
+require( plotrix ) #shading
 require( cowplot ) #ggplot gridding
 require( lme4 ) #modeling
 require( MCMCglmm ) #modeling
-require( ggplot2 ) #plotting
-require( dplyr ) #munging
-require( reshape2 ) #munging
 require( ggthemes )
+require( ggplot2 ) #plotting
+require( reshape2 ) #munging
+require( dplyr ) #munging
 hmcols<-colorRampPalette(c("#002447", "white"))(100)
 
+#Standard Error of a proportion
+SEP <- function( x, n ){
+  B <- sqrt( ( x * (1-x) ) / (n - 1) )
+}
 
 ```
 
@@ -35,6 +38,10 @@ FlowData$DOYPS <- ifelse( FlowData$DOYP < 78, FlowData$DOYP + 287, FlowData$DOYP
 FlowData$DOYGS <- ifelse( FlowData$DOYG < 78, FlowData$DOYG + 287, FlowData$DOYG - 78 )
 #drop confusus
 FlowData <- FlowData[FlowData$SubSpecies !="confusus",]
+
+#drop gh_2006 because it doesn't have germination dates
+FlowData <- droplevels(FlowData[FlowData$Experiment !="gh2006",])
+
 
 #FlowData <- tbl_df( FlowData )
 ```
@@ -139,7 +146,7 @@ RawData <- filter( FlowData, Taxonomy != "confusus" &
                              !is.na( DOYGS )  ) %>% 
            select( ID, GTF, Geography, Seedstock, GrowthEnvironment, DOYGS, 
                    DaysVernNoNA, Pop, Experiment, Habitat, PTF, DOYPS, PTG, 
-                   SurviveGTF, FlowWoVern, Taxonomy, Species, Order, locals)
+                   SurviveGTF, FlowWoVern, Taxonomy, Species, Order, locals, ExCode)
     
 
 RawData$Geography <- relevel( RawData$Geography, "west" )
@@ -150,6 +157,111 @@ RawData <- droplevels( RawData )
 
 ```
 
+```{r ActualRawData, echo=FALSE}
+# Data Subset for table of experiments
+# Numbers for what was planned/done regardless of who died
+
+ExtraRawData <- filter( FlowData, Taxonomy != "confusus" & 
+                             Taxonomy != "CAHybrid" ) %>% 
+           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, DOYGS, 
+                   DaysVernNoNA, Pop, Experiment, Habitat, PTF, DOYPS, PTG, 
+                   SurviveGTF, FlowWoVern, Taxonomy, Species, Order, locals, ExCode)
+
+ExtraRawData$Geography <- relevel( ExtraRawData$Geography, "west" )
+ExtraRawData$Habitat <- relevel( ExtraRawData$Habitat, "natural" )
+ExtraRawData$Ag <- ExtraRawData$Habitat
+levels(ExtraRawData$Ag) <- c("nonag", "ag", "nonag", "nonag" )
+ExtraRawData <- droplevels( ExtraRawData )
+
+
+```
+
+```{r unsubsettedmodeldata, echo=FALSE}
+AllModeled <- filter( FlowData, !is.na( SurviveGTF) & 
+                                !is.na( DOYGS )  ) %>% 
+           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, DOYGS, 
+                   DaysVernNoNA, Pop, Experiment, Habitat, PTF, DOYPS, 
+                   Species, SubSpecies, Taxonomy, SurviveGTF, FlowWoVern)
+
+AllModeled <- droplevels( AllModeled )
+```
+
+#Summary Data
+
+##Data Subset for R.r. raphanistrum analysis. 
+Only kept data for individuals that are Rrr, have a flowering date and germination date.
+This includes individuals that were given a +1 flowering date:
+
+Total individuals: `r length(RrrData$Pop)`
+
+Number of Pops: `r length(levels(RrrData$Pop))`
+
+Indivduals per Pop: `r dplyr::count(RrrData, Pop) %>% summarize(min(n))` - `r dplyr::count(RrrData, Pop) %>% summarize(max(n))`
+
+## Data Subset for Raphanus natives analysis
+Only keep data for individuals that are natives, have a flowering date and germination date.
+This includes individuals that were given a +1 flowering date:
+
+Total individuals: `r length(NatData$Pop)`
+
+Number of Pops: `r length(levels(NatData$Pop))`
+
+Indivduals per Pop: `r dplyr::count(NatData, Pop) %>% summarize(min(n))` - `r dplyr::count(NatData, Pop) %>% summarize(max(n))`
+
+## Data Subset for sativus analysis
+Only keep data for individuals that are sativus, have a flowering date and germination date.
+This includes individuals that were given a +1 flowering date:
+
+Total individuals: `r length(SatData$Pop)`
+
+Number of Pops: `r length(levels(SatData$Pop))`
+
+Indivduals per Pop: `r dplyr::count(SatData, Pop) %>% summarize(min(n))` - `r dplyr::count(SatData, Pop) %>% summarize(max(n))`
+
+## Raw numbers
+Combined data from the above datasets but NOT including +1 flowering date. 
+This was used to create the flowering boxplot figure
+
+Total individuals: `r length(RawData$Pop)`
+
+Number of Pops: `r length(levels(RawData$Pop))`
+
+Indivduals per Pop: `r dplyr::count(RawData, Pop) %>% summarize(min(n))` - `r dplyr::count(RawData, Pop) %>% summarize(max(n))`
+
+## Raw +1 numbers
+Combined data from the datasets used for modeling, DOES include +1 flowering date. 
+
+Total individuals: `r length(AllModeled$Pop)`
+
+Number of Pops: `r length(levels(AllModeled$Pop))`
+
+Indivduals per Pop: `r dplyr::count(AllModeled, Pop) %>% summarize(min(n))` - `r dplyr::count(AllModeled, Pop) %>% summarize(max(n))`
+
+## As planned numbers
+Numbers of planted individuals (experiments as planned)
+
+Total individuals: `r length(ExtraRawData$Pop)`
+
+Number of Pops: `r length(levels(ExtraRawData$Pop))`
+
+Indivduals per Pop: `r dplyr::count(ExtraRawData, Pop) %>% summarize(min(n))` - `r dplyr::count(ExtraRawData, Pop) %>% summarize(max(n))`
+
+Pops per Experiment:
+```{r, echo=FALSE}
+dplyr::count( ExtraRawData, ExCode, Pop ) %>% dplyr::count( ExCode )
+
+```
+
+Individuals per Experiment: 
+
+```{r, echo=FALSE}
+dplyr::count( ExtraRawData, Experiment, ExCode )
+```
+
+Individuals per Pop, per Experiment:
+```{r, echo=FALSE}
+dplyr::count( ExtraRawData, ExCode, Pop ) %>% dplyr::group_by( ExCode ) %>% summarise(minN=min(n), maxN=max(n))
+```
 
 #Modeling
 

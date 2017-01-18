@@ -61,36 +61,27 @@ for(n in 1:File_Num){
 
 for(run_num in c(1:metadata[1])){
   
-  for(i in c(1:metadata[2])){  # <- 1:length for K=1, 2:length for no
+  for(i in c(3:metadata[2])){  # <- 1:length for K=1, 2:length for no
     
     dataset <- File_list[File_list[,1]==i & File_list[,2]==run_num,3]
     str.data <- 0
     str.data <- read.csv(paste("../OriginalData/parsed_data/",dataset, sep=""), header=F)
-    str.to.sort <- order(str.data$V2)
-    str.sorted <- str.data[str.to.sort,] 
-    str.sorted <- str.sorted[,c(3,5:ncol(str.data-3))]
-    K = length(str.sorted)-1
-    colnames(str.sorted) <- c("%missing",1:(ncol(str.sorted)-1))
+    K <- length(str.data[,c(5:ncol(str.data-3))]) # Find out what K is
+    str.data <- str.data[,c(2,3,5:ncol(str.data-3))] # Get only useful columns from STRUCTURE
+    colnames(str.data) <- c( "Individual", "%missing",1:K)
     
-#Get the label/metadata about each individual from a seperate file. Remove all the "RA" and "NZIL" individuals
+    #Get the label/metadata about each individual from a seperate file. Join to remove all the "RA" and "NZIL" individuals
     
     labels <- read.csv("../OriginalData/MarkerPopEditOrder2014.csv", header=F, col.names=c("Individual", "Type", "Pop", "Order", "Name", "Species", "Color", "Vernalization", "DTF", "Bins", "locals"))
     
-    labels <- labels[labels$Type!="UnknownType",]
-    labels <- labels[labels$Pop!="NZIL",]
-    
-    labels.to.sort <- order(labels$Individual)
-    labels.sorted <- labels[labels.to.sort,]
-    
-    all.data <- cbind(labels.sorted[,2:length(names(labels.sorted))],str.sorted)
-    row.names(all.data) <- labels.sorted$Individual
+    all.data <- left_join(str.data, labels)
     
 
-    if (i > 1) {ghosts <- apply(all.data[,12:ncol(all.data)], 2, max)
+    if (i > 1) {ghosts <- apply(all.data[,3:(2+K)], 2, max)
                 newghost <- c(i, run_num, sum(ghosts < .5))
                 ghost_count <- rbind(ghost_count, newghost)}
     
-    if (i > 1) { popghosts <- aggregate(all.data, by=list(all.data$Pop), FUN=mean)[12:ncol(all.data)+1]
+    if (i > 1) { popghosts <- aggregate(all.data, by=list(all.data$Pop), FUN=mean)[4:(3+K)]
                  popghosts <- apply(popghosts, 2, max)
                  newpopghost <- c(i, run_num, sum(popghosts < .5))
                  pop_ghost_count <- rbind(pop_ghost_count, newpopghost)}
@@ -106,13 +97,13 @@ for(run_num in c(1:metadata[1])){
     european.data <- all.data[all.data$Species=="European",]
     oilrat.data <- all.data[all.data$Species=="Rattail" | all.data$Species=="Oilseed",]
     
-    daikon.table <- t(daikon.data[12:length(daikon.data[1,])][order(daikon.data$Order),])
-    weed.table <- t(weed.data[12:length(weed.data[1,])][order(weed.data$Order),])
-    native.table <- t(native.data[12:length(native.data[1,])][order(native.data$Order),])
-    raphNatW.table <- t(raphNatW.data[12:length(raphNatW.data[1,])][order(raphNatW.data$Order),])
-    raphNatE.table <- t(raphNatE.data[12:length(raphNatE.data[1,])][order(raphNatE.data$Order),])
-    european.table <- t(european.data[12:length(european.data[1,])][order(european.data$Order),])
-    oilrat.table <- t(oilrat.data[12:length(oilrat.data[1,])][order(oilrat.data$Order),])
+    daikon.table <- t(daikon.data[3:(2+K)][order(daikon.data$Order),])
+    weed.table <- t(weed.data[3:(2+K)][order(weed.data$Order),])
+    native.table <- t(native.data[3:(2+K)][order(native.data$Order),])
+    raphNatW.table <- t(raphNatW.data[3:(2+K)][order(raphNatW.data$Order),])
+    raphNatE.table <- t(raphNatE.data[3:(2+K)][order(raphNatE.data$Order),])
+    european.table <- t(european.data[3:(2+K)][order(european.data$Order),])
+    oilrat.table <- t(oilrat.data[3:(2+K)][order(oilrat.data$Order),])
     
     
     colnames(native.table) <- native.data$Pop[order(native.data$Order)]

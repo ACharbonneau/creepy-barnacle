@@ -40,8 +40,8 @@ col_pal <- c(col_pal[c(1:5)], col6[6], col_pal[c(8,9)], "gray20", "black")
 
 ALLTHECOLORS <- add.alpha(col_pal)
 
-CropD.col <- ALLTHECOLORS[1]
-CropE.col <- ALLTHECOLORS[6]
+CropD.col <- ALLTHECOLORS[6]
+CropE.col <- ALLTHECOLORS[1]
 CropO.col <- ALLTHECOLORS[3]
 CropR.col <- ALLTHECOLORS[8]
 

@@ -73,6 +73,7 @@ cult_2013$crownSide <- as.POSIXct( strptime(cult_2013$crownSide, format="%m/%d/%
 cult_2013$FlowerDate <- as.POSIXct( strptime(cult_2013$FlowerDate, format="%m/%d/%y"))
 cult_2013$FlowerPics <- as.POSIXct( strptime(cult_2013$FlowerPics, format="%m/%d/%y"))
 cult_2013$TissueColl <- as.POSIXct( strptime(cult_2013$TissueColl, format="%m/%d/%y"))
+cult_2013$ExCode <- "G1_13"
 
 ```
 
@@ -80,8 +81,9 @@ cult_2013$TissueColl <- as.POSIXct( strptime(cult_2013$TissueColl, format="%m/%d
 # fix dates for gh_2006
 gh_2006$flowerDate <- as.POSIXct( strptime(gh_2006$flowerDate, format="%m/%d/%y"))
 gh_2006$PlantingDate <- as.POSIXct( strptime(gh_2006$PlantingDate, format="%m/%d/%y"))
+gh_2006$ExCode <- "G_06"
 
-# fix dates for 2006Greenhouse.csv
+# fix dates for IsraelSpain Pops 2013 GH.csv
 IS_2013$Planted <- as.POSIXct( strptime( IS_2013$Planted, format="%m/%d/%y"))
 IS_2013$Germ <- as.POSIXct( strptime( IS_2013$Germ, format="%m/%d/%y"))
 IS_2013$crownTop <- as.POSIXct( strptime( IS_2013$crownTop, format="%m/%d/%y"))
@@ -90,6 +92,7 @@ IS_2013$X1stFlwrDate <- as.POSIXct( strptime( IS_2013$X1stFlwrDate, format="%m/%
 IS_2013$FlwrPicDate <- as.POSIXct( strptime( IS_2013$FlwrPicDate, format="%m/%d/%y"))
 IS_2013$Tissue.coll <- as.POSIXct( strptime( IS_2013$Tissue.coll, format="%m/%d/%y"))
 IS_2013$GTF <- IS_2013$X1stFlwrDate - IS_2013$Germ
+IS_2013$ExCode <- "G2_13"
 
 # fix dates for LaleField2005.csv
 lale2005$Planting_Date <- as.POSIXct( strptime(lale2005$Planting_Date, format="%m/%d/%y"))
@@ -99,6 +102,7 @@ lale2005$Mortality_Date <- as.POSIXct( strptime(lale2005$Mortality_Date, format=
 lale2005$OvuleDate <- as.POSIXct( strptime(lale2005$OvuleDate, format="%m/%d/%y"))
 lale2005$family <- as.factor(lale2005$family)
 lale2005$PTF <- lale2005$First_FlowerDate - lale2005$Planting_Date
+lale2005$ExCode <- "F_05"
 
 # fix dates for 2012FieldData.csv
 plants2012$Planting_Date <- as.POSIXct( strptime(plants2012$Planting_Date, format="%m/%d/%y"))
@@ -112,12 +116,15 @@ plants2012$SpringAliveDate <- as.POSIXct( strptime(plants2012$SpringAliveDate, f
 plants2012 <- droplevels(plants2012[plants2012$subpop != "unknown" & plants2012$subpop != "cross", ])
 plants2012$PTF <- plants2012$Flowering_Date - plants2012$Planting_Date
 plants2012$Survive_winter <- ifelse(plants2012$Survive_winter==0, "No", "Yes")
+plants2012$ExCode <- "F_12"
 
 # fix dates for 2003QstParents.csv"
 qst_2003$PlantingDate <- as.POSIXct( strptime( qst_2003$PlantingDate, format="%m/%d/%y"))
+qst_2003$ExCode <- "G_03"
 
 # fix dates for 2004 QstOffspring.csv
 qst_2004$plantingDate <- as.POSIXct( strptime( qst_2004$plantingDate, format="%d-%b-%y"))
+qst_2004$ExCode <- "G_04"
 
 # fix dates for 2013plantsSpring.csv
 spring2013$PD <- as.POSIXct( strptime(spring2013$Plant_Date, format="%m/%d/%y"))
@@ -128,6 +135,7 @@ spring2013$blossom <- as.POSIXct( strptime(spring2013$Blossom_Collected, format=
 spring2013$PTF <- spring2013$FD - spring2013$PD
 spring2013$DTB <- spring2013$BD - spring2013$GD
 spring2013$DTF <- spring2013$FD - spring2013$GD
+spring2013$ExCode <- "F_13"
 
 # fix dates for Summer2010dataSummary.csv
 sum2010$planted <- as.POSIXct( strptime( sum2010$planted, format="%m/%d/%y"))
@@ -137,6 +145,7 @@ sum2010$X1stflwr <- as.POSIXct( strptime( sum2010$X1stflwr, format="%m/%d/%y"))
 sum2010$blossomPhoto <- as.POSIXct( strptime( sum2010$blossomPhoto, format="%m/%d/%y"))
 sum2010$tissueColl <- as.POSIXct( strptime( sum2010$tissueColl, format="%m/%d/%y"))
 sum2010$X2ndRosettePhoto <- as.POSIXct( strptime( sum2010$X2ndRosettePhoto, format="%m/%d/%y"))
+sum2010$ExCode <- "G_10"
 ```
 ####Get subsets of data from the various datasets into the same format, with columns as follows:
 
@@ -204,10 +213,11 @@ sum2010$X2ndRosettePhoto <- as.POSIXct( strptime( sum2010$X2ndRosettePhoto, form
 
 As in:
 ```{r Subsetting1}
-columnnames <- c("Experiment", "ID", "GrowthEnvironment", "Pop", "PTF", "DTB", "GTF", "Year", "FlowDate", "PlantDate", "GermDate", "HeightFFcm", "Vernalized", "DaysVern", "TimesVern", "SurviveGTF")
+columnnames <- c("Experiment", "ExCode", "ID", "GrowthEnvironment", "Pop", "PTF", "DTB", "GTF", "Year", "FlowDate", "PlantDate", "GermDate", "HeightFFcm", "Vernalized", "DaysVern", "TimesVern", "SurviveGTF")
 
 # subset cult_2013
 cult_2013sub <- data.frame(rep("Cult2013", length(cult_2013$Cultivar)),  	#Experiment
+                         cult_2013$ExCode, #Experiment Code
                          paste(cult_2013$Cultivar, cult_2013$Pot, sep=""),		#ID
                          rep("greenhouse", length(cult_2013$Cultivar)), 		#GrowthEnvironment
                          cult_2013$Cultivar, 		#Pop
@@ -265,6 +275,7 @@ winter_13_14$vern <- ifelse(winter_13_14$V2 < 55, "vern", "")
 
 ```{r Subsetting2, echo=FALSE}
 gh2006sub <- data.frame(rep("gh2006", length(gh_2006$Pop)),  	#Experiment
+                         gh_2006$ExCode, #Experiment Code
                          paste(gh_2006$Pop, gh_2006$Individual,	sep=""),	#ID
                          rep("greenhouse", length(gh_2006$Pop)), 		#GrowthEnvironment
                          gh_2006$Pop, 		#Pop
@@ -282,6 +293,7 @@ gh2006sub <- data.frame(rep("gh2006", length(gh_2006$Pop)),  	#Experiment
                          rep(NA, length(gh_2006$Pop))) #SurviveGTF
                          
 IS_2013sub <- data.frame(rep("IS2013", length(IS_2013$Population)),		#Experiment
+                         IS_2013$ExCode, #Experiment Code
                          paste(IS_2013$Population, round(IS_2013$Pot), sep=""),		#ID
                          rep("greenhouse", length(IS_2013$Population)), 		#GrowthEnvironment
                          IS_2013$Population, 		#Pop
@@ -299,6 +311,7 @@ IS_2013sub <- data.frame(rep("IS2013", length(IS_2013$Population)),		#Experiment
                          IS_2013$GTF)  #SurviveGTF
                                                   
 lalesub <- data.frame(rep("Lale05", length(lale2005$population)),		#Experiment
+                      lale2005$ExCode, #Experiment Code
                       paste(lale2005$family, lale2005$sibling, sep=""),		#ID
                       rep("field", length(lale2005$population)), 		#GrowthEnvironment
                       lale2005$population,		#Pop
@@ -319,6 +332,7 @@ lalesub <- data.frame(rep("Lale05", length(lale2005$population)),		#Experiment
                                   lale2005$DaysGermToFlwr))) #SurviveGTF
 	
 p2012sub <- data.frame(rep("field2012", length(plants2012$Code)),		#Experiment
+                       plants2012$ExCode, #Experiment Code
                        paste(plants2012$Row, plants2012$Column, sep=""),		#ID
                        rep("field", length(plants2012$Code)),		#GrowthEnvironment
                        plants2012$Code,		#Pop
@@ -343,6 +357,7 @@ p2012sub <- data.frame(rep("field2012", length(plants2012$Code)),		#Experiment
 
 
 qst2003sub <- data.frame(rep("qst2003", length(qst_2003$Pop)),		#Experiment
+                         qst_2003$ExCode, #Experiment Code
                          as.factor(qst_2003$UniqueID),		#ID
                          rep("greenhouse", length(qst_2003$Pop)),		#GrowthEnvironment
                          qst_2003$Pop,		#Pop
@@ -360,6 +375,7 @@ qst2003sub <- data.frame(rep("qst2003", length(qst_2003$Pop)),		#Experiment
                          qst_2003$GermToFlwr)   #SurviveGTF
 
 qst2004sub <- data.frame(rep("qst2004", length(qst_2004$Pop)),		#Experiment
+                         qst_2004$ExCode, #Experiment Code
                          as.factor(qst_2004$ID),		#ID
                          rep("greenhouse", length(qst_2004$Pop)),		#GrowthEnvironment
                          qst_2004$Pop,		#Pop
@@ -378,6 +394,7 @@ qst2004sub <- data.frame(rep("qst2004", length(qst_2004$Pop)),		#Experiment
 
 
 s2013sub <- data.frame(rep("field2013", length(spring2013$Name)),		#Experiment
+                       spring2013$ExCode, #Experiment Code
                        paste(spring2013$NS_Row, spring2013$WE_Row, sep=""),		#ID
                        rep("field", length(spring2013$Name)), 		#GrowthEnvironment
                        spring2013$Name, 		#Pop
@@ -397,6 +414,7 @@ s2013sub <- data.frame(rep("field2013", length(spring2013$Name)),		#Experiment
                                    round(as.POSIXct("11/14/13", format="%m/%d/%y") - spring2013$GD) + 1 ))) #SurviveGTF
 
 sum2010sub <- data.frame(rep("sum2010", length(sum2010$Pop)),		#Experiment
+                         sum2010$ExCode, #Experiment Code
                          paste(sum2010$Pop, sum2010$Plant, sep=""),		#ID
                          rep("greenhouse", length(sum2010$Pop)),		#GrowthEnvironment
                          sum2010$Pop,		#Pop
@@ -421,6 +439,7 @@ ParseData <- function( mydata ) {
   names( mydata ) <- columnnames
   mydata$Pop <- factor( mydata$Pop)
   mydata$Pop <- as.factor(as.character(droplevels(mydata$Pop)))
+  mydata$ExCode <- factor( mydata$ExCode)
   mydata$Flowered <- ifelse(mydata$PTF > 0, "Yes", "No")
   mydata$Flowered[is.na(mydata$Flowered)] <- "No"
   mydata$FlowWoVern <- ifelse(mydata$PTF > 0 & mydata$Vernalized == "No", "Yes",

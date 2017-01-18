@@ -1,0 +1,160 @@
+---
+title: "PopGen"
+author: "Amanda Charbonneau"
+date: "10/7/2016"
+output: html_document
+---
+
+
+```{r}
+require("adegenet")
+require("hierfstat")
+require("pegas")
+require("pheatmap")
+require("RColorBrewer")
+```
+
+Using input for STRUCTURE:
+
+```{r, echo=FALSE}
+ALLTHEALLELES <- read.structure(file = "/Volumes/Storage/RadishData/2015_Marker_Paper/OriginalData/1rand.str", n.ind = 338, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 2, row.marknames = 1, NA.char = "-9", col.others = 3)
+
+ALLTHEGROUPALLELES <- read.structure(file = "/Volumes/Storage/RadishData/2015_Marker_Paper/OriginalData/1randgroup.str", n.ind = 338, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 2, row.marknames = 1, NA.char = "-9", col.others = NA)
+
+
+nonnative <- read.structure(file = "/Volumes/Storage/RadishData/2015_Marker_Paper/OriginalData/nonnative.str", n.ind = 50, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 2, row.marknames = 1, NA.char = "-9", col.others = NA)
+
+lanmar <- read.structure(file = "/Volumes/Storage/RadishData/2015_Marker_Paper/OriginalData/lanmar.str", n.ind = 30, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 2, row.marknames = 1, NA.char = "-9", col.others = NA)
+
+west <- read.structure(file = "/Volumes/Storage/RadishData/2015_Marker_Paper/OriginalData/west.str", n.ind = 60, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 2, row.marknames = 1, NA.char = "-9", col.others = NA)
+
+east <- read.structure(file = "/Volumes/Storage/RadishData/2015_Marker_Paper/OriginalData/east.str", n.ind = 50, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 2, row.marknames = 1, NA.char = "-9", col.others = NA)
+
+pugionformis <- read.structure(file = "/Volumes/Storage/RadishData/2015_Marker_Paper/OriginalData/pugionformis.str", n.ind = 10, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 0, row.marknames = 1, NA.char = "-9", col.others = NA)
+
+rattail <- read.structure(file = "/Volumes/Storage/RadishData/2015_Marker_Paper/OriginalData/rattail.str", n.ind = 29, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 2, row.marknames = 1, NA.char = "-9", col.others = NA)
+
+oilseed <- read.structure(file = "/Volumes/Storage/RadishData/2015_Marker_Paper/OriginalData/oilseed.str", n.ind = 30, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 2, row.marknames = 1, NA.char = "-9", col.others = NA)
+
+daikon <- read.structure(file = "/Volumes/Storage/RadishData/2015_Marker_Paper/OriginalData/daikon.str", n.ind = 40, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 2, row.marknames = 1, NA.char = "-9", col.others = NA)
+
+european <- read.structure(file = "/Volumes/Storage/RadishData/2015_Marker_Paper/OriginalData/european.str", n.ind = 39, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 2, row.marknames = 1, NA.char = "-9", col.others = NA)
+
+
+
+```
+
+
+```{r}
+poplevel <- genind2genpop(x = ALLTHEALLELES)
+
+poplevelfreq <- tab(poplevel, freq=T)
+
+write.csv(poplevelfreq, "/Volumes/Storage/RadishData/2015_Marker_Paper/output/PopulationLevelAlleleFreq.csv")
+grouplevel <- genind2genpop(x = ALLTHEALLELES, pop = ALLTHEALLELES@other$X)
+grouplevelfreq <- tab(grouplevel, freq=T)
+write.csv(grouplevelfreq, "/Volumes/Storage/RadishData/2015_Marker_Paper/output/GroupLevelAlleleFreq.csv")
+```
+
+
+```{r}
+sampleDists <- dist.genpop(poplevel, method = 1, diag = T, upper = T)
+sampleDistMatrix <- as.matrix(sampleDists)
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows="euclidean",
+         clustering_distance_cols="euclidean",
+         cluster_rows = T,
+         cluster_cols = T,
+         col=colors)
+```
+
+```{r}
+sampleDists <- dist.genpop(grouplevel, method = 1, diag = T, upper = T)
+sampleDistMatrix <- as.matrix(sampleDists)
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows="euclidean",
+         clustering_distance_cols="euclidean",
+         cluster_rows = T,
+         cluster_cols = T,
+         col=colors)
+```
+
+
+```{r}
+pheatmap(poplevelfreq, cluster_rows=TRUE, show_rownames=TRUE, cluster_cols=T, show_colnames = F)
+```
+
+```{r}
+pheatmap(grouplevelfreq, cluster_rows=TRUE, show_rownames=TRUE, cluster_cols=T, show_colnames = F)
+```
+
+```{r}
+Hs(poplevel)
+Hs(grouplevel)
+allhwe <- hw.test(lanmar, res='matrix')
+hist(allhwe[,4], col = "pink", main = "Distribution of HWE test p-values", nclass = 60)
+points(as.vector(allhwe), rep(1, 84), col = "red", pch = "|")
+
+basicALL <- basic.stats(ALLTHEGROUPALLELES)
+basic.stats(ALLTHEALLELES)
+
+basicALL$n.ind.samp
+
+rbind(
+basic.stats(lanmar)$overall,
+basic.stats(west)$overall,
+basic.stats(east)$overall,
+basic.stats(nonnative)$overall,
+basic.stats(daikon)$overall,
+basic.stats(european)$overall,
+basic.stats(oilseed)$overall,
+basic.stats(rattail)$overall)
+
+```
+
+```{r GroupHeterozygosity}
+grouplist <- c(lanmar, west, east, nonnative, daikon, european, oilseed, rattail, pugionformis)
+groupcol <- c("lanmar", "west", "east", "nonnative", "daikon", "european", "oilseed", "rattail", "pugionformis")
+markers <- c("DWRD_124", "DWRD_112", "DWRD_61", "DWRD_177", "DWRD_107", "DWRD_123", "DWRD_121", "DWRD_158", "DWRD_48", "DWRD_180", "DWRD_97", "DWRD_205", "DWRD_27", "Bn26a", "BRMS005", "Na10H06", "Ra1H08", "Ra2E11", "Na14E08", "Bn35d", "Na12E05")
+
+deltah <- matrix(nrow = 21, ncol = 9, dimnames = list(markers,groupcol))
+
+for( i in 1:9){
+ taco <- summary(grouplist[[i]])
+ deltah[,i] <-  taco$Hobs - taco$Hexp
+}
+
+pheatmap(t(deltah), cluster_rows=TRUE, show_rownames=T, cluster_cols=T, show_colnames = F)
+```
+
+```{r PopHeterozygosity}
+grouplist <- c(lanmar, west, east, nonnative, daikon, european, oilseed, rattail, pugionformis)
+groupcol <- c("lanmar", "west", "east", "nonnative", "daikon", "european", "oilseed", "rattail", "pugionformis")
+markers <- c("DWRD_124", "DWRD_112", "DWRD_61", "DWRD_177", "DWRD_107", "DWRD_123", "DWRD_121", "DWRD_158", "DWRD_48", "DWRD_180", "DWRD_97", "DWRD_205", "DWRD_27", "Bn26a", "BRMS005", "Na10H06", "Ra1H08", "Ra2E11", "Na14E08", "Bn35d", "Na12E05")
+
+deltah <- matrix(nrow = 21, ncol = 9, dimnames = list(markers,groupcol))
+
+for( i in 1:9){
+ taco <- summary(grouplist[[i]])
+ deltah[,i] <-  taco$Hobs - taco$Hexp
+}
+
+pheatmap(t(deltah), cluster_rows=TRUE, show_rownames=T, cluster_cols=T, show_colnames = F)
+```
+
+```{r}
+
+
+pheatmap(propShared(ALLTHEGROUPALLELES))
+```
+
+```{r}
+ALL_df <- genind2df(ALLTHEALLELES)
+wc(ALL_df[,-1], diploid=TRUE)
+
+data(gtrunchier)
+pairwise.WCfst(gtrunchier[,-2],diploid=TRUE)
+```
+
