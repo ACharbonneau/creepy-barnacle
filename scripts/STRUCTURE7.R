@@ -6,25 +6,16 @@ str.data <- read.csv("/Volumes/Storage/RadishData/21MarkersData/Analysis/STRUCTU
 pdf(file="../figures/Ranalpha_K7_colorMatch.pdf", height=9.3, width=15.3)
 
 
-str.to.sort <- order(str.data$V2)
-str.sorted <- str.data[str.to.sort,] 
-str.sorted <- str.sorted[,c(3,5:ncol(str.data-3))]
-K = length(str.sorted)-1
-colnames(str.sorted) <- c("%missing",1:(ncol(str.sorted)-1))
+K <- length(str.data[,c(5:ncol(str.data-3))]) # Find out what K is
+str.data <- str.data[,c(2,3,5:ncol(str.data-3))] # Get only useful columns from STRUCTURE
+colnames(str.data) <- c( "Individual", "%missing",1:K)
 
-#Get the label/metadata about each individual from a seperate file. Remove all the "RA" and "NZIL" individuals
+#Get the label/metadata about each individual from a seperate file. Join to remove all the "RA" and "NZIL" individuals
 
 labels <- read.csv("../OriginalData/MarkerPopEditOrder2014.csv", header=F, col.names=c("Individual", "Type", "Pop", "Order", "Name", "Species", "Color", "Vernalization", "DTF", "Bins", "locals"))
-
-labels <- labels[labels$Type!="UnknownType",]
-labels <- labels[labels$Pop!="NZIL",]
 labels$Pop[labels$Pop=="SPEU"] <- "SPNK"
 
-labels.to.sort <- order(labels$Individual)
-labels.sorted <- labels[labels.to.sort,]
-
-all.data <- cbind(labels.sorted[,2:length(names(labels.sorted))],str.sorted)
-row.names(all.data) <- labels.sorted$Individual
+all.data <- left_join(str.data, labels)
 
 #For prettier plotting, lump all of the different species together. Later you'll plot each
 #species seperately in a divided plotting screen
@@ -37,13 +28,13 @@ daikon.data <- all.data[all.data$Species=="Daikon",]
 european.data <- all.data[all.data$Species=="European",]
 oilrat.data <- all.data[all.data$Species=="Rattail" | all.data$Species=="Oilseed",]
 
-daikon.table <- t(daikon.data[12:length(daikon.data[1,])][order(daikon.data$Order),])
-weed.table <- t(weed.data[12:length(weed.data[1,])][order(weed.data$Order),])
-native.table <- t(native.data[12:length(native.data[1,])][order(native.data$Order),])
-raphNatW.table <- t(raphNatW.data[12:length(raphNatW.data[1,])][order(raphNatW.data$Order),])
-raphNatE.table <- t(raphNatE.data[12:length(raphNatE.data[1,])][order(raphNatE.data$Order),])
-european.table <- t(european.data[12:length(european.data[1,])][order(european.data$Order),])
-oilrat.table <- t(oilrat.data[12:length(oilrat.data[1,])][order(oilrat.data$Order),])
+daikon.table <- t(daikon.data[3:(2+K)][order(daikon.data$Order),])
+weed.table <- t(weed.data[3:(2+K)][order(weed.data$Order),])
+native.table <- t(native.data[3:(2+K)][order(native.data$Order),])
+raphNatW.table <- t(raphNatW.data[3:(2+K)][order(raphNatW.data$Order),])
+raphNatE.table <- t(raphNatE.data[3:(2+K)][order(raphNatE.data$Order),])
+european.table <- t(european.data[3:(2+K)][order(european.data$Order),])
+oilrat.table <- t(oilrat.data[3:(2+K)][order(oilrat.data$Order),])
 
 
 colnames(native.table) <- native.data$Pop[order(native.data$Order)]

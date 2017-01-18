@@ -73,6 +73,7 @@ for(run_num in c(1:metadata[1])){
     #Get the label/metadata about each individual from a seperate file. Join to remove all the "RA" and "NZIL" individuals
     
     labels <- read.csv("../OriginalData/MarkerPopEditOrder2014.csv", header=F, col.names=c("Individual", "Type", "Pop", "Order", "Name", "Species", "Color", "Vernalization", "DTF", "Bins", "locals"))
+    labels$Pop[labels$Pop=="SPEU"] <- "SPNK"
     
     all.data <- left_join(str.data, labels)
     
