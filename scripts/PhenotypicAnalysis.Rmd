@@ -459,16 +459,16 @@ Rrr_noV_fixed <- mutate(Rrr_noV_fixed, species = rownames(Rrr_noV_fixed), Mean =
 
 ```{r NatModelMeans, echo=FALSE}
 
-Nat_pop_chains <- Nat_glmm$Sol[ , 14:28 ] + Nat_glmm$Sol[ , 1 ]
+Nat_pop_chains <- Nat_glmm$Sol[ , 13:27 ] + Nat_glmm$Sol[ , 1 ]
 
 # landra effect
-Nat_pop_chains[ , 11 ] <- Nat_pop_chains[ , 11 ] + Nat_glmm$Sol[, 2]
+#Nat_pop_chains[ , 11 ] <- Nat_pop_chains[ , 11 ] + Nat_glmm$Sol[, 2]
 
 # maritimus effect
-Nat_pop_chains[ , c( 2, 13 ) ] <- Nat_pop_chains[ , c( 2, 13 ) ] + Nat_glmm$Sol[, 3]
+Nat_pop_chains[ , c( 2, 11, 13 ) ] <- Nat_pop_chains[ , c( 2, 11, 13 ) ] + Nat_glmm$Sol[, 2]
 
 # rostratus effect
-Nat_pop_chains[ , 5 ] <- Nat_pop_chains[ , 5 ] + Nat_glmm$Sol[, 4]
+Nat_pop_chains[ , 5 ] <- Nat_pop_chains[ , 5 ] + Nat_glmm$Sol[, 3]
 
 
 Nat_pop <- as.data.frame( cbind( colMeans( Nat_pop_chains ), 
@@ -481,10 +481,10 @@ Nat_pop <- arrange( Nat_pop, SubSp )
 
 Nat_fixed_chains <- mutate( data.frame( Nat_glmm$Sol ),
                             raphanistrum = X.Intercept., 
-                            landra = X.Intercept. + SubSpecieslandra,
-                            maritimus = X.Intercept. + SubSpeciesmaritimus,
+                            maritimus = X.Intercept. + 
+                            SubSpeciesmaritimus,
                             rostratus = X.Intercept. + SubSpeciesrostratus ) %>%
-                    select( raphanistrum, landra, maritimus, rostratus)
+                    select( raphanistrum, maritimus, rostratus)
 
 Nat_fixed <- data.frame( cbind( colMeans( Nat_fixed_chains ), 
                          data.frame( HPDinterval( as.mcmc( Nat_fixed_chains ) ) ) ) )
@@ -496,16 +496,16 @@ Nat_fixed <- mutate(Nat_fixed, species = rownames(Nat_fixed), Mean = colMeans.Na
 
 ```{r NoV_NatModelMeans, echo=FALSE}
 
-Nat_NoV_pop_chains <- Nat_glmm_noV$Sol[ , 13:27 ] + Nat_glmm_noV$Sol[ , 1 ]
+Nat_NoV_pop_chains <- Nat_glmm_noV$Sol[ , 12:26 ] + Nat_glmm_noV$Sol[ , 1 ]
 
 # landra effect
-Nat_NoV_pop_chains[ , 11 ] <- Nat_NoV_pop_chains[ , 11 ] + Nat_glmm_noV$Sol[, 2]
+#Nat_NoV_pop_chains[ , 11 ] <- Nat_NoV_pop_chains[ , 11 ] + Nat_glmm_noV$Sol[, 2]
 
 # maritimus effect
-Nat_NoV_pop_chains[ , c( 2, 13 ) ] <- Nat_NoV_pop_chains[ , c( 2, 13 ) ] + Nat_glmm_noV$Sol[, 3]
+Nat_NoV_pop_chains[ , c( 2, 11, 13 ) ] <- Nat_NoV_pop_chains[ , c( 2, 11, 13 ) ] + Nat_glmm_noV$Sol[, 2]
 
 # rostratus effect
-Nat_NoV_pop_chains[ , 5 ] <- Nat_NoV_pop_chains[ , 5 ] + Nat_glmm_noV$Sol[, 4]
+Nat_NoV_pop_chains[ , 5 ] <- Nat_NoV_pop_chains[ , 5 ] + Nat_glmm_noV$Sol[, 3]
 
 
 Nat_noV_pop <- as.data.frame( cbind( colMeans( Nat_NoV_pop_chains ), 
@@ -518,10 +518,9 @@ Nat_noV_pop <- arrange( Nat_noV_pop, SubSp )
 
 Nat_NoV_fixed_chains <- mutate( data.frame( Nat_glmm_noV$Sol ),
                             raphanistrum = X.Intercept., 
-                            landra = X.Intercept. + SubSpecieslandra,
                             maritimus = X.Intercept. + SubSpeciesmaritimus,
                             rostratus = X.Intercept. + SubSpeciesrostratus ) %>%
-                    select( raphanistrum, landra, maritimus, rostratus)
+                    select( raphanistrum, maritimus, rostratus)
 
 Nat_NoV_fixed <- data.frame( cbind( colMeans( Nat_NoV_fixed_chains ), 
                          data.frame( HPDinterval( as.mcmc( Nat_NoV_fixed_chains ) ) ) ) )
@@ -611,7 +610,7 @@ Nat_overplot$SubSp
 levels(Nat_overplot$SubSp)[levels(Nat_overplot$SubSp)=="rostratus"] <- "R.pugioniformis"
 levels(Nat_overplot$SubSp)[levels(Nat_overplot$SubSp)=="maritimus"] <- "R.r.maritimus"
 levels(Nat_overplot$SubSp)[levels(Nat_overplot$SubSp)=="raphanistrum"] <- "R.r.raphanistrum"
-levels(Nat_overplot$SubSp)[levels(Nat_overplot$SubSp)=="landra"] <- "R.r.landra"
+#levels(Nat_overplot$SubSp)[levels(Nat_overplot$SubSp)=="landra"] <- "R.r.landra"
 NatPlot <- ggplot( Nat_overplot, aes( y = Mean, x = Pop, colour = Data ) ) + 
               geom_point( cex = 2.5) + 
               geom_errorbar( aes( y = Mean, max = Upper, min = Lower, colour = Data), width = 0, cex = 1) + 
@@ -850,8 +849,8 @@ axis(side = 1, at=c(1, 1.8, 2.7), tick = F,  labels=c("France\n(PBFR)","Spain\n(
                                               "Spain\n(SAES)"))
 axis(side = 2, line=-1)
 par(cex=.9)
-axis(side=3, at=1, labels=expression(italic("R.r. landra")), cex=2, tick=F, line=-1)
-axis(side=3, at=2.5, labels=expression(italic("R.r. maritimus")), cex=2, tick=F, line=-1)
+#axis(side=3, at=1, labels=expression(italic("R.r. landra")), cex=2, tick=F, line=-1)
+axis(side=3, at=1.5, labels=expression(italic("R.r. maritimus")), cex=2, tick=F, line=-1)
         
 
 par(fig=c(0.3,1,.67,.95), cex=.7, new=TRUE)
