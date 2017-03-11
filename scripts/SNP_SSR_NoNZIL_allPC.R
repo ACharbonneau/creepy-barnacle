@@ -1,10 +1,16 @@
 rm( list=ls())
 
 require(RColorBrewer)
-PCA.dat <- read.table("../output/Marker.pca", skip=11)
+require(pheatmap)
+
+PCA.dat <- read.table("../OrigOutput/Marker.pca", skip=11)
 
 labels.dat <- read.csv("../OriginalData//MarkerPopEditOrder2014.csv", header=F, 
                        col.names=c("Individual", "Type", "Pop", "Order", "Name", "Species", "Color", "Vernalization", "DTF", "Bins", "locals"))
+
+Divergence <- read.table("../OrigOutput/PopMarker.log", skip=60, header = T, nrows = 9)
+
+Differences <- read.table("../OrigOutput/PopMarker.log", skip=581, header = T, nrows = 36, row.names = NULL)
 
 
 ## To get rid of pops in the labels file that weren't in the analysis
@@ -91,7 +97,6 @@ conf.sym <- c(1:length(levels(droplevels(conf.data$Pop))))
 tempar <- par()$mar
 
 pdf(file="../figures/squareNoRA_2014DTF_pca_All_FT_rost.pdf", width=10, height=8.5)
-#pdf(file="squareNoRA_pca_CropColors.pdf", width=8.5, height=8.5)
 
 par( xpd=TRUE, mar=c(5.1, 5.1, 5.1, 10))
 
@@ -275,7 +280,7 @@ plot((conf.data$V1 ),
 rect(0.055, -0.165, 0.115, -0.118, col="white")
 
 legend(0.058,-0.12, legend=levels(droplevels(lanmar.data$new.name)), 
-       pch=lanmar.sym, col=col_pal[7], title=expression(italic("R.r. landra & maritimus")), cex=.9, bty="n" )
+       pch=lanmar.sym, col=col_pal[7], title=expression(italic("R.r. landra")), cex=.9, bty="n" )
 
 
 # Non Natives
@@ -296,8 +301,8 @@ legend(-0.127, 0.121, legend=levels(droplevels(raphNatW.data$new.name)),
 legend(-0.085, 0.118, legend=levels(droplevels(raphNatE.data$new.name)), 
        pch=raphNatE.sym, col=raphNatE.col, bty="n" )
 
-text(-0.1, 0.124, expression( "Native" ), cex=.9)
-text(-0.073, 0.123, expression(italic("R.r. raphanistrum")), cex=.9)
+text(-0.103, 0.124, expression( "Native" ), cex=.9)
+text(-0.074, 0.1235, expression(italic("R.r. raphanistrum")), cex=.9)
 
 ## R. pugioniformis
 rect(-0.0, 0.085, 0.042, 0.12, col="white")
@@ -353,6 +358,25 @@ legend(0.095, -0.008, legend=levels(droplevels(CropR.data$new.name)),
 	
 
 dev.off()
+
+pdf(file="../figures/SmartPCADivergence.pdf", width=5, height=5)
+
+pheatmap(Divergence[1:9,1:9], cluster_rows=TRUE, show_rownames=TRUE, cluster_cols=TRUE)
+
+dev.off()
+
+
+#bob <- Divergence[1:9,1:9]
+#
+#for( diffval in 1:length(Differences[,5])){
+#  xval <- droplevels(Differences[diffval, 2])
+#  yval <- droplevels(Differences[diffval, 3])
+#  bob[rownames(bob) == xval, colnames(bob)== yval ] <- Differences[diffval, 5]
+#}
+#
+#pheatmap(bob[], cluster_rows=T, show_rownames=TRUE, cluster_cols=T, display_numbers = T, clustering_method = "complete")
+#
+
 
 
 #Just Crops

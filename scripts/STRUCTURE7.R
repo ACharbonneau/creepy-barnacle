@@ -69,8 +69,7 @@ par(fig=c(0,1,.8,.9)) #new=TRUE)
 barplot(native.table, col=col_pal[1:K], cex.names=1.2, xaxt="n", yaxt="n", 
         space=c(rep(0,10),1, rep(0,9), 1, rep(0,9), 1,rep(0,9)))
 axis(side=3, at=22, labels=c(K_text), cex=5, tick=F, line=.8)
-axis(side=3, at=10.5, labels=expression(italic("R.r. maritimus")), cex=2, tick=F, line=-1)
-axis(side=3, at=27, labels=expression(italic("R.r. landra")), cex=2, tick=F, line=-1)
+axis(side=3, at=16, labels=expression(italic("R.r. landra")), cex=2, tick=F, line=-1)
 axis(side=3, at=38, labels=expression(italic("R. pugioniformis")), cex=2, tick=F, line=-1)
 axis(side=1, at=c(5,16,27,38), labels=c("Spain (CBES)",
                                         "Spain (SAES)",
@@ -81,7 +80,7 @@ axis(side=1, at=c(5,16,27,38), labels=c("Spain (CBES)",
 par(fig=c(0,.5,.63,.73), new=TRUE)
 barplot(raphNatW.table, col=col_pal[1:K], cex.names=1.2, xaxt="n", yaxt="n", 
         space=c(rep(0,10), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9)))
-axis(side=3, at=27, labels=expression(paste(italic("Western R.r. raphanistrum")," inside native range")), cex=1.2, tick=F, line=-1)
+axis(side=3, at=33, labels=expression(paste(italic("Western R.r. raphanistrum")," inside native range")), cex=1.2, tick=F, line=-1)
 axis(side=1, at=c(4.5,16,27,38,49,60), tick=F, labels=c("France (AFFR)", 
                                                                        "Spain (MAES)",
                                                                        "Spain (DEES)",
