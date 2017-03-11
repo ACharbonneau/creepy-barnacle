@@ -944,7 +944,7 @@ par(fig=c(0.1,1,.03,.31), new=TRUE, cex=.7)
 boxplot(crop.data$GTF ~ crop.data$Order, frame=F, axes=F, ylim=c(0,200),
         varwidth=TRUE, boxwex=.7, at=c(seq(from=.9, to=18.9, by=.9)))
 axis(side = 2, line=-1, tck=.95, col='gray85')
-par(new=TRUE, cex=.6)
+par(new=TRUE, cex=.7)
 
 boxplot(crop.data$GTF ~ crop.data$Order, add=T, frame=F, axes=F, ylim=c(0,200),
         varwidth=TRUE, boxwex=.7, at=c(seq(from=.9, to=18.9, by=.9)), col=hmcols[c(
@@ -960,9 +960,14 @@ boxplot(crop.data$GTF ~ crop.data$Order, add=T, frame=F, axes=F, ylim=c(0,200),
         PS_table$RPV[PS_table$Pop=="MABG"], PS_table$RPV[PS_table$Pop=="RABG"], 
         PS_table$RPV[PS_table$Pop=="RAJS"])])
 
-axis(side = 1, at=c(seq(from=.9, to=18.9, by=.9)), tick = F, line=-1.5, ylim=c(0, 300),
-     label=c("CGBC","FGBC","MYJO","NEJS","TOBG","WMBG","CBBG","DAJO","ESNK","FRSI",
-             "LBBC","RABS","RBBC","SPNK","ADOL","AROL","COOL","OIBG","MABG","RABG","RAJS"))
+axis(side = 1, at=c(seq(from=.9, to=19, by=1.8)), tick = F, line=-1.5, ylim=c(0, 300),
+     label=c("CGBC","MYJO","TOBG","CBBG","ESNK",
+             "LBBC","RBBC","ADOL","COOL","MABG","RAJS"))
+
+axis(side = 1, at=c(seq(from=1.8, to=19, by=1.8)), tick = F, line=-1.5, ylim=c(0, 300),
+     label=c("FGBC","NEJS","WMBG","DAJO","FRSI",
+             "RABS","SPNK","AROL","OIBG","RABG"))
+
 par(cex=1)
 axis(side = 3, at=9.5, tick = F, line=-1, labels=expression(italic("R. sativus")))
 
