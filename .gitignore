@@ -5,4 +5,5 @@ figures/
 .Rhistory
 .RData
 output/
+OrigOutput/
 OriginalData/
