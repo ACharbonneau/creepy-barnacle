@@ -1,10 +1,11 @@
 source('/Volumes/Storage/RadishData/Scripts/Misc_scripts/AmandaSource.R', chdir = TRUE)
 require(RColorBrewer)
+require(dplyr)
+
 #dataset <- "NoRACoNo-5_f.txt"
 
 str.data <- read.csv("/Volumes/Storage/RadishData/21MarkersData/Analysis/STRUCTURE/EstimateK/Corrfreq/NewPops2013/parsed_data/1_2014_all_data-7_f.parsed", header=F)
 pdf(file="../figures/Ranalpha_K7_colorMatch.pdf", height=9.3, width=15.3)
-
 
 K <- length(str.data[,c(5:ncol(str.data-3))]) # Find out what K is
 str.data <- str.data[,c(2,3,5:ncol(str.data-3))] # Get only useful columns from STRUCTURE
@@ -13,7 +14,7 @@ colnames(str.data) <- c( "Individual", "%missing",1:K)
 #Get the label/metadata about each individual from a seperate file. Join to remove all the "RA" and "NZIL" individuals
 
 labels <- read.csv("../OriginalData/MarkerPopEditOrder2014.csv", header=F, col.names=c("Individual", "Type", "Pop", "Order", "Name", "Species", "Color", "Vernalization", "DTF", "Bins", "locals"))
-labels$Pop[labels$Pop=="SPEU"] <- "SPNK"
+labels$Pop <- revalue(labels$Pop, c("SPEU"="SPNK"))
 
 all.data <- left_join(str.data, labels)
 
