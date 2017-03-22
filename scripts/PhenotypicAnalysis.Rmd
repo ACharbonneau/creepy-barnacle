@@ -30,7 +30,7 @@ SEP <- function( x, n ){
 
 
 ```{r ImportData, echo=FALSE}
-FlowData <- read.csv( "../output/CombinedDataSet.csv" )
+FlowData <- read.csv( "../MungedData/CombinedDataSet.csv" )
 FlowData$FlowDate <- as.Date( FlowData$FlowDate )
 FlowData$GermDate <- as.Date( FlowData$GermDate )
 FlowData$PlantDate <- as.Date( FlowData$PlantDate )
@@ -42,9 +42,6 @@ FlowData$DOYGS <- ifelse( FlowData$DOYG < 78, FlowData$DOYG + 287, FlowData$DOYG
 #Dropping PABS, MBBC, NTJO, Confusus and UKAU
 FlowData <- filter(FlowData, SubSpecies !="confusus" & Pop !="UKAU" &
                    Pop !="PABS" & Pop !="MBBC" & Pop !="NTJO")
-
-#drop gh_2006 because it doesn't have germination dates
-FlowData <- droplevels(FlowData[FlowData$Experiment !="gh2006",])
 
 FlowData <- droplevels(FlowData)
 
@@ -643,7 +640,7 @@ JeffSat_fixed <- mutate(JeffSat_fixed, species = rownames(JeffSat_fixed), Mean =
 #Plotting
 
 ##Only Native range *R. raphanus*
-```{r PlotNatPopMeans, echo=FALSE, fig.path="../figures/", fig.keep="last", fig.width=11, eval=F}
+```{r PlotNatPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", fig.width=11, eval=F}
 plot.new()
 Nat_overplot <- rbind( mutate(Nat_pop, Data = "Yes"), mutate( Nat_noV_pop, Data = "No"))
 
@@ -671,7 +668,7 @@ NatPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size = 1
 mtext(text = expression(italic("R.pugioniformis")), side = 3, line = -.95, at=.21, cex = .8)
 ```
 
-```{r PlotNatMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+```{r PlotNatMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last"}
 
 Nat_fixed_overplot <- rbind( mutate(Nat_fixed, Data = "Yes")[2:6], mutate( Nat_NoV_fixed, Data = "No")[2:6] )
 
@@ -693,7 +690,7 @@ NatPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size = 1
 ```
 
 ##All *R.r. raphanistrum*
-```{r PlotRrrPopMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+```{r PlotRrrPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last"}
 Rrr_pop_overplot <- rbind( mutate(Rrr_pop, Data = "Yes"), mutate( Rrr_noV_pop, Data = "No"))
 
 RrrPlot <- ggplot( Rrr_pop_overplot, aes( x = Pop, y = Mean, col = Data ) ) + 
@@ -712,7 +709,7 @@ RrrPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size=14,
 
 ```
 
-```{r PlotRrrMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+```{r PlotRrrMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last"}
 Rrr_fixed_overplot <- rbind( mutate(Rrr_fixed, Data = "Yes")[2:6], mutate( Rrr_noV_fixed, Data = "No")[2:6] )
 
 RrrPlot <- ggplot( Rrr_fixed_overplot, aes( x = species, y = Mean, col = Data ) ) + 
@@ -732,7 +729,7 @@ RrrPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size=14,
 ```
 
 ##Only crops *R. sativus*
-```{r PlotSatPopMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+```{r PlotSatPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last"}
 
 SatPlot <- ggplot( Sat_pop, aes( x = Pop, y = Mean) ) + 
               geom_point( cex = 2.5 ) + 
@@ -749,7 +746,7 @@ SatPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size = 1
 
 ```
 
-```{r PlotSatMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+```{r PlotSatMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last"}
 
 SatPlot <- ggplot( Sat_fixed, aes( x = species, y = Mean) ) + 
               geom_point( cex = 2.5 ) + 
@@ -766,7 +763,7 @@ SatPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size = 1
 ```
 
 ##Only crops genotyped subset *R. sativus*
-```{r PlotJeffSatPopMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+```{r PlotJeffSatPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last"}
 
 JeffSatPlot <- ggplot( JeffSat_pop, aes( x = Pop, y = Mean) ) + 
               geom_point( cex = 2.5 ) + 
@@ -783,7 +780,7 @@ JeffSatPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size
 
 ```
 
-```{r PlotJeffSatMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
+```{r PlotJeffSatMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last"}
 
 JeffSatPlot <- ggplot( JeffSat_fixed, aes( x = species, y = Mean) ) + 
               geom_point( cex = 2.5 ) + 
@@ -846,7 +843,7 @@ crop.data <- filter(RawData, Species=="sativus") %>% arrange(Order)
 ```
 
 
-```{r RawDataPlot, echo=FALSE, fig.path="../figures/", fig.keep="last", message=FALSE, warning=FALSE, fig.height=8, fig.width=11}
+```{r RawDataPlot, echo=FALSE, fig.path="../Figures/", fig.keep="last", message=FALSE, warning=FALSE, fig.height=8, fig.width=11}
 
 #Everything is plotted twice so that the axis lines go behind the plots 
 

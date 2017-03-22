@@ -2,10 +2,10 @@
 
 mkdir Figures
 mkdir OriginalData
-mkdir OriginalOutput
+mkdir MungedData
 
 cd OriginalData
-wget -LO https://www.dropbox.com/s/y5lqrwf1q4zmxvo/WeedEvo.zip
+wget -L https://www.dropbox.com/s/y5lqrwf1q4zmxvo/WeedEvo.zip
 unzip WeedEvo.zip
 
 cd ../scripts
