@@ -551,9 +551,19 @@ SubsetBialleleGene <- droplevels( dplyr::filter( BialleleGene,
 
 ```{r write, echo=FALSE}
 write.csv(CombinedDataSet, "../MungedData/CombinedDataSet.csv", quote=F, row.names=F)
+
 write.csv(BialleleGene, "../MungedData/AllBialleleGeno.csv", row.names = F)
-write.csv(BialleleGene[c(2:nrow(BialleleGene)), c(2:ncol(BialleleGene))], "../MungedData/Marker.geno", row.names = F)
-write.csv(BialleleGene, "../MungedData/Marker.ind", row.names = F)
+
+write.table(t(BialleleGene[c(2:nrow(BialleleGene)), c(7:ncol(BialleleGene))]), "../MungedData/Marker.geno", row.names = F, col.names = F, sep="", na = "9")
+
+write.table(cbind(BialleleGene$SSR.ID, rep("U", length(BialleleGene$Pop)), BialleleGene$Pop), "../MungedData/Marker.ind", row.names = F, quote = F, col.names = F, sep = "\t")
+
+write.table(cbind( colnames(BialleleGene)[7:129], 
+       c(rep(1,3), rep(2,3), rep(6,3), 8, 4, 9, 9, 
+         rep(5,40), rep(7,16), rep(10,8), rep(1, 25), 
+         rep(3,9), rep(6,12)), rep(0, 123), rep(0, 123)),
+       "../MungedData/Marker.snp", 
+       row.names = F, quote = F, col.names = F, sep = "\t")
 
 ```
 

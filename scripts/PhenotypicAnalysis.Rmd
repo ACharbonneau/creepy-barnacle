@@ -668,7 +668,7 @@ NatPlot <- ggplot( Nat_overplot, aes( y = Mean, x = Pop, colour = Data ) ) +
               scale_colour_grey(start = .7, end = .2) +
               ggtitle( expression( "Only Native-range"~italic( "Raphanus" ) ) ) 
 
-NatPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
+NatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
                                  axis.text.y = element_text( size = 14 ),
                                  axis.title.y = element_text( size = 14 ),
                                  strip.text.x = element_text( angle = 0, size = 9, face = "italic" ) ) 
@@ -690,7 +690,7 @@ NatPlot <- ggplot( Nat_fixed_overplot, aes(y = Mean, x = species, colour = Data)
               scale_colour_grey(start = .7, end = .2) +
               ggtitle( expression( "Mean days to flower for all"~italic( "Raphanus" ) ) ) 
 
-NatPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05, face = "italic" ),
+NatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05, face = "italic" ),
                                  axis.text.y = element_text( size = 14 ),
                                  axis.title.y = element_text( size = 14 ),
                                  strip.text.x = element_text( angle = 0, size = 10, face = "italic" ) ) 
@@ -711,7 +711,7 @@ RrrPlot <- ggplot( Rrr_pop_overplot, aes( x = Pop, y = Mean, col = Data ) ) +
               scale_colour_grey(start = .7, end = .2) +
               ggtitle( expression( "All" ~ italic( "R.r. raphanistrum" ) ) ) 
 
-RrrPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size=14, hjust = -.05 ),
+RrrPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size=14, hjust = -.05 ),
                                  axis.text.y = element_text( size = 14 ),
                                  axis.title.y = element_text( size = 14 ),
                                  strip.text.x = element_text( angle = 0, size = 10 ) ) 
@@ -730,7 +730,7 @@ RrrPlot <- ggplot( Rrr_fixed_overplot, aes( x = species, y = Mean, col = Data ) 
               scale_colour_grey(start = .7, end = .2) +
               ggtitle( expression( "Geographic means of" ~ italic( "R.r. raphanistrum" ) ) ) 
 
-RrrPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size=14, hjust = -.05 ),
+RrrPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size=14, hjust = -.05 ),
                                  axis.text.y = element_text( size = 14 ),
                                  axis.title.y = element_text( size = 14 ),
                                  strip.text.x = element_text( angle = 0, size = 10 ) ) 
@@ -748,7 +748,7 @@ SatPlot <- ggplot( Sat_pop, aes( x = Pop, y = Mean) ) +
               ylab( "Population means as \ndays from germination to flower" ) + 
               ggtitle( expression( "Only crops" ~ ( italic( "R. sativus" ) ) ) ) 
 
-SatPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
+SatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
                                  axis.text.y = element_text( size = 14 ),
                                  axis.title.y = element_text( size = 14 ),
                                  strip.text.x = element_text( angle = 0, size = 10 ) )
@@ -764,7 +764,7 @@ SatPlot <- ggplot( Sat_fixed, aes( x = species, y = Mean) ) +
               ylab( "Means as \ndays from germination to flower" ) + 
               ggtitle( expression( "Crop" ~ ( italic( "R. sativus" ) ) ~ "variety means" ) ) 
 
-SatPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
+SatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
                                  axis.text.y = element_text( size = 14 ),
                                  axis.title.y = element_text( size = 14 ),
                                  strip.text.x = element_text( angle = 0, size = 10 ) )
@@ -782,7 +782,7 @@ JeffSatPlot <- ggplot( JeffSat_pop, aes( x = Pop, y = Mean) ) +
               ylab( "Population means as \ndays from germination to flower" ) + 
               ggtitle( expression( "Only crops" ~ ( italic( "R. sativus" ) ) ) ) 
 
-JeffSatPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
+JeffSatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
                                  axis.text.y = element_text( size = 14 ),
                                  axis.title.y = element_text( size = 14 ),
                                  strip.text.x = element_text( angle = 0, size = 10 ) )
@@ -798,7 +798,7 @@ JeffSatPlot <- ggplot( JeffSat_fixed, aes( x = species, y = Mean) ) +
               ylab( "Means as \ndays from germination to flower" ) + 
               ggtitle( expression( "Crop" ~ ( italic( "R. sativus" ) ) ~ "variety means" ) ) 
 
-JeffSatPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
+JeffSatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
                                  axis.text.y = element_text( size = 14 ),
                                  axis.title.y = element_text( size = 14 ),
                                  strip.text.x = element_text( angle = 0, size = 10 ) )
