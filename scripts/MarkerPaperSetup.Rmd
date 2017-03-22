@@ -558,10 +558,10 @@ write.table(t(BialleleGene[, c(7:ncol(BialleleGene))]), "../MungedData/Marker.ge
 
 write.table(cbind(BialleleGene$SSR.ID, rep("U", length(BialleleGene$Pop)), BialleleGene$Pop), "../MungedData/Marker.ind", row.names = F, quote = F, col.names = F, sep = "\t")
 
-write.table(cbind( colnames(BialleleGene)[7:129], 
+write.table(cbind( colnames(BialleleGene)[7:131], 
        c(rep(1,3), rep(2,3), rep(6,3), 8, 4, 9, 9, 
          rep(5,40), rep(7,16), rep(10,8), rep(1, 25), 
-         rep(3,9), rep(6,12)), rep(0, 123), rep(0, 123)),
+         rep(3,9), rep(6,14)), rep(0, 125), rep(0, 125)),
        "../MungedData/Marker.snp", 
        row.names = F, quote = F, col.names = F, sep = "\t")
 
