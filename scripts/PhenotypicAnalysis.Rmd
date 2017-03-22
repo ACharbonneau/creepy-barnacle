@@ -10,15 +10,24 @@ output:
 
 ```{r SourcePackages, include=FALSE}
 rm( list=ls() )
-#source( "~/Dropbox/DworkinLabSharedMaterial/scripts/WRP_FUNCTIONS.R")
-require( plotrix ) #shading
-require( cowplot ) #ggplot gridding
-require( lme4 ) #modeling
-require( MCMCglmm ) #modeling
-require( ggthemes )
-require( ggplot2 ) #plotting
-require( reshape2 ) #munging
-require( dplyr ) #munging
+
+# Install function for packages    
+packages<-function(x){
+  x<-as.character(match.call()[[2]])
+  if (!require(x,character.only=TRUE)){
+    install.packages(pkgs=x,repos="http://cran.r-project.org")
+    require(x,character.only=TRUE)
+  }
+}
+
+packages( plotrix ) #shading
+packages( cowplot ) #ggplot gridding
+packages( lme4 ) #modeling
+packages( MCMCglmm ) #modeling
+packages( ggthemes )
+packages( ggplot2 ) #plotting
+packages( reshape2 ) #munging
+packages( dplyr ) #munging
 hmcols <- colorRampPalette(c("black", "white"))(100)
 
 #Standard Error of a proportion

@@ -1,7 +1,7 @@
 # creepy-barnacle
 Script repository Weed evolution: Genetic differentiation among wild, weedy, and crop radish
 
-To build a copy of paper:
+To build a copy of paper data:
 
 Clone this repo:
 
@@ -12,31 +12,26 @@ Run PaperSetup.sh, from inside the new repo:
 > cd creepy-barnacle
 > sh scripts/PaperSetup.sh
 
+That will create the dataset and run all of the flowering time analysis, as well as produce the files needed to run STRUCTURE and SmartPCA
 
-##Scripts
 
-####General Scripts
+## Scripts
+
+#### General Scripts
 
 - 2015_Marker_Paper.Rproj
 	
 	R Project file
 	
-- Functionarium.R
-	
-	Generic custom functions
-
-####Phenotypic Analysis
+#### Phenotypic Analysis
 
 - MarkerPaperSetup.Rmd  
+
+
 - PhenotypicAnalysis.Rmd  
 
-To run:
 
-> rmarkdown::render('MarkerPaperSetup.Rmd', output_file = '../OriginalOutput/MarkerPaperSetup.html') 
-> rmarkdown::render('PhenotypicAnalysis.Rmd', output_file = '../OriginalOutput/PhenotypicAnalysis.html') 
-
-
-####Genotypic Analysis
+#### Genotypic Analysis
 
 - STRUCTURE_submit.qsub 
 	
@@ -74,7 +69,7 @@ To run:
 
 	R script for generating STRUCTURE plot for main paper figure, where coloring matches the SmartPCA plot
 	
-#####Running STRUCTURE
+##### Running STRUCTURE
 
 mainparams 
 extraparams 
@@ -96,7 +91,7 @@ To run:
 
 - To recapitulate the STRUCTURE plot from the main paper figure, run STRUCTURE7.R
 
-#####Running SmartPCA
+##### Running SmartPCA
 
 - biallele.py
 - MarkerPaperSetup.Rmd
