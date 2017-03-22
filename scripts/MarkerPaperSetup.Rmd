@@ -12,11 +12,9 @@ This script takes nine datasets from varying years and sources, and reformats th
 
 ###Datasets
 
-Cultivar GH 2013.csv
+CultivarGH2013.csv
 
-2006Greenhouse.csv
-
-IsraelSpain Pops 2013 GH.csv
+IsraelSpainPops2013GH.csv
 
 LaleField2005.csv
 
@@ -24,7 +22,7 @@ LaleField2005.csv
 
 2003QstParents.csv
 
-2004 QstOffspring.csv
+2004QstOffspring.csv
 
 2013plantsSpring.csv
 
@@ -39,11 +37,9 @@ require(plyr)
 
 ```{r ReadIN, echo=FALSE}
 
-cult_2013 <- read.csv("../OriginalData/Cultivar GH 2013.csv", na.strings=".")
+cult_2013 <- read.csv("../OriginalData/CultivarGH2013.csv", na.strings=".")
 
-gh_2006 <- read.csv("../OriginalData/2006Greenhouse.csv", na.strings=".")
-
-IS_2013 <- read.csv("../OriginalData/IsraelSpain Pops 2013 GH.csv", na.strings=".")
+IS_2013 <- read.csv("../OriginalData/IsraelSpainPops2013 GH.csv", na.strings=".")
 
 lale2005 <- read.csv("../OriginalData/LaleField2005.csv", na.strings=".")
 
@@ -51,7 +47,7 @@ plants2012 <- read.csv("../OriginalData/2012FieldData.csv", sep=",", na.strings=
 
 qst_2003 <- read.csv("../OriginalData/2003QstParents.csv", na.strings=".")
 
-qst_2004 <- read.csv("../OriginalData/2004 QstOffspring.csv", na.strings=".")
+qst_2004 <- read.csv("../OriginalData/2004QstOffspring.csv", na.strings=".")
 
 spring2013 <- read.csv("../OriginalData/2013plantsSpring.csv", sep=",", na.strings="")
 
@@ -59,9 +55,8 @@ sum2010 <- read.csv("../OriginalData/Summer2010dataSummary.csv", na.strings=".")
 
 Genotypes <- read.csv("../OriginalData/GenotypicData.csv", sep = ",", na.strings = c("NA", "", "."))
 
-#Genotypes$ComPops <- Genotypes$Pop
-#levels(Genotypes$ComPops) <- c("ADOL","AFFR","AROL","AUFI","BINY","CBBG","CBES","UKAU","COOL","DAJO","DEES","ESNK","GHIL","GMIL","HCES","HMES","HZIL","IMES","MABG","MAES","MYJO","NCDE","NELO","NZIL","PBFR","RA173","RA215","RA219","RA226","RA264","RA265","RA399","RA402","RA432","RA444","RA447","RA475","RA494","RA503","RA761","RA787","RA835","RA837","RA838","RA840","RABG","RACA","REIL","SAES","SPEU","TOBG","TYIL","UKAU","WMBG","ZYIL")
 ```
+
 ###Data Munging
 ####Fix dates for each dataset so they are all the same format, as in:
 ```{r Dates1}
@@ -78,10 +73,6 @@ cult_2013$ExCode <- "G1_13"
 ```
 
 ```{r Dates2, echo=FALSE}
-# fix dates for gh_2006
-gh_2006$flowerDate <- as.POSIXct( strptime(gh_2006$flowerDate, format="%m/%d/%y"))
-gh_2006$PlantingDate <- as.POSIXct( strptime(gh_2006$PlantingDate, format="%m/%d/%y"))
-gh_2006$ExCode <- "G_06"
 
 # fix dates for IsraelSpain Pops 2013 GH.csv
 IS_2013$Planted <- as.POSIXct( strptime( IS_2013$Planted, format="%m/%d/%y"))
@@ -274,24 +265,6 @@ winter_13_14$vern <- ifelse(winter_13_14$V2 < 55, "vern", "")
 ```
 
 ```{r Subsetting2, echo=FALSE}
-gh2006sub <- data.frame(rep("gh2006", length(gh_2006$Pop)),  	#Experiment
-                         gh_2006$ExCode, #Experiment Code
-                         paste(gh_2006$Pop, gh_2006$Individual,	sep=""),	#ID
-                         rep("greenhouse", length(gh_2006$Pop)), 		#GrowthEnvironment
-                         gh_2006$Pop, 		#Pop
-                         gh_2006$FlwrTime,		#PTF
-                         rep(NA, length(gh_2006$Pop)), 		#DTB
-                         rep(NA, length(gh_2006$Pop)), 		#GTF
-                         rep("2006", length(gh_2006$Pop)), 		#Year
-                         gh_2006$flowerDate, 		#FlowDate
-                         gh_2006$PlantingDate,     #PlantDate
-                         rep(NA, length(gh_2006$Pop)),		#GermDate
-                         (gh_2006$Hgt1stFlwr_mm / 100),		#HeightFFcm
-                         ifelse(gh_2006$DaysVernal > 0, "Yes", "No"),		#Vernalized
-                         gh_2006$DaysVernal,		#DaysVern
-                         gh_2006$NumVernaliz,		#TimesVern
-                         rep(NA, length(gh_2006$Pop))) #SurviveGTF
-                         
 IS_2013sub <- data.frame(rep("IS2013", length(IS_2013$Population)),		#Experiment
                          IS_2013$ExCode, #Experiment Code
                          paste(IS_2013$Population, round(IS_2013$Pot), sep=""),		#ID
@@ -457,7 +430,6 @@ ParseData <- function( mydata ) {
   mydata
 }
 cult_2013sub <- ParseData( cult_2013sub )
-gh2006sub <- ParseData(gh2006sub)
 IS_2013sub <- ParseData(IS_2013sub)
 lalesub <- ParseData(lalesub)
 p2012sub <- ParseData(p2012sub)
@@ -468,37 +440,32 @@ sum2010sub <- ParseData(sum2010sub)
 ```
 
 ```{r Combine, echo=FALSE}
-CombinedDataSet <- data.frame(rbind(cult_2013sub, gh2006sub, IS_2013sub, lalesub, p2012sub, qst2003sub, qst2004sub, s2013sub, sum2010sub))
+CombinedDataSet <- data.frame(rbind(cult_2013sub, IS_2013sub, lalesub, p2012sub, qst2003sub, qst2004sub, s2013sub, sum2010sub))
 ```
 ####Adding Biological Information
 To create the **Subspecies**, **Species**, **Geography**, **Taxonomy**, **Habitat**, **SpecificOrigin** and **RegionOrigin** columns, I made a series of assignment lists based on population names, as in:
 ```{r Assign1, echo=TRUE}
-SubSpeciesList <- c(ADOL="sativus", AROL="sativus", CBBG="sativus", COOL="sativus", DAJO="sativus", ESNK="sativus", MABG="sativus", MYJO="sativus", NELO="sativus", OIBG="sativus", RABG="sativus", RACA="sativus", SPEU="sativus", TOBG="sativus", WMBG="sativus", AFFR="raphanistrum", BBCA="CAHybrid", BINY="raphanistrum", GSCA="CAHybrid", MAES="raphanistrum", PBFR="landra", SAES="landra", DEES="raphanistrum", GHIL="raphanistrum", HCES="raphanistrum", HMES="raphanistrum", HZIL="raphanistrum", IMES="raphanistrum", ZYIL="raphanistrum", AUFI="raphanistrum", COAU="raphanistrum", KAMI="raphanistrum", AL="raphanistrum", CBES="landra", GMIL="pugioniformis", M3AU="raphanistrum", N3="raphanistrum",  NZIL="confusus", PG6="raphanistrum", REIL="raphanistrum", MAFI="raphanistrum", NAAU="raphanistrum", WEAU="raphanistrum", CGBC="sativus", FGBC="sativus", FRSI="sativus", LBBC="sativus", MBBC="sativus", NTJO="sativus", PABS="sativus", RABS="sativus", RBBC="sativus", SPNK="sativus", TYIL="raphanistrum")
+SubSpeciesList <- c(ADOL="sativus", AROL="sativus", CBBG="sativus", COOL="sativus", DAJO="sativus", ESNK="sativus", MABG="sativus", MYJO="sativus", NELO="sativus", OIBG="sativus", RABG="sativus", RACA="sativus", SPEU="sativus", TOBG="sativus", WMBG="sativus", AFFR="raphanistrum", DEES="raphanistrum", GHIL="raphanistrum", HCES="raphanistrum", HMES="raphanistrum", HZIL="raphanistrum", IMES="raphanistrum", MAES="raphanistrum", ZYIL="raphanistrum", AUFI="raphanistrum", COAU="raphanistrum", KAMI="raphanistrum", PBFR="landra", SAES="landra", AL="raphanistrum", BINY="raphanistrum", CBES="landra", GMIL="pugioniformis", M3AU="raphanistrum", N3="raphanistrum", NZIL="confusus", PG6="raphanistrum", REIL="raphanistrum", MAFI="raphanistrum", NAAU="raphanistrum", WEAU="raphanistrum", CGBC="sativus", FGBC="sativus", FRSI="sativus", LBBC="sativus", MBBC="sativus", NTJO="sativus", PABS="sativus", RABS="sativus", RBBC="sativus", SPNK="sativus", TYIL="raphanistrum")
+                    
 ```
 
 ```{r Assign2, echo=FALSE}
 
-SpeciesList <- c(ADOL="sativus", AROL="sativus", CBBG="sativus", COOL="sativus", DAJO="sativus", ESNK="sativus", MABG="sativus", MYJO="sativus", NELO="sativus", OIBG="sativus", RABG="sativus", RACA="sativus", SPEU="sativus", TOBG="sativus", WMBG="sativus", AFFR="raphanistrum", BBCA="CAHybrid", BINY="raphanistrum", GSCA="CAHybrid", MAES="raphanistrum", PBFR="raphanistrum", SAES="raphanistrum", DEES="raphanistrum", GHIL="raphanistrum", HCES="raphanistrum", HMES="raphanistrum", HZIL="raphanistrum", IMES="raphanistrum", ZYIL="raphanistrum", AUFI="raphanistrum", COAU="raphanistrum", KAMI="raphanistrum", AL="raphanistrum", CBES="raphanistrum", GMIL="pugioniformis", M3AU="raphanistrum", N3="raphanistrum", NZIL="confusus", PG6="raphanistrum", REIL="raphanistrum", MAFI="raphanistrum", NAAU="raphanistrum", WEAU="raphanistrum", CGBC="sativus", FGBC="sativus", FRSI="sativus", LBBC="sativus", MBBC="sativus", NTJO="sativus", PABS="sativus", RABS="sativus", RBBC="sativus", SPNK="sativus", TYIL="raphanistrum")
+SpeciesList <- c(ADOL="sativus", AROL="sativus", CBBG="sativus", COOL="sativus", DAJO="sativus", ESNK="sativus", MABG="sativus", MYJO="sativus", NELO="sativus", OIBG="sativus", RABG="sativus", RACA="sativus", SPEU="sativus", TOBG="sativus", WMBG="sativus", AFFR="raphanistrum", DEES="raphanistrum", GHIL="raphanistrum", HCES="raphanistrum", HMES="raphanistrum", HZIL="raphanistrum", IMES="raphanistrum", MAES="raphanistrum", ZYIL="raphanistrum", AUFI="raphanistrum", COAU="raphanistrum", KAMI="raphanistrum", PBFR="raphanistrum", SAES="raphanistrum",  AL="raphanistrum", BINY="raphanistrum", CBES="raphanistrum", GMIL="pugioniformis", M3AU="raphanistrum", N3="raphanistrum", NZIL="confusus", PG6="raphanistrum", REIL="raphanistrum", MAFI="raphanistrum", NAAU="raphanistrum", WEAU="raphanistrum", CGBC="sativus", FGBC="sativus", FRSI="sativus", LBBC="sativus", MBBC="sativus", NTJO="sativus", PABS="sativus", RABS="sativus", RBBC="sativus", SPNK="sativus", TYIL="raphanistrum")
 
-GeographyList <- c(ADOL="NA", AROL="NA", CBBG="NA", COOL="NA", DAJO="NA", ESNK="NA", MABG="NA", MYJO="NA", NELO="NA", OIBG="NA", RABG="NA", RACA="NA", SPEU="NA", TOBG="NA", WMBG="NA", AFFR="west", BBCA="nonNative", BINY="nonNative", GSCA="nonNative", MAES="west", PBFR="west", SAES="west", DEES="west", GHIL="east", HCES="west", HMES="west", HZIL="east", IMES="west", ZYIL="east", AUFI="nonNative", COAU="nonNative", KAMI="nonNative", AL="nonNative", CBES="west", GMIL="pugioniformis", M3AU="nonNative", N3="nonNative", NZIL="confusus", PG6="nonNative", REIL="east", MAFI="nonNative", NAAU="nonNative", WEAU="nonNative", CGBC="NA", FGBC="NA", FRSI="NA", LBBC="NA", MBBC="NA", NTJO="NA", PABS="NA", RABS="NA", RBBC="NA", SPNK="NA", TYIL="east")
+GeographyList <- c(ADOL="NA", AROL="NA", CBBG="NA", COOL="NA", DAJO="NA", ESNK="NA", MABG="NA", MYJO="NA", NELO="NA", OIBG="NA", RABG="NA", RACA="NA", SPEU="NA", TOBG="NA", WMBG="NA", AFFR="west", DEES="west", GHIL="east", HCES="west", HMES="west", HZIL="east", IMES="west", MAES="west", ZYIL="east", AUFI="nonNative", COAU="nonNative", KAMI="nonNative", PBFR="west", SAES="west", AL="nonNative", BINY="nonNative",CBES="west", GMIL="pugioniformis", M3AU="nonNative", N3="nonNative", NZIL="confusus", PG6="nonNative", REIL="east", MAFI="nonNative", NAAU="nonNative", WEAU="nonNative", CGBC="NA", FGBC="NA", FRSI="NA", LBBC="NA", MBBC="NA", NTJO="NA", PABS="NA", RABS="NA", RBBC="NA", SPNK="NA", TYIL="east")
 
-TaxonomyList <- c(ADOL="oleifera", AROL="oleifera", CBBG="european", COOL="oleifera", DAJO="european", ESNK="european", MABG="caudatus", MYJO="daikon", NELO="daikon", OIBG="oleifera", RABG="caudatus", RACA="caudatus", SPEU="european", TOBG="daikon", WMBG="daikon", AFFR="raphanistrum", BBCA="CAHybrid", BINY="raphanistrum", GSCA="CAHybrid", MAES="raphanistrum", PBFR="landra", SAES="landra", DEES="raphanistrum", GHIL="raphanistrum", HCES="raphanistrum", HMES="raphanistrum", HZIL="raphanistrum", IMES="raphanistrum", ZYIL="raphanistrum", AUFI="raphanistrum", COAU="raphanistrum", KAMI="raphanistrum", AL="raphanistrum", CBES="landra", GMIL="pugioniformis", M3AU="raphanistrum", N3="raphanistrum", NZIL="confusus", PG6="raphanistrum", REIL="raphanistrum", MAFI="raphanistrum", NAAU="raphanistrum", WEAU="raphanistrum", CGBC="daikon", FGBC="daikon", FRSI="european", LBBC="european", MBBC="european", NTJO="european", PABS="european", RABS="european", RBBC="european", SPNK="european", TYIL="raphanistrum")
+TaxonomyList <- c(ADOL="oleifera", AROL="oleifera", CBBG="european", COOL="oleifera", DAJO="european", ESNK="european", MABG="caudatus", MYJO="daikon", NELO="daikon", OIBG="oleifera", RABG="caudatus", RACA="caudatus", SPEU="european", TOBG="daikon", WMBG="daikon", AFFR="raphanistrum", DEES="raphanistrum", GHIL="raphanistrum", HCES="raphanistrum", HMES="raphanistrum", HZIL="raphanistrum", IMES="raphanistrum", MAES="raphanistrum", ZYIL="raphanistrum", AUFI="raphanistrum", COAU="raphanistrum", KAMI="raphanistrum", PBFR="landra", SAES="landra", AL="raphanistrum", BINY="raphanistrum", CBES="landra", GMIL="pugioniformis", M3AU="raphanistrum", N3="raphanistrum", NZIL="confusus", PG6="raphanistrum", REIL="raphanistrum", MAFI="raphanistrum", NAAU="raphanistrum", WEAU="raphanistrum", CGBC="daikon", FGBC="daikon", FRSI="european", LBBC="european", MBBC="european", NTJO="european", PABS="european", RABS="european", RBBC="european", SPNK="european", TYIL="raphanistrum")
 
-HabitatList <- c(ADOL="cultivar", AROL="cultivar", CBBG="cultivar", COOL="cultivar", DAJO="cultivar", ESNK="cultivar", MABG="cultivar", MYJO="cultivar", NELO="cultivar", OIBG="cultivar", RABG="cultivar", RACA="cultivar", SPEU="cultivar", TOBG="cultivar", WMBG="cultivar", AFFR="agricultural", BBCA="natural", BINY="agricultural", GSCA="natural", MAES="disturbed", PBFR="natural", SAES="natural", DEES="natural", GHIL="disturbed", HCES="disturbed", HMES="disturbed", HZIL="disturbed", IMES="disturbed", ZYIL="disturbed", AUFI="agricultural", COAU="agricultural", KAMI="agricultural", AL="agricultural", CBES="natural", GMIL="natural", M3AU="agricultural", N3="agricultural", NZIL="natural", PG6="agricultural", REIL="disturbed", MAFI="disturbed", NAAU="agricultural", WEAU="agricultural", CGBC="cultivar", FGBC="cultivar", FRSI="cultivar", LBBC="cultivar", MBBC="cultivar", NTJO="cultivar", PABS="cultivar", RABS="cultivar", RBBC="cultivar", SPNK="cultivar", TYIL="disturbed")
+HabitatList <- c(ADOL="cultivar", AROL="cultivar", CBBG="cultivar", COOL="cultivar", DAJO="cultivar", ESNK="cultivar", MABG="cultivar", MYJO="cultivar", NELO="cultivar", OIBG="cultivar", RABG="cultivar", RACA="cultivar", SPEU="cultivar", TOBG="cultivar", WMBG="cultivar", AFFR="agricultural", DEES="natural", GHIL="disturbed", HCES="disturbed", HMES="disturbed", HZIL="disturbed", IMES="disturbed", MAES="disturbed", ZYIL="disturbed", AUFI="agricultural", COAU="agricultural", KAMI="agricultural", PBFR="natural", SAES="natural",  AL="agricultural", BINY="agricultural", CBES="natural", GMIL="natural", M3AU="agricultural", N3="agricultural", NZIL="natural", PG6="agricultural", REIL="disturbed", MAFI="disturbed", NAAU="agricultural", WEAU="agricultural", CGBC="cultivar", FGBC="cultivar", FRSI="cultivar", LBBC="cultivar", MBBC="cultivar", NTJO="cultivar", PABS="cultivar", RABS="cultivar", RBBC="cultivar", SPNK="cultivar", TYIL="disturbed")
 
-SpecificOriginList <- c(ADOL="MSU", AROL="MSU", CBBG="BountifulGardens", COOL="MSU", DAJO="JohnScheepers", ESNK="NKLawn", MABG="BountifulGardens", MYJO="JohnScheepers", NELO="JohnScheepers", OIBG="BountifulGardens", RABG="BountifulGardens", RACA="California", SPEU="unknown", TOBG="BountifulGardens", WMBG="BountifulGardens", AFFR="France", BBCA="California", BINY="NewYork", GSCA="California", MAES="Spain", PBFR="France", SAES="Spain", DEES="Spain", GHIL="Israel", HCES="Spain", HMES="Spain", HZIL="Israel", IMES="Spain", ZYIL="Israel", AUFI="Finland", COAU="Australia", KAMI="Michigan", AL="Australia", CBES="Spain", GMIL="Israel", M3AU="Australia", N3="Australia", NZIL="Israel", PG6="Australia", REIL="Israel", MAFI="Finland", NAAU="Australia", WEAU="Australia", CGBC="BakersCreek", FGBC="BakersCreek", FRSI="SeedsItaly", LBBC="BakersCreek", MBBC="BakersCreek", NTJO="JohnScheepers", PABS="Burpees", RABS="Burpees", RBBC="BakersCreek", SPNK="NKLawn", TYIL="Israel")
+SpecificOriginList <- c(ADOL="MSU", AROL="MSU", CBBG="BountifulGardens", COOL="MSU", DAJO="JohnScheepers", ESNK="NKLawn", MABG="BountifulGardens", MYJO="JohnScheepers", NELO="JohnScheepers", OIBG="BountifulGardens", RABG="BountifulGardens", RACA="California", SPEU="NKLawn", TOBG="BountifulGardens", WMBG="BountifulGardens", AFFR="France", DEES="Spain", GHIL="Israel", HCES="Spain", HMES="Spain", HZIL="Israel", IMES="Spain", MAES="Spain", ZYIL="Israel", AUFI="Finland", COAU="Australia", KAMI="Michigan", PBFR="France", SAES="Spain",  AL="Australia", BINY="NewYork", CBES="Spain", GMIL="Israel", M3AU="Australia", N3="Australia", NZIL="Israel", PG6="Australia", REIL="Israel", MAFI="Finland", NAAU="Australia", WEAU="Australia", CGBC="BakersCreek", FGBC="BakersCreek", FRSI="SeedsItaly", LBBC="BakersCreek", MBBC="BakersCreek", NTJO="JohnScheepers", PABS="Burpees", RABS="Burpees", RBBC="BakersCreek", SPNK="NKLawn", TYIL="Israel")
 
-RegionOriginList <- c(ADOL="oleifera", AROL="oleifera", CBBG="european", COOL="oleifera", DAJO="european", ESNK="european", MABG="caudatus", MYJO="daikon", NELO="daikon", OIBG="oleifera", RABG="caudatus", RACA="caudatus", SPEU="european", TOBG="daikon", WMBG="daikon", AFFR="France", BBCA="California", BINY="NewYork", GSCA="California", MAES="Spain", PBFR="France", SAES="Spain", DEES="Spain", GHIL="Israel", HCES="Spain", HMES="Spain", HZIL="Israel", IMES="Spain", ZYIL="Israel", AUFI="Finland", COAU="Australia", KAMI="Michigan", AL="Australia", CBES="Spain", GMIL="Israel", M3AU="Australia", N3="Australia", NZIL="Israel", PG6="Australia", REIL="Israel", MAFI="Finland", NAAU="Australia", WEAU="Australia", CGBC="daikon", FGBC="daikon", FRSI="european", LBBC="european", MBBC="european", NTJO="european", PABS="european", RABS="european", RBBC="european", SPNK="european", TYIL="Israel")
+RegionOriginList <- c(ADOL="oleifera", AROL="oleifera", CBBG="european", COOL="oleifera", DAJO="european", ESNK="european", MABG="caudatus", MYJO="daikon", NELO="daikon", OIBG="oleifera", RABG="caudatus", RACA="caudatus", SPEU="european", TOBG="daikon", WMBG="daikon", AFFR="France", DEES="Spain", GHIL="Israel", HCES="Spain", HMES="Spain", HZIL="Israel", IMES="Spain", MAES="Spain", ZYIL="Israel", AUFI="Finland", COAU="Australia", KAMI="Michigan", PBFR="France", SAES="Spain", AL="Australia", BINY="NewYork", CBES="Spain", GMIL="Israel", M3AU="Australia", N3="Australia", NZIL="Israel", PG6="Australia", REIL="Israel", MAFI="Finland", NAAU="Australia", WEAU="Australia", CGBC="daikon", FGBC="daikon", FRSI="european", LBBC="european", MBBC="european", NTJO="european", PABS="european", RABS="european", RBBC="european", SPNK="european", TYIL="Israel")
 
-LocationList <- c(ADOL="oleifera", AROL="oleifera", CBBG="european", COOL="oleifera", DAJO="european", ESNK="european", MABG="caudatus", MYJO="daikon", NELO="daikon", OIBG="oleifera", RABG="caudatus", RACA="caudatus", SPEU="european", TOBG="daikon", WMBG="daikon", AFFR="raphNatW", BBCA="California", BINY="raphNN", GSCA="California", MAES="raphNatW", PBFR="lanmar", SAES="lanmar", DEES="raphNatW", GHIL="raphNatE", HCES="raphNatW", HMES="raphNatW", HZIL="raphNatE", IMES="raphNatW", ZYIL="raphNatE", AUFI="raphNN", COAU="raphNN", KAMI="raphNN", AL="raphNN", CBES="lanmar", GMIL="pugioniformis", M3AU="raphNN", N3="raphNN", NZIL="none", PG6="raphNN", REIL="raphNatE", MAFI="raphNN", NAAU="raphNN", WEAU="raphNN", CGBC="daikon", FGBC="daikon", FRSI="european", LBBC="european", MBBC="european", NTJO="european", PABS="european", RABS="european", RBBC="european", SPNK="european", TYIL="raphNatE")
+LocationList <- c(ADOL="oleifera", AROL="oleifera", CBBG="european", COOL="oleifera", DAJO="european", ESNK="european", MABG="caudatus", MYJO="daikon", NELO="daikon", OIBG="oleifera", RABG="caudatus", RACA="caudatus", SPEU="european", TOBG="daikon", WMBG="daikon", AFFR="raphNatW", DEES="raphNatW", GHIL="raphNatE", HCES="raphNatW", HMES="raphNatW", HZIL="raphNatE", IMES="raphNatW", MAES="raphNatW", ZYIL="raphNatE", AUFI="raphNN", COAU="raphNN", KAMI="raphNN", PBFR="lanmar", SAES="lanmar",  AL="raphNN", BINY="raphNN", CBES="lanmar", GMIL="pugioniformis", M3AU="raphNN", N3="raphNN", NZIL="none", PG6="raphNN", REIL="raphNatE", MAFI="raphNN", NAAU="raphNN", WEAU="raphNN", CGBC="daikon", FGBC="daikon", FRSI="european", LBBC="european", MBBC="european", NTJO="european", PABS="european", RABS="european", RBBC="european", SPNK="european", TYIL="raphNatE")
 
-OrderList <- c(ADOL=18, AROL=19, CBBG=7, COOL=20, DAJO=8, ESNK=9, MABG=22, MYJO=3, NELO=4,
-               OIBG=21, RABG=23, RACA=24, SPEU=17, TOBG=5, WMBG=6, AFFR=4, BBCA=30, BINY=2,
-               GSCA=30, MAES=9, PBFR=1, SAES=3, DEES=5, GHIL=10, HCES=6, HMES=7, HZIL=11,
-               IMES=8, ZYIL=14, AUFI=1, COAU=3, KAMI=4, AL=7, CBES=2, GMIL=15, M3AU=7,
-               N3=7, NZIL=16, PG6=7, REIL=12, MAFI=5, NAAU=6, WEAU=7, CGBC=1,
-               FGBC=2, FRSI=10, LBBC=11, MBBC=12, NTJO=13, PABS=14, RABS=15, RBBC=16,
-               SPNK=17, TYIL=13) 
+OrderList <- c(ADOL=18, AROL=19, CBBG=7, COOL=20, DAJO=8, ESNK=9, MABG=22, MYJO=3, NELO=4,OIBG=21, RABG=23, RACA=24, SPEU=17, TOBG=5, WMBG=6, AFFR=4, DEES=5, GHIL=10, HCES=6, HMES=7, HZIL=11, IMES=8, MAES=9, ZYIL=14, AUFI=1, COAU=3, KAMI=4, PBFR=1, SAES=3,  AL=7, BINY=2, CBES=2, GMIL=15, M3AU=7, N3=7, NZIL=16, PG6=7, REIL=12, MAFI=5, NAAU=6, WEAU=7, CGBC=1,FGBC=2, FRSI=10, LBBC=11, MBBC=12, NTJO=13, PABS=14, RABS=15, RBBC=16,SPNK=17, TYIL=13) 
 
 ```
 
@@ -575,7 +542,7 @@ SubsetBialleleGene <- droplevels( dplyr::filter( BialleleGene,
 ```{r write, echo=FALSE}
 write.csv(CombinedDataSet, "../output/CombinedDataSet.csv", quote=F, row.names=F)
 write.csv(BialleleGene, "../output/AllBialleleGeno.csv", row.names = F)
-write.csv(BialleleGene[c(2:nrow(BialleleGene)), c(2:ncol(BialleleGene))], "../output/Marker.geno", row.names = F, sep=",")
+write.csv(BialleleGene[c(2:nrow(BialleleGene)), c(2:ncol(BialleleGene))], "../output/Marker.geno", row.names = F)
 write.csv(BialleleGene, "../output/Marker.ind", row.names = F)
 
 ```
