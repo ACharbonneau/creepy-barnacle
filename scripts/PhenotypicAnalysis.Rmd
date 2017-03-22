@@ -827,7 +827,7 @@ PS_table <- tbl_df( mutate( PS_table, PnoVern = ( Yes / (Yes + No) ) * 100,
                       Pop = factor(rownames(PS_table) ),
                       SEPnoVern = SEP( PnoVern/100, N )))
 
-PS_table <- full_join( PS_table, MD_table ) %>%
+PS_table <- full_join( PS_table, MD_table, by="Pop" ) %>%
             mutate( FixGeography = replace( as.character(Geography), is.na( Geography ) == T, "Crop") )
 
 PS_table$RPV <- ifelse(PS_table$PnoVern < 1, 1, round(PS_table$PnoVern) )
