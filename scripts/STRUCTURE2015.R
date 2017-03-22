@@ -6,7 +6,9 @@ require(RColorBrewer)
 
 ########################################################
 
+Prob_data <- read.csv("../OrigOutput/AlltheProbabilities.txt", header=F,sep=",")
 
+colnames(Prob_data) <- c("RunNumber", "KNumber", "Estimated_Ln_Prob_of_Data", "Mean_value_of_ln_likelihood", "Variance_of_ln_likelihood")
 
 pdf(file="../figures/RanalphaNewPops.pdf", height=9.3, width=15.3)
 
@@ -15,13 +17,48 @@ pop_ghost_count <- c(0,0,0)
 
 ########################################################
 
+# Plot probabilities
+
+probs <- list()
+for(i in levels(as.factor(Prob_data$RunNumber))){
+  probs[[i]] <- cbind(Prob_data$KNumber[Prob_data$RunNumber==i], 	Prob_data$Estimated_Ln_Prob_of_Data[Prob_data$RunNumber==i],
+                      ApproxBayesFac(Prob_data$Estimated_Ln_Prob_of_Data[Prob_data$RunNumber==i])
+  )
+}
+
+pdf(file="../figures/STRUCTUREprobs.pdf")
+
+for(i in levels(as.factor(Prob_data$RunNumber))){
+  plot(probs[[i]][ order(probs[[i]][,1]) ,3]#probs[[i]][,3]
+       ,xlab="Proposed K", ylab="Approximate Bayes Factor", 
+       main=paste("Run", i, sep=" "))
+  
+  text(x=seq(1,max(Prob_data$KNumber)), 
+       y=probs[[i]][ order(probs[[i]][,1]),3]#probs[[i]][,3]
+       , pos=1, cex=.7)
+}
+
+BestK = rep(NA, length(levels(as.factor(Prob_data$RunNumber))))
+
+for(a in seq(1,length(levels(as.factor(Prob_data$RunNumber))))){
+  BestK[a] <- probs[[a]][,1] [probs[[a]][,3]== max(probs[[a]][,3])]
+}
+
+BestK = BestK[seq(1,length(levels(as.factor(Prob_data$RunNumber))))]
+plot(density(BestK, bw=.4), main= "Density Plot of Best Ks")
+
+
+dev.off()
+
+### Plot STRUCTURE bargraphs
+
 #### You have to add a +1 to File_Num and change the second 'for loop' to 2:length(ALLTHEFILES) for datasets without a K=1
 #### 
 
 ##Get all the files from this directory to put into a single PDF
 #Sort the filelist into numerical order by K instead of order from filesystem
 
-ALLTHEFILES <- dir("../OriginalData/parsed_data/")
+ALLTHEFILES <- dir("../OrigOutput/parsed_data/")
 
 File_Num <- length(ALLTHEFILES) #+1
 

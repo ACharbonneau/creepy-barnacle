@@ -19,7 +19,7 @@ require( ggthemes )
 require( ggplot2 ) #plotting
 require( reshape2 ) #munging
 require( dplyr ) #munging
-hmcols <- colorRampPalette(c("#002447", "white"))(100)
+hmcols <- colorRampPalette(c("black", "white"))(100)
 
 #Standard Error of a proportion
 SEP <- function( x, n ){
@@ -57,7 +57,7 @@ Global parameters for MCMCglmm
 ```{r ModelParameters}
 
 nitt <- 1000000   # Number of iterations
-thin <- 100       # Thinning interval
+thin <- 1000       # Thinning interval
 burnin <- 5000   # burnin period
 pr <- TRUE       # save posterior distribution of random effects
 
@@ -645,10 +645,10 @@ JeffSat_fixed <- mutate(JeffSat_fixed, species = rownames(JeffSat_fixed), Mean =
 ##Only Native range *R. raphanus*
 ```{r PlotNatPopMeans, echo=FALSE, fig.path="../figures/", fig.keep="last", fig.width=11, eval=F}
 plot.new()
-Nat_overplot <- rbind( mutate(Nat_pop, Data = "Vern"), mutate( Nat_noV_pop, Data = "NoVern"))
+Nat_overplot <- rbind( mutate(Nat_pop, Data = "Yes"), mutate( Nat_noV_pop, Data = "No"))
 
 Nat_overplot$SubSp
-levels(Nat_overplot$SubSp)[levels(Nat_overplot$SubSp)=="rostratus"] <- ""
+levels(Nat_overplot$SubSp)[levels(Nat_overplot$SubSp)=="pugioniformis"] <- ""
 levels(Nat_overplot$SubSp)[levels(Nat_overplot$SubSp)=="landra"] <- "R.r.landra"
 levels(Nat_overplot$SubSp)[levels(Nat_overplot$SubSp)=="raphanistrum"] <- "R.r.raphanistrum"
 
@@ -658,6 +658,8 @@ NatPlot <- ggplot( Nat_overplot, aes( y = Mean, x = Pop, colour = Data ) ) +
               facet_grid( ~ SubSp, scales = "free", space = "free") +
               xlab( "Population" ) + 
               ylab( "Population means as \ndays from germination to flower" ) + 
+              labs(color='Vernalization\nModeled') +
+              scale_colour_grey(start = .7, end = .2) +
               ggtitle( expression( "Only Native-range"~italic( "Raphanus" ) ) ) 
 
 NatPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
@@ -666,18 +668,20 @@ NatPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size = 1
                                  strip.text.x = element_text( angle = 0, size = 9, face = "italic" ) ) 
 
 
-mtext(text = expression(italic("R.pugioniformis")), side = 3, line = -.95, at=.92, cex = .8)
+mtext(text = expression(italic("R.pugioniformis")), side = 3, line = -.95, at=.21, cex = .8)
 ```
 
 ```{r PlotNatMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
 
-Nat_fixed_overplot <- rbind( mutate(Nat_fixed, Data = "Vern")[2:6], mutate( Nat_NoV_fixed, Data = "NoVern")[2:6] )
+Nat_fixed_overplot <- rbind( mutate(Nat_fixed, Data = "Yes")[2:6], mutate( Nat_NoV_fixed, Data = "No")[2:6] )
 
 NatPlot <- ggplot( Nat_fixed_overplot, aes(y = Mean, x = species, colour = Data)) + 
               geom_point( cex = 2.5) + 
               geom_errorbar( aes( y = Mean, max = upper, min = lower, colour = Data), width = 0, cex = 1) + 
               xlab( "Species or Sub-Species" ) + 
               ylab( "Means as \ndays from germination to flower" ) + 
+              labs(color='Vernalization\nModeled') +
+              scale_colour_grey(start = .7, end = .2) +
               ggtitle( expression( "Mean days to flower for all"~italic( "Raphanus" ) ) ) 
 
 NatPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05, face = "italic" ),
@@ -690,14 +694,15 @@ NatPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size = 1
 
 ##All *R.r. raphanistrum*
 ```{r PlotRrrPopMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
-Rrr_pop_overplot <- rbind( mutate(Rrr_pop, Data = "Vern"), mutate( Rrr_noV_pop, Data = "NoVern"))
+Rrr_pop_overplot <- rbind( mutate(Rrr_pop, Data = "Yes"), mutate( Rrr_noV_pop, Data = "No"))
 
 RrrPlot <- ggplot( Rrr_pop_overplot, aes( x = Pop, y = Mean, col = Data ) ) + 
               geom_point( cex = 2.5 ) + 
               geom_errorbar( aes( y = Mean, max = Upper, min = Lower, col = Data), width = 0, cex = 1 ) +  
               facet_grid( ~Geography, scales = "free", space = "free" ) +
               xlab( "Population" ) + 
-              ylab( "Population means as \ndays from germination to flower" ) + 
+              ylab( "Population means as \ndays from germination to flower" ) +                       labs(color='Vernalization\nModeled') +
+              scale_colour_grey(start = .7, end = .2) +
               ggtitle( expression( "All" ~ italic( "R.r. raphanistrum" ) ) ) 
 
 RrrPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size=14, hjust = -.05 ),
@@ -708,13 +713,15 @@ RrrPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size=14,
 ```
 
 ```{r PlotRrrMeans, echo=FALSE, fig.path="../figures/", fig.keep="last"}
-Rrr_fixed_overplot <- rbind( mutate(Rrr_fixed, Data = "Vern")[2:6], mutate( Rrr_noV_fixed, Data = "NoVern")[2:6] )
+Rrr_fixed_overplot <- rbind( mutate(Rrr_fixed, Data = "Yes")[2:6], mutate( Rrr_noV_fixed, Data = "No")[2:6] )
 
 RrrPlot <- ggplot( Rrr_fixed_overplot, aes( x = species, y = Mean, col = Data ) ) + 
               geom_point( cex = 2.5 ) + 
               geom_errorbar( aes( y = Mean, max = upper, min = lower, col = Data), width = 0, cex = 1 ) +  
               xlab( "Geographic Origin" ) + 
               ylab( "Means as \ndays from germination to flower" ) + 
+              labs(color='Vernalization\nModeled') +
+              scale_colour_grey(start = .7, end = .2) +
               ggtitle( expression( "Geographic means of" ~ italic( "R.r. raphanistrum" ) ) ) 
 
 RrrPlot + theme_few() + theme( axis.text.x = element_text( angle = -50, size=14, hjust = -.05 ),
