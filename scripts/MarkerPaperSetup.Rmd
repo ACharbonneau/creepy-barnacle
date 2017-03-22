@@ -533,10 +533,10 @@ CombinedDataSet <- droplevels(CombinedDataSet)
 JustSNPs <- Genotypes[,c(1:19)]
 JustSSR <- Genotypes[c(1, 20:35)]
 
-write.csv(JustSSR, "../output/JustSSR.csv", row.names = F, quote=F)
-system("python biallele.py ../output/JustSSR.csv ../output/BiSSR.csv")
+write.csv(JustSSR, "../MungedData/JustSSR.csv", row.names = F, quote=F)
+system("python biallele.py ../MungedData/JustSSR.csv ../MungedData/BiSSR.csv")
 
-JustSSRFix <- read.csv("../output/BiSSR.csv", header = T)
+JustSSRFix <- read.csv("../MungedData/BiSSR.csv", header = T)
 colnames(JustSSRFix) <- c("SSR.ID", colnames(JustSSRFix[2:113]))
 
 BialleleGene <- dplyr::full_join( JustSNPs, JustSSRFix )
@@ -550,10 +550,10 @@ SubsetBialleleGene <- droplevels( dplyr::filter( BialleleGene,
 
 
 ```{r write, echo=FALSE}
-write.csv(CombinedDataSet, "../output/CombinedDataSet.csv", quote=F, row.names=F)
-write.csv(BialleleGene, "../output/AllBialleleGeno.csv", row.names = F)
-write.csv(BialleleGene[c(2:nrow(BialleleGene)), c(2:ncol(BialleleGene))], "../output/Marker.geno", row.names = F)
-write.csv(BialleleGene, "../output/Marker.ind", row.names = F)
+write.csv(CombinedDataSet, "../MungedData/CombinedDataSet.csv", quote=F, row.names=F)
+write.csv(BialleleGene, "../MungedData/AllBialleleGeno.csv", row.names = F)
+write.csv(BialleleGene[c(2:nrow(BialleleGene)), c(2:ncol(BialleleGene))], "../MungedData/Marker.geno", row.names = F)
+write.csv(BialleleGene, "../MungedData/Marker.ind", row.names = F)
 
 ```
 
