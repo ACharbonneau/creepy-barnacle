@@ -3,14 +3,14 @@ Script repository Weed evolution: Genetic differentiation among wild, weedy, and
 
 To build a copy of paper:
 
-Clone this repo in an empty directory:
+Clone this repo:
 
 > git clone https://github.com/ACharbonneau/creepy-barnacle.git
 
 Run PaperSetup.sh, from inside the new repo:
 
 > cd creepy-barnacle
-> sh PaperSetup.sh
+> sh scripts/PaperSetup.sh
 
 
 ##Scripts
@@ -32,8 +32,8 @@ Run PaperSetup.sh, from inside the new repo:
 
 To run:
 
-> rmarkdown::render('MarkerPaperSetup.Rmd', output_file = '../output/MarkerPaperSetup.html') 
-> rmarkdown::render('PhenotypicAnalysis.Rmd', output_file = '../output/PhenotypicAnalysis.html') 
+> rmarkdown::render('MarkerPaperSetup.Rmd', output_file = '../OriginalOutput/MarkerPaperSetup.html') 
+> rmarkdown::render('PhenotypicAnalysis.Rmd', output_file = '../OriginalOutput/PhenotypicAnalysis.html') 
 
 
 ####Genotypic Analysis

@@ -49,7 +49,7 @@ packages(plyr)
 
 cult_2013 <- read.csv("../OriginalData/CultivarGH2013.csv", na.strings=".")
 
-IS_2013 <- read.csv("../OriginalData/IsraelSpainPops2013 GH.csv", na.strings=".")
+IS_2013 <- read.csv("../OriginalData/IsraelSpainPops2013GH.csv", na.strings=".")
 
 lale2005 <- read.csv("../OriginalData/LaleField2005.csv", na.strings=".")
 
