@@ -17,5 +17,5 @@ packages(knitr)
 packages(rmarkdown)
 
 
-rmarkdown::render('MarkerPaperSetup.Rmd', output_file = '../Figures/MarkerPaperSetup.html')
-rmarkdown::render('PhenotypicAnalysis.Rmd', output_file = '../Figures/PhenotypicAnalysis.html') 
+rmarkdown::render('../scripts/MarkerPaperSetup.Rmd', output_file = '../Figures/MarkerPaperSetup.html')
+rmarkdown::render('../scripts/PhenotypicAnalysis.Rmd', output_file = '../Figures/PhenotypicAnalysis.html') 
