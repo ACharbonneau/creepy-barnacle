@@ -8,3 +8,5 @@ output/
 OrigOutput/
 OriginalData/
 MolEcoSubmission/
+MungedData/
+withtemp.qsub
