@@ -8,11 +8,11 @@ mkdir STRUCTURE
 mkdir smartPCA
 
 
-cd OriginalData
+cd OriginalData || exit
 wget -L https://www.dropbox.com/s/nx6dx3ivxgwbsww/WeedEvo.zip
 unzip WeedEvo.zip
 
-cd ../scripts
-module load R/3.2.0
-module load pandoc/1.17.3
+cd ../scripts || exit
+module load R/3.2.0 || exit
+module load pandoc/1.17.3 || exit
 R --file=../scripts/1_RunPhenotypicAnalysis.R

@@ -31,7 +31,6 @@ Summer2010dataSummary.csv
 ```{r Settings, echo=FALSE, message=FALSE}
 rm( list=ls())
 
-getwd()
 
 # Install function for packages    
 packages<-function(x){
