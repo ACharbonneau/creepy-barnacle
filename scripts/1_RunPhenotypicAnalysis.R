@@ -5,7 +5,7 @@
 
 rm(list = ls())
 
-# Install function for packages    
+# Install function for packages
 packages<-function(x){
   x<-as.character(match.call()[[2]])
   if (!require(x,character.only=TRUE)){
@@ -17,5 +17,5 @@ packages(knitr)
 packages(rmarkdown)
 
 
-rmarkdown::render('MarkerPaperSetup.Rmd', output_file = '../MungedData/MarkerPaperSetup.html')
-rmarkdown::render('PhenotypicAnalysis.Rmd', output_file = '../MungedData/PhenotypicAnalysis.html') 
+rmarkdown::render('MarkerPaperSetup.Rmd', output_file = '../Figures/MarkerPaperSetup.html')
+rmarkdown::render('PhenotypicAnalysis.Rmd', output_file = '../Figures/PhenotypicAnalysis.html') 
