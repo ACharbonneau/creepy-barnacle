@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/bash -login
 # Build Weed evolution: Genetic differentiation among wild, weedy, and crop radish
 
 mkdir Figures
