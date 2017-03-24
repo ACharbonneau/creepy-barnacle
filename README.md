@@ -19,7 +19,7 @@ Clone this repo:
 Run 0_PaperSetup.sh, from inside the new repo:
 
 > cd creepy-barnacle
-> sh scripts/0_PaperSetup.sh
+> bash scripts/0_PaperSetup.sh
 
 That will download the raw dataset, build a coherent dataframe from it, and run all of the flowering time analysis, as well as produce the files needed to run STRUCTURE and SmartPCA. Files used downstream go into the MungedData folder, figures and html output will be in Figures.
 
