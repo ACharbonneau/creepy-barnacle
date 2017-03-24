@@ -9,7 +9,6 @@ output:
 ---
 
 ```{r SourcePackages, include=FALSE}
-rm( list=ls() )
 
 # Install function for packages    
 packages<-function(x){

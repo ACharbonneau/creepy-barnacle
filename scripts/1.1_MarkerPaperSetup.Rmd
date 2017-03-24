@@ -29,8 +29,6 @@ LaleField2005.csv
 Summer2010dataSummary.csv
 
 ```{r Settings, echo=FALSE, message=FALSE}
-rm( list=ls())
-
 R.Version()
 
 # Install function for packages    
