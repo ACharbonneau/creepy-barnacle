@@ -3,7 +3,6 @@
 # 2013plantsSpring.csv, and Summer2010dataSummary.csv
 # Then runs PhenotypicAnalysis.Rmd
 
-rm(list = ls())
 
 # Install function for packages
 packages<-function(x){
@@ -18,4 +17,4 @@ packages(rmarkdown)
 
 
 rmarkdown::render('../scripts/1.1_MarkerPaperSetup.Rmd', output_file = '../Figures/MarkerPaperSetup.html')
-rmarkdown::render('../scripts/1.2_PhenotypicAnalysis.Rmd', output_file = '../Figures/PhenotypicAnalysis.html') 
+rmarkdown::render('../scripts/1.2_PhenotypicAnalysis.Rmd', output_file = '../Figures/PhenotypicAnalysis.html')
