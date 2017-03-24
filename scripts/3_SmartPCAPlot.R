@@ -3,10 +3,13 @@ rm( list=ls())
 require(RColorBrewer)
 require(pheatmap)
 
-PCA.dat <- read.table("../OrigOutput/Marker.pca", skip=11)
+PCA.dat <- read.table("../smartPCA/Marker.pca", skip=11)
 
-labels.dat <- read.csv("../OriginalData/MarkerPopEditOrder2014.csv", header=F, 
+labels.dat <- read.csv("../OriginalData/MarkerPopOrder.csv", header=F, 
                        col.names=c("Individual", "Type", "Pop", "Order", "Name", "Species", "Color", "Vernalization", "DTF", "Bins", "locals"))
+
+pdf(file="../Figures/SmartPCA.pdf", width=10, height=8.5)
+
 
 #Divergence <- read.table("../OrigOutput/Marker.log", skip=60, header = T, nrows = 9)
 
@@ -15,17 +18,6 @@ labels.dat <- read.csv("../OriginalData/MarkerPopEditOrder2014.csv", header=F,
 
 ## To get rid of pops in the labels file that weren't in the analysis
  
-#Use only for no NZIL runs:
-labels.dat <- labels.dat[grep("NZIL", labels.dat$Pop, invert=TRUE),]
-
-#Use for all runs :
-levels(labels.dat$Pop)[50] <- "SPNK" #SPEU is now SPNK; NELO now NEJS; RACA now RAJS. -JKC 
-levels(labels.dat$Pop)[23] <- "NEJS"
-levels(labels.dat$Pop)[47] <- "RAJS"
-
-
-labels.dat <- labels.dat[grep("UnknownType", labels.dat$Type, invert=TRUE),]
-pca.lab <- data.frame(PCA.dat, labels.dat[grep("RA\\d\\d\\d", labels.dat$Pop, invert=TRUE),]) 
 pca.lab$new.name <- factor( paste( pca.lab$Name, " (", pca.lab$Pop, ")", sep="" ) )
 pca.lab <- droplevels(pca.lab)
 
@@ -96,7 +88,6 @@ conf.sym <- c(1:length(levels(droplevels(conf.data$Pop))))
 
 tempar <- par()$mar
 
-pdf(file="../figures/squareNoRA_2014DTF_pca_All_FT_rost.pdf", width=10, height=8.5)
 
 par( xpd=TRUE, mar=c(5.1, 5.1, 5.1, 10))
 

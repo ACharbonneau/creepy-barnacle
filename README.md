@@ -25,13 +25,13 @@ That will download the raw dataset, build a coherent dataframe from it, and run 
 
 Then manually run both STRUCTURE and SmartPCA, using the scripts provided. These are independent, and can be run in parallel:
 
-> cd STRUCTURE
+> cd ../STRUCTURE
 
 > sh ../scripts/2_STRUCTURE_submit.sh
 
 > cd ../smartPCA
 
-> qsub ../scripts/SmartPCA.qsub -N SmartPCA
+> qsub ../scripts/2_SmartPCA.qsub -N SmartPCA
 
 Once these have finished, manually begin the plotting prep and functions:
 
