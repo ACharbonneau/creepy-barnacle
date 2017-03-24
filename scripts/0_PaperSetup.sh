@@ -15,4 +15,4 @@ unzip WeedEvo.zip
 cd ../scripts || exit
 module load R/3.2.0 || exit
 module load pandoc/1.17.3 || exit
-R --file=../scripts/1_RunPhenotypicAnalysis.R
+R --file=1_RunPhenotypicAnalysis.R
