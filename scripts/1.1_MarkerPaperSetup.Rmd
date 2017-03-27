@@ -570,7 +570,7 @@ write.csv(BialleleGene, "../MungedData/AllBialleleGeno.csv", row.names = F)
 
 #SmartPCA Files
 
-write.table(t(BialleleGene[, c(7:ncol(BialleleGene))]), "../MungedData/Marker.geno", row.names = F, col.names = F, sep="", na = "9")
+write.table(t(BialleleGene[, c(3:ncol(BialleleGene))]), "../MungedData/Marker.geno", row.names = F, col.names = F, sep="", na = "9")
 
 write.table(cbind(BialleleGene$SSR.ID, rep("U", length(BialleleGene$Pop)), BialleleGene$Pop), "../MungedData/Marker.ind", row.names = F, quote = F, col.names = F, sep = "\t")
 
