@@ -1,8 +1,16 @@
 rm( list=ls())
+# Install function for packages    
+packages<-function(x){
+  x<-as.character(match.call()[[2]])
+  if (!require(x,character.only=TRUE)){
+    install.packages(pkgs=x,repos="http://cran.r-project.org")
+    require(x,character.only=TRUE)
+  }
+}
 
-require(RColorBrewer)
-require(pheatmap)
-require(dplyr)
+packages(RColorBrewer)
+packages(pheatmap)
+packages(dplyr)
 
 #SmartPCA drops the ID's but keeps them in the same order, so bind output to input
 
