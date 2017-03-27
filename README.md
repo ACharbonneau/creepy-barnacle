@@ -46,7 +46,7 @@ From the smartPCA folder:
 
 > module load R/3.2.0
 
-> Rscript SmartPCAPlot.R
+> Rscript 3_SmartPCAPlot.R
 
 
 
