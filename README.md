@@ -97,19 +97,19 @@ Assuming all the parts ran correctly, the Figures folder should contain all figu
 
 	Required parameter files for running STRUCTURE
 
-- 2.2_AllTheStructureParsing.sh
+- 3_AllTheStructureParsing.sh
 
 	Shell script that takes output from STRUCTURE and puts it into a format readable by R scripts
 
-- 2.2.1_structureparse.py
+- 3.1_structureparse.py
 
 	Does the actual format rewriting, called by 2.2_AllTheStructureParsing.sh
 
-- STRUCTURE2015.R  
+- 3.2_STRUCTURE2015.R  
 
 	R script for generating all STRUCTURE plots
 
-- STRUCTURE7.R
+- 3.2_STRUCTURE7.R
 
 	R script for generating STRUCTURE plot for main paper figure, where coloring matches the SmartPCA plot
 
@@ -119,6 +119,6 @@ Assuming all the parts ran correctly, the Figures folder should contain all figu
 
 	Submits SmartPCA job to cluster
 
-- SmartPCAPlot.R  
+- 3_SmartPCAPlot.R  
 
 	R script for generating SmartPCA plots
