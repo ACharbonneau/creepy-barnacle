@@ -2,11 +2,29 @@ rm( list=ls())
 
 require(RColorBrewer)
 require(pheatmap)
+require(dplyr)
 
-PCA.dat <- read.table("../smartPCA/Marker.pca", skip=11)
+#SmartPCA drops the ID's but keeps them in the same order, so bind output to input
+
+PCA.dat <- read.table("Marker.pca", skip=11)
+
+PCA.ind <- read.table("../MungedData/Marker.ind")
+
+colnames(PCA.ind) <- c("Individual", "U", "PopNum")
+
+pca.lab <- cbind(PCA.ind, PCA.dat)
+
+#Get other useful labels and join
 
 labels.dat <- read.csv("../OriginalData/MarkerPopOrder.csv", header=F, 
                        col.names=c("Individual", "Type", "Pop", "Order", "Name", "Species", "Color", "Vernalization", "DTF", "Bins", "locals"))
+
+pca.lab <- full_join(pca.lab, labels.dat)
+
+pca.lab$new.name <- factor( paste( pca.lab$Name, " (", pca.lab$Pop, ")", sep="" ) )
+pca.lab <- droplevels(pca.lab)
+
+
 
 pdf(file="../Figures/SmartPCA.pdf", width=10, height=8.5)
 
@@ -14,12 +32,6 @@ pdf(file="../Figures/SmartPCA.pdf", width=10, height=8.5)
 #Divergence <- read.table("../OrigOutput/Marker.log", skip=60, header = T, nrows = 9)
 
 #Differences <- read.table("../OrigOutput/Marker.log", skip=581, header = T, nrows = 36, row.names = NULL)
-
-
-## To get rid of pops in the labels file that weren't in the analysis
- 
-pca.lab$new.name <- factor( paste( pca.lab$Name, " (", pca.lab$Pop, ")", sep="" ) )
-pca.lab <- droplevels(pca.lab)
 
 #Set up plotting colors
 
