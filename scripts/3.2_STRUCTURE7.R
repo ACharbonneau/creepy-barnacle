@@ -1,21 +1,18 @@
-source('/Volumes/Storage/RadishData/Scripts/Misc_scripts/AmandaSource.R', chdir = TRUE)
 require(RColorBrewer)
 require(dplyr)
 require(plyr)
 
-#dataset <- "NoRACoNo-5_f.txt"
 
-str.data <- read.csv("/Volumes/Storage/RadishData/21MarkersData/Analysis/STRUCTURE/EstimateK/Corrfreq/NewPops2013/parsed_data/1_2014_all_data-7_f.parsed", header=F)
-pdf(file="../figures/Halfpage_STRUCTURE.pdf", height=5, width=8)
+str.data <- read.csv("parsed_data/1_STRUCTURE-7_f.parsed", header=F)
+pdf(file="../Figures/Halfpage_STRUCTURE.pdf", height=5, width=8)
 
-K <- length(str.data[,c(5:ncol(str.data-3))]) # Find out what K is
+K <- 7
 str.data <- str.data[,c(2,3,5:ncol(str.data-3))] # Get only useful columns from STRUCTURE
 colnames(str.data) <- c( "Individual", "%missing",1:K)
 
 #Get the label/metadata about each individual from a seperate file. Join to remove all the "RA" and "NZIL" individuals
 
-labels <- read.csv("../OriginalData/MarkerPopEditOrder2014.csv", header=F, col.names=c("Individual", "Type", "Pop", "Order", "Name", "Species", "Color", "Vernalization", "DTF", "Bins", "locals"))
-labels$Pop <- revalue(labels$Pop, c("SPEU"="SPNK"))
+labels <- read.csv("../OriginalData/MarkerPopOrder.csv", header=F, col.names=c("Individual", "Type", "Pop", "Order", "Name", "Species", "Color", "Vernalization", "DTF", "Bins", "locals"))
 
 all.data <- left_join(str.data, labels)
 

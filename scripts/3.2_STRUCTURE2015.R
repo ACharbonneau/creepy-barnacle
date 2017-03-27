@@ -1,21 +1,34 @@
-source('/Volumes/Storage/RadishData/Scripts/Misc_scripts/AmandaSource.R', chdir = TRUE)
-require(ggplot2)
-require(dplyr)
-require(RColorBrewer)
-#dataset <- "NoRACoNo-5_f.txt"
+# Install function for packages    
+packages<-function(x){
+  x<-as.character(match.call()[[2]])
+  if (!require(x,character.only=TRUE)){
+    install.packages(pkgs=x,repos="http://cran.r-project.org")
+    require(x,character.only=TRUE)
+  }
+}
+packages(RColorBrewer)
+packages(ggplot2)
+packages(dplyr)
 
 ########################################################
+ApproxBayesFac <- function(x) {
+  x <- x[!is.na(x)]
+  max.probs <- max(x)
+  new.probs <- x - max.probs
+  trans.probs <- exp(new.probs)
+  BayesProb <- trans.probs/sum(trans.probs)
+  return(BayesProb)
+}
+########################################################
 
-Prob_data <- read.csv("../OrigOutput/AlltheProbabilities.txt", header=F,sep=",")
+# Estimate best K
+
+Prob_data <- read.csv("AlltheProbabilities.txt", header=F,sep=",")
 
 colnames(Prob_data) <- c("RunNumber", "KNumber", "Estimated_Ln_Prob_of_Data", "Mean_value_of_ln_likelihood", "Variance_of_ln_likelihood")
 
-pdf(file="../figures/RanalphaNewPops.pdf", height=9.3, width=15.3)
-
 ghost_count <- c(0,0,0) #c("K", "Run", "Ghosts")
 pop_ghost_count <- c(0,0,0)
-
-########################################################
 
 # Plot probabilities
 
@@ -26,7 +39,7 @@ for(i in levels(as.factor(Prob_data$RunNumber))){
   )
 }
 
-pdf(file="../figures/STRUCTUREprobs.pdf")
+pdf(file="../Figures/STRUCTUREprobs.pdf")
 
 for(i in levels(as.factor(Prob_data$RunNumber))){
   plot(probs[[i]][ order(probs[[i]][,1]) ,3]#probs[[i]][,3]
@@ -50,79 +63,60 @@ plot(density(BestK, bw=.4), main= "Density Plot of Best Ks")
 
 dev.off()
 
+########################################################
+
 ### Plot STRUCTURE bargraphs
 
-#### You have to add a +1 to File_Num and change the second 'for loop' to 2:length(ALLTHEFILES) for datasets without a K=1
-#### 
+pdf(file="../Figures/STRUCTURE_All.pdf", height=9.3, width=15.3)
 
 ##Get all the files from this directory to put into a single PDF
 #Sort the filelist into numerical order by K instead of order from filesystem
 
-ALLTHEFILES <- dir("../OrigOutput/parsed_data/")
+ALLTHEFILES <- dir("parsed_data/")
 
-File_Num <- length(ALLTHEFILES) #+1
+File_Num <- length(ALLTHEFILES)
 
-metadata <- rep(NA, 2) #Runs, Ks
+File_list <- data.frame(matrix(unlist(strsplit(ALLTHEFILES, "\\_|\\-")), ncol = 4, byrow = T))
+File_list$runname <- ALLTHEFILES
+colnames(File_list) <- c("randomization", "structure", "K", "f.parsed", "runname")
+File_list$K <- as.numeric(levels(File_list$K))[File_list$K]
+File_list$randomization <- as.numeric(levels(File_list$randomization))[File_list$randomization]
+File_list <- select(File_list, K, randomization, runname)
+File_list <- arrange(File_list, randomization, K)
 
-#This ridiculous thing just makes is so I can get the highest run number without a loop, and the next one gets the highest K
-metadata[1] <- max(as.numeric(as.matrix(as.data.frame(regmatches(ALLTHEFILES, regexec("^([0-9]+)", ALLTHEFILES))))))
-
-metadata[2] <- max(as.numeric(as.matrix(as.data.frame(regmatches(ALLTHEFILES, regexec("-([0-9]+)", ALLTHEFILES))))))
-
-
-File_list <- matrix(
-  c(
-    rep(1:metadata[2], metadata[1]),
-    rep(1:metadata[1], each=metadata[2]),
-    rep(NA, File_Num)
-  ), 
-  nrow=File_Num, ncol=3)
-colnames(File_list) <- c("K", "randomization", "runname")
-
-
-for(n in 1:File_Num){
-  nameoffile <- ALLTHEFILES[n]
-  randomization <- regexec("^([0-9]+)", nameoffile)
-  random_new <- regmatches(nameoffile, randomization)
-  R <- random_new[[1]][2]
-  
-  testedK <- regexec("-([0-9]+)", nameoffile)
-  K_new <- regmatches(nameoffile, testedK)
-  K <- K_new[[1]][2]
-  
-  File_list[File_list[,1]==as.numeric(K) & File_list[,2]==as.numeric(R),3] <- nameoffile
-}
 
 #Sort each STRUCTURE file and metadata file by the plant ID number then combine them. This gets rid
 #of the random order of indivduals needed to run STRUCTURE
 
-for(run_num in c(1:metadata[1])){
-  
-  for(i in c(3:metadata[2])){  # <- 1:length for K=1, 2:length for no
-    
-    dataset <- File_list[File_list[,1]==i & File_list[,2]==run_num,3]
-    str.data <- 0
-    str.data <- read.csv(paste("../OriginalData/parsed_data/",dataset, sep=""), header=F)
-    K <- length(str.data[,c(5:ncol(str.data-3))]) # Find out what K is
-    str.data <- str.data[,c(2,3,5:ncol(str.data-3))] # Get only useful columns from STRUCTURE
-    colnames(str.data) <- c( "Individual", "%missing",1:K)
-    
-    #Get the label/metadata about each individual from a seperate file. Join to remove all the "RA" and "NZIL" individuals
-    
-    labels <- read.csv("../OriginalData/MarkerPopEditOrder2014.csv", header=F, col.names=c("Individual", "Type", "Pop", "Order", "Name", "Species", "Color", "Vernalization", "DTF", "Bins", "locals"))
-    labels$Pop[labels$Pop=="SPEU"] <- "SPNK"
-    
-    all.data <- left_join(str.data, labels)
-    
 
-    if (i > 1) {ghosts <- apply(all.data[,3:(2+K)], 2, max)
-                newghost <- c(i, run_num, sum(ghosts < .5))
-                ghost_count <- rbind(ghost_count, newghost)}
+for( strrun in c(1:length(File_list$K))){
+  #strrun <- 1
+  dataset <- File_list[strrun, 3]
+  str.data <- 0
+  str.data <- read.csv(paste("parsed_data/",dataset, sep=""), header=F)
+  K <- File_list[strrun, 1] # Find out what K is
+  str.data <- str.data[,c(2,3,5:ncol(str.data))] # Get only useful columns from STRUCTURE
+  colnames(str.data) <- c( "Individual", "%missing",1:K)
+  str.data$ID <- unlist(strsplit(as.character(str.data$Individual), "_QTL.+"))
+  
+  #Get the label/metadata about each individual from a seperate file. 
+  
+  labels <- read.csv("../OriginalData/MarkerPopOrder.csv", header=F, 
+           col.names=c("ID", "Type", "Pop", "Order", "Name", "Species", "Color", "Vernalization", "DTF", "Bins", "locals"))
+  
+  labels$ID <- as.character(labels$ID)
+  
+  all.data <- left_join(str.data, labels)
+  
+
+  ghosts <- apply(all.data[,3:(2+K)], 2, max)
+  newghost <- c(File_list$K[strrun], File_list$randomization[strrun], sum(ghosts < .5))
+  ghost_count <- rbind(ghost_count, newghost)
     
-    if (i > 1) { popghosts <- aggregate(all.data, by=list(all.data$Pop), FUN=mean)[4:(3+K)]
-                 popghosts <- apply(popghosts, 2, max)
-                 newpopghost <- c(i, run_num, sum(popghosts < .5))
-                 pop_ghost_count <- rbind(pop_ghost_count, newpopghost)}
+  popghosts <- aggregate(all.data[3:(2+K)], by=list(all.data$Pop), FUN=mean)
+  popghosts <- apply(popghosts, 2, max)
+  newpopghost <- c(File_list$K[strrun], File_list$randomization[strrun], sum(popghosts < .5))
+  pop_ghost_count <- rbind(pop_ghost_count, newpopghost)
     
 #For prettier plotting, lump all of the different species together. Later you'll plot each
 #species seperately in a divided plotting screen
@@ -234,7 +228,7 @@ for(run_num in c(1:metadata[1])){
                                                           "Rattail (RABG)", 
                                                           "Rattail (RAJS)"), line=-1)
     
-  }    
+  
 }
 
 dev.off()
