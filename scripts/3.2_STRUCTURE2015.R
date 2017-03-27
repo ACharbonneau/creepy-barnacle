@@ -237,7 +237,7 @@ ghost_count <- data.frame(ghost_count)
 colnames(ghost_count) <- c("K", "Run", "Ghosts")
 ghost_count <- ghost_count[2:nrow(ghost_count), ]
 
-pdf(file="../figures/GhostInd.pdf", height=9.3, width=15.3)
+pdf(file="../Figures/GhostInd.pdf", height=9.3, width=15.3)
 
 arrange( ghost_count, K) %>% ggplot( aes(K, Ghosts)) + geom_point() + geom_jitter(height = 0)
 
@@ -250,7 +250,7 @@ pop_ghost_count <- data.frame(pop_ghost_count)
 colnames(pop_ghost_count) <- c("K", "Run", "Ghosts")
 pop_ghost_count <- pop_ghost_count[2:nrow(pop_ghost_count), ]
 
-pdf(file="../figures/GhostPops.pdf", height=9.3, width=15.3)
+pdf(file="../Figures/GhostPops.pdf", height=9.3, width=15.3)
 
 arrange( pop_ghost_count, K) %>% ggplot( aes(K, Ghosts)) + geom_point() + geom_jitter(height = 0)
 
