@@ -25,21 +25,29 @@ That will download the raw dataset, build a coherent dataframe from it, and run 
 
 Then manually run both STRUCTURE and SmartPCA, using the scripts provided. These are independent, and can be run in parallel:
 
-> cd ../STRUCTURE
+> cd STRUCTURE
 
-> sh ../scripts/2_STRUCTURE_submit.sh
+> bash ../scripts/2_STRUCTURE_submit.sh
 
 > cd ../smartPCA
 
-> qsub ../scripts/2_SmartPCA.qsub -N SmartPCA
+> qsub ../scripts/2_SmartPCA.qsub -N Marker
 
 Once these have finished, manually begin the plotting prep and functions:
 
-> cd ..
+From inside STRUCTURE folder:
 
-> sh scripts/SmartPCAPlot.R
+> bash ../scripts/3_AllTheStructureParsing.sh
 
-> sh scripts/2.2_AllTheStructureParsing.sh
+From the smartPCA folder:
+
+> cd ../smartPCA
+
+> module load R/3.2.0
+
+> Rscript SmartPCAPlot.R
+
+
 
 Assuming all the parts ran correctly, the Figures folder should contain all figures from the paper, plus several unused supplemental ones, and html files explaining the analysis.
 
