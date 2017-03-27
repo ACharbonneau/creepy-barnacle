@@ -265,19 +265,19 @@ Indivduals per Pop: `r dplyr::count(AllModeled, Pop) %>% summarize(min(n))` - `r
 
 
 Pops per Experiment:
-```{r, echo=FALSE}
+```{r PopExp, echo=FALSE}
 dplyr::count( ExtraRawData, ExCode, Pop ) %>% dplyr::count( ExCode )
 
 ```
 
 Individuals per Experiment: 
 
-```{r, echo=FALSE}
+```{r IndExp, echo=FALSE}
 dplyr::count( ExtraRawData, Experiment, ExCode )
 ```
 
 Individuals per Pop, per Experiment:
-```{r, echo=FALSE}
+```{r IndPopExp, echo=FALSE}
 dplyr::count( ExtraRawData, ExCode, Pop ) %>% dplyr::group_by( ExCode ) %>% summarise(minN=min(n), maxN=max(n))
 ```
 
@@ -374,12 +374,6 @@ summary( Rrr_glmm )
 summary( Rrr_glmm_noV )
 ```
 
-```{r, echo=FALSE, fig.height=5, include=FALSE}
-plot( Rrr_glmm$Sol )
-
-acf( Rrr_glmm$VCV )
-```
-
 ###Model output for just native range *R. raphanus*
 ```{r ModelStatsNat, echo=FALSE}
 
@@ -389,11 +383,6 @@ summary( Nat_glmm )
 ###Model output for just native range *R. raphanus*, no vernalization predictor
 ```{r ModelStatsNatNoV, echo=FALSE}
 summary( Nat_glmm_noV )
-```
-
-```{r, echo=FALSE, fig.height=5, include=FALSE}
-plot( Nat_glmm$Sol )
-acf( Nat_glmm$VCV )
 ```
 
 ###Model output for just *R.r. sativus*
@@ -406,12 +395,6 @@ summary( Sat_glmm )
 ```{r JeffModelStatsSat, echo=FALSE}
 summary( JeffSat_glmm )
 
-```
-
-```{r, echo=FALSE, fig.height=8, include=FALSE }
-plot( Sat_glmm$Sol )
-
-acf( Sat_glmm$VCV )
 ```
 
 
