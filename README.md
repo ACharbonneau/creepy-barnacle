@@ -112,7 +112,7 @@ Assuming all the parts ran correctly, the Figures folder should contain all figu
 
 - 3.2_STRUCTURE7.R
 
-	R script for generating STRUCTURE plot for main paper figure, where coloring matches the SmartPCA plot
+	R script for generating STRUCTURE plot for main paper figure, where coloring matches the SmartPCA plot. This script plots 1_STRUCTURE-7_f.parsed by default. Due to the randomization of input files, the coloring will not *always* match the SmartPCA. However, the color palette will. If you require a matched figure, but don't get it, replace the 1_STRUCTURE-7_f.parsed on line 6 of the code with any randomization number from 1-20, as in: 20_STRUCTURE-7_f.parsed and re-run the plotting function. 
 
 ##### SmartPCA
 
