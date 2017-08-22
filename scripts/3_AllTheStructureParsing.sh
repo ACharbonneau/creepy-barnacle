@@ -13,19 +13,27 @@ sed -i -E '/^([0-9]+)_.+-([0-9])+_f$/ N
 }
 }' AlltheProbabilities.txt
 
-for i in `ls *_f`
+for i in `*_f`
 	do grep -A 339 "Inferred ancestry of individuals" $i > $i.forparse
 done
 
-for i in `ls *forparse`
+for i in `*forparse`
 	do python ../scripts/3.1_structureparse.py $i
 done
+
+for i in `seq 3 24`
+	do for x in *-${i}_f.forparse
+		do tail -n +3 ${x} | sort -k2 -n
+	done >> for_clumpp_k${i}.indfile
+done
+
+
 
 mkdir parsed_data
 mkdir forparse
 mkdir raw_output
 mkdir error_output
-
+mkdir for_clumpp
 
 mv *_f.parsed parsed_data/
 mv *_f.forparse forparse

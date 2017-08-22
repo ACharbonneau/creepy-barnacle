@@ -684,6 +684,8 @@ NatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14
 ```{r PlotRrrPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last"}
 Rrr_pop_overplot <- rbind( mutate(Rrr_pop, Data = "Yes"), mutate( Rrr_noV_pop, Data = "No"))
 
+Rrr_pop_overplot$Geography <- relevel(as.factor(Rrr_pop_overplot$Geography), ref="west")
+
 RrrPlot <- ggplot( Rrr_pop_overplot, aes( x = Pop, y = Mean, col = Data ) ) + 
               geom_point( cex = 2.5 ) + 
               geom_errorbar( aes( y = Mean, max = Upper, min = Lower, col = Data), width = 0, cex = 1 ) +  
@@ -702,6 +704,8 @@ RrrPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size=14, 
 
 ```{r PlotRrrMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last"}
 Rrr_fixed_overplot <- rbind( mutate(Rrr_fixed, Data = "Yes")[2:6], mutate( Rrr_noV_fixed, Data = "No")[2:6] )
+
+Rrr_fixed_overplot$species <- relevel(as.factor(Rrr_fixed_overplot$species), ref="west")
 
 RrrPlot <- ggplot( Rrr_fixed_overplot, aes( x = species, y = Mean, col = Data ) ) + 
               geom_point( cex = 2.5 ) + 
