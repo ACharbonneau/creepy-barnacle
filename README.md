@@ -43,12 +43,9 @@ From inside STRUCTURE folder:
 From the smartPCA folder:
 
 > cd ../smartPCA
-
 > module load R/3.2.0
-
 > Rscript 3_SmartPCAPlot.R
-
-
+> Rscript 3.1_SupSmartPCA.R
 
 Assuming all the parts ran correctly, the Figures folder should contain all figures from the paper, plus several unused supplemental ones, and html files explaining the analysis.
 

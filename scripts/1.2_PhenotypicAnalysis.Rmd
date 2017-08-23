@@ -828,13 +828,19 @@ PS_table <- filter(PS_table, N > 0)
 ```{r RawDataSubsets, echo=FALSE}
 native.data <- filter(RawData, locals=="pugioniformis" | locals=="raphNatW" |
                                    locals=="raphNatE") %>% arrange(Order)
+group_by(native.data, Pop) %>% summarise(avg=mean(GTF), stdd=sd(GTF), min=min(GTF), max=max(GTF))
 
 lanmar.data <- filter(RawData, locals=="lanmar") %>% arrange(Order)
 
+group_by(lanmar.data, Pop) %>% summarise(avg=mean(GTF), stdd=sd(GTF), min=min(GTF), max=max(GTF))
+
 weed.data <- filter(RawData, locals=="raphNN") %>% arrange(Order)
+
+group_by(weed.data, Pop) %>% summarise(avg=mean(GTF), stdd=sd(GTF), min=min(GTF), max=max(GTF))
 
 crop.data <- filter(RawData, Species=="sativus") %>% arrange(Order)
 
+group_by(crop.data, Pop) %>% summarise(avg=mean(GTF), stdd=sd(GTF), min=min(GTF), max=max(GTF))
 ```
 
 
