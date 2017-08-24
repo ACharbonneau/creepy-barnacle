@@ -9,4 +9,7 @@ OrigOutput/
 OriginalData/
 MolEcoSubmission/
 MungedData/
+STRUCTURE/
+rename.txt
+smartPCA/
 withtemp.qsub

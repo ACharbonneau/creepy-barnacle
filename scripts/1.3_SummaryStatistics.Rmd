@@ -193,7 +193,9 @@ These are the three Fstatistics for the overall dataset. You are supposed to rea
 fstat(ALLTHEALLELES)
 ```
 
-Pairwise Fst for all populations. This is also output as a csv file, which is much easier to read.
+Pairwise Fst for all populations. This is output as a csv file, which is much easier to read.
+
+This is the Fst numbers, just as a clustered heatmap so you can see patterns more easily.
 
 ```{r, echo=FALSE, warning=FALSE}
 
@@ -201,11 +203,17 @@ popfst <- pairwise.fst(ALLTHEALLELES)
 
 attr(popfst, "Labels") <- unique(as.character(ALLTHEALLELES$pop))
 
-popfst
-
-
 write.csv(as.data.frame(as.matrix(popfst)), "../figures/PairwiseFst.csv", sep = "'", quote = F, row.names = TRUE, col.names = TRUE )
 
+```
+
+
+
+```{r, echo=FALSE}
+
+pheatmap(as.matrix(popfst), cluster_rows = T, cluster_cols = T, 
+         clustering_distance_rows = "euclidean",
+         clustering_distance_cols = "euclidean", )
 ```
 
 
