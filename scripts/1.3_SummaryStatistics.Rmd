@@ -1,0 +1,229 @@
+---
+title: "PopGen"
+author: "Amanda Charbonneau"
+date: "10/7/2016"
+output: html_document
+---
+
+
+```{r, echo=FALSE, message=FALSE}
+# Install function for packages    
+packages<-function(x){
+  x<-as.character(match.call()[[2]])
+  if (!require(x,character.only=TRUE)){
+    install.packages(pkgs=x,repos="http://cran.r-project.org")
+    require(x,character.only=TRUE)
+  }
+}
+
+packages("adegenet")
+packages("hierfstat")
+packages("pegas")
+packages("pheatmap")
+packages("RColorBrewer")
+packages("poppr") 
+```
+
+This script uses the input for STRUCTURE to do some population genetics.
+
+```{r, echo=FALSE, message=FALSE}
+
+#has population names and group names
+
+ALLTHEALLELES <- read.structure(file = "/Volumes/Storage/RadishData/2015_Marker_Paper/OriginalData/1rand.str", n.ind = 338, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 2, row.marknames = 1, NA.char = "-9", col.others = 3)
+
+
+
+```
+
+
+```{r, echo=FALSE,message=FALSE}
+#Genind has only individual information, genpop has population level info as well
+
+poplevel <- genind2genpop(ALLTHEALLELES)
+
+poplevelfreq <- tab(poplevel, freq=T)
+
+write.csv(poplevelfreq, "/Volumes/Storage/RadishData/2015_Marker_Paper/output/PopulationLevelAlleleFreq.csv")
+
+grouplevel <- genind2genpop(x = ALLTHEALLELES, pop = ALLTHEALLELES@other$X)
+grouplevelfreq <- tab(grouplevel, freq=T)
+
+write.csv(grouplevelfreq, "/Volumes/Storage/RadishData/2015_Marker_Paper/output/GroupLevelAlleleFreq.csv")
+```
+#Summary of the marker data
+
+##Data missingness.
+
+There's a lot of missingness. At one point I ran a manual jackknife of STRUCTURE by both markers and populations to see if dropping any one made a difference. It didn't. I don't understand how it can be robust with that much missing, but it seems to be.
+
+```{r, echo=FALSE, message=FALSE}
+bob <- info_table(ALLTHEALLELES, plot = TRUE, scaled = T)
+```
+
+
+##Comparing expected and observed heterozygosity per marker
+```{r, echo=FALSE, message=FALSE}
+summary(ALLTHEALLELES)
+
+ALLSUM <- summary(ALLTHEALLELES)
+
+bartlett.test(list(ALLSUM$Hexp,ALLSUM$Hobs))
+
+t.test(ALLSUM$Hexp,ALLSUM$Hobs,pair=T,var.equal=TRUE,alter="greater")
+
+```
+
+##Summary stats for all markers
+```{r, echo=FALSE}
+basic.stats(ALLTHEALLELES)
+
+```
+
+##Do markers appear to be in HWE across dataset? 
+
+```{r, echo=FALSE}
+
+hw.test(ALLTHEALLELES, res='matrix', B=1000)
+
+```
+##Do markers appear to be in HWE by population? 
+
+Blue is population in departure from HWE at marker at a p < .05
+
+```{r, echo=FALSE, message=FALSE}
+
+#https://grunwaldlab.github.io/Population_Genetics_in_R/Locus_Stats.html
+
+nanhwe.pop <- seppop(ALLTHEALLELES) %>% lapply(hw.test, B = 0)
+
+nanhwe.mat <- sapply(nanhwe.pop, "[", i = TRUE, j = 3) # Take the third column with all rows
+
+alpha  <- 0.05
+newmat <- nanhwe.mat
+newmat[newmat > alpha] <- 1
+
+pheatmap(newmat)
+```
+
+##Comparing expected heterozygosity per population and per group
+
+```{r, echo=FALSE}
+Hs(poplevel)
+
+Hs(grouplevel)
+
+
+```
+
+##PCA
+
+A fun little pca that tries to make boundries around pops. Labels seem unmoveable though, so I can't get it to format nicely for use. Looks essentially the same as the paper one, even though it's using the dataset in a completely differnt format. So that's nice.
+
+```{r, echo=FALSE}
+testpca <- scaleGen(ALLTHEALLELES, NA.method="mean")
+dim(testpca)
+
+pca1 <- dudi.pca(testpca,cent=FALSE,scale=FALSE,scannf=FALSE,nf=3)
+#barplot(pca1$eig[1:50],main="PCA eigenvalues", col=heat.colors(50))
+
+
+col <- funky(34)
+s.class(pca1$li, pop(ALLTHEALLELES),xax=1,yax=2, col=transp(col,.6), axesell=FALSE,
+        cstar=1, cpoint=1, grid=FALSE, clabel = .5)
+
+
+#colorplot(pca1$li, pca1$li, transp=TRUE, cex=3, xlab="PC 1", ylab="PC 2")
+#title("PCA of microbov dataset\naxes 1-2")
+#abline(v=0,h=0,col="grey", lty=2)
+```
+```{r, echo=FALSE, eval=FALSE}
+
+#Playing with adegnet tutorial: An introduction to adegenet 2.1.0 6/14/2017
+
+ca1 <- dudi.coa(tab(poplevel),scannf=FALSE,nf=3)
+barplot(ca1$eig,main="Correspondance Analysis eigenvalues",
+        col=heat.colors(length(ca1$eig)))
+
+ s.label(ca1$li, sub="CA 1-2",csub=2)
+
+
+set.seed(1)
+s.label(ca1$li*1.2, sub="CA 1-2",csub=2, clab=0, cpoint="")
+textplot(ca1$li[,1], ca1$li[,2], words=popNames(poplevel),
+         cex=1.4, new=FALSE, xpd=TRUE)
+add.scatter.eig(ca1$eig,nf=3,xax=1,yax=2,posi="bottomright")
+```
+##Populations clustered by genetic distance. Euclidean method. 
+
+Makes some expected groupings: landra, weeds(BINY, AUFI, NCDE), most of the crops
+Has Australian weeds clustered with native RRR's instead of other weeds. Sort of like STRUCTURE
+
+```{r, echo=FALSE}
+sampleDists <- dist.genpop(poplevel, method = 1, diag = T, upper = T)
+sampleDistMatrix <- as.matrix(sampleDists)
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows="euclidean",
+         clustering_distance_cols="euclidean",
+         cluster_rows = T,
+         cluster_cols = T,
+         col=colors)
+```
+##Same clustering method, just using groups instead of pops.
+
+
+```{r, echo=FALSE}
+sampleDists <- dist.genpop(grouplevel, method = 1, diag = T, upper = T)
+sampleDistMatrix <- as.matrix(sampleDists)
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows="euclidean",
+         clustering_distance_cols="euclidean",
+         cluster_rows = T,
+         cluster_cols = T,
+         col=colors)
+```
+
+##Fstatistics
+
+These are the three Fstatistics for the overall dataset. You are supposed to read each value as 'column/row'
+
+```{r, echo=FALSE}
+fstat(ALLTHEALLELES)
+```
+
+Pairwise Fst for all populations. This is also output as a csv file, which is much easier to read.
+
+```{r, echo=FALSE, warning=FALSE}
+
+popfst <- pairwise.fst(ALLTHEALLELES)
+
+attr(popfst, "Labels") <- unique(as.character(ALLTHEALLELES$pop))
+
+popfst
+
+
+write.csv(as.data.frame(as.matrix(popfst)), "../figures/PairwiseFst.csv", sep = "'", quote = F, row.names = TRUE, col.names = TRUE )
+
+```
+
+
+
+##Allele by Pop
+
+I don't remember why I made this, but it's a clustered heatmap of the population level allele frequencies. The columns are alleles. A lot of alleles are at low frequency, and then a handful at very high frequency. But there's not many that only appear in certian pops like I assume I was looking for.
+
+
+```{r, echo=FALSE}
+pheatmap(poplevelfreq, cluster_rows=TRUE, show_rownames=TRUE, cluster_cols=T, show_colnames = F)
+```
+##Allele by Group
+
+Again, same type of plot, just using groups instead of populations. And again, there don't appear to be a great deal of alleles private to groups.
+
+```{r, echo=FALSE}
+pheatmap(grouplevelfreq, cluster_rows=TRUE, show_rownames=TRUE, cluster_cols=T, show_colnames = F)
+```
+
+
