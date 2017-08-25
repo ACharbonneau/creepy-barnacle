@@ -30,7 +30,7 @@ This script uses the input for STRUCTURE to do some population genetics.
 
 #has population names and group names
 
-ALLTHEALLELES <- read.structure(file = "/Volumes/Storage/RadishData/2015_Marker_Paper/OriginalData/1rand.str", n.ind = 338, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 2, row.marknames = 1, NA.char = "-9", col.others = 3)
+ALLTHEALLELES <- read.structure(file = "../MungedData/1rand.str", n.ind = 338, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 2, row.marknames = 1, NA.char = "-9", col.others = 3)
 
 
 
@@ -44,12 +44,12 @@ poplevel <- genind2genpop(ALLTHEALLELES)
 
 poplevelfreq <- tab(poplevel, freq=T)
 
-write.csv(poplevelfreq, "/Volumes/Storage/RadishData/2015_Marker_Paper/output/PopulationLevelAlleleFreq.csv")
+write.csv(poplevelfreq, "../Figures/PopulationLevelAlleleFreq.csv")
 
 grouplevel <- genind2genpop(x = ALLTHEALLELES, pop = ALLTHEALLELES@other$X)
 grouplevelfreq <- tab(grouplevel, freq=T)
 
-write.csv(grouplevelfreq, "/Volumes/Storage/RadishData/2015_Marker_Paper/output/GroupLevelAlleleFreq.csv")
+write.csv(grouplevelfreq, "../Figures/GroupLevelAlleleFreq.csv")
 ```
 #Summary of the marker data
 
@@ -203,7 +203,7 @@ popfst <- pairwise.fst(ALLTHEALLELES)
 
 attr(popfst, "Labels") <- unique(as.character(ALLTHEALLELES$pop))
 
-write.csv(as.data.frame(as.matrix(popfst)), "../figures/PairwiseFst.csv", sep = "'", quote = F, row.names = TRUE, col.names = TRUE )
+write.csv(as.data.frame(as.matrix(popfst)), "../Figures/PairwiseFst.csv", sep = "'", quote = F, row.names = TRUE, col.names = TRUE )
 
 ```
 
