@@ -78,6 +78,10 @@ Assuming all the parts ran correctly, the Figures folder should contain all figu
 - 1.2_PhenotypicAnalysis.Rmd  
 
 	Completes flowering time analysis
+	
+- 1.3_SummaryStatistics.Rmd
+
+	Calculates heterozygosity and Fst	
 
 #### Genotypic Analysis
 
