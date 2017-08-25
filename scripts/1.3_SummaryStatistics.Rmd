@@ -15,7 +15,7 @@ packages<-function(x){
     require(x,character.only=TRUE)
   }
 }
-
+packages("phangorn")
 packages("adegenet")
 packages("hierfstat")
 packages("pegas")
