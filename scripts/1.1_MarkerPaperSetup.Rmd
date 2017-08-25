@@ -66,6 +66,8 @@ sum2010 <- read.csv("../OriginalData/Summer2010dataSummary.csv", na.strings=".")
 
 Genotypes <- read.csv("../OriginalData/GenotypicData.csv", sep = ",", na.strings = c("NA", "", "."))
 
+MarkerPop <- read.csv("../OriginalData/MarkerPopOrder.csv", header = F)
+
 ```
 
 ###Data Munging
@@ -586,17 +588,36 @@ write.table(cbind( colnames(BialleleGene)[ 3:123 ],
 
 STR_geno <- full_join(JustMeta, JustSSR)
 
-STR_geno$Pop <- as.numeric(STR_geno$Pop)
-
 STR_columns <- colnames(STR_geno)[seq(from = 3, to = 44, by=2)]
+
+STR_labeled <- STR_geno
+
+STR_sum <- left_join(STR_labeled, MarkerPop, by=c("SSR.ID"="V1"))
+
+STR_sum <- select(STR_sum, SSR.ID, Pop, V11, DWRD_124, DWRD_124_2, DWRD_112, 
+                  DWRD_112_2, DWRD_61, DWRD_61_2, DWRD_177, DWRD_177_2, DWRD_107, 
+                  DWRD_107_2, DWRD_123, DWRD_123_2, DWRD_121, DWRD_121_2, DWRD_158, 
+                  DWRD_158_2, DWRD_48, DWRD_48_2, DWRD_180, DWRD_180_2, DWRD_97, 
+                  DWRD_97_2, DWRD_205, DWRD_205_2, DWRD_27, DWRD_27_2, Bn26a, 
+                  Bn26a_2, BRMS005, BRMS005_2, Na10H06, Na10H06_2, Ra1H08, 
+                  Ra1H08_2, Ra2E11, Ra2E11_2, Na14E08, Na14E08_2, Bn35d, Bn35d_2, 
+                  Na12E05, Na12E05_2)
+
+STR_geno$Pop <- as.numeric(STR_geno$Pop)
 
 for (i in 1:20) {
   STR_geno_shuffle <- STR_geno[ sample( nrow( STR_geno ), nrow( STR_geno ), FALSE ) ,]
-  write.table(c(STR_columns, "\n"), c(paste( "../MungedData/", i, "rand.str", coll='', sep='')), 
-              quote = FALSE, sep = " ", row.names = FALSE, eol = " ", col.names = FALSE)
+  write.table(matrix(STR_columns, nrow=1), c(paste( "../MungedData/", i, "rand.str", coll='', sep='')), 
+              quote = FALSE, sep = " ", row.names = FALSE, eol = "\n", col.names = FALSE)
   write.table( STR_geno_shuffle, paste( "../MungedData/", i, "rand.str", coll='', sep=''), 
                quote = FALSE, sep = " ", row.names = FALSE, col.names = FALSE, append = TRUE, na = "-9")
 }
+
+#Need to write out a version with character metadata for summary stats. It's just easier.
+write.table(matrix(STR_columns, nrow=1), "../MungedData/1randSS.str", 
+              quote = FALSE, sep =" ", row.names = FALSE, eol = "\n", col.names = FALSE)
+write.table( STR_sum, paste( "../MungedData/1randSS.str", coll='', sep=''), 
+               quote = FALSE, sep = " ", row.names = FALSE, col.names = FALSE, append = TRUE, na = "-9")
 
 ```
 
