@@ -846,8 +846,8 @@ CoV <- group_by(RawData, Pop, Experiment, locals) %>% summarise(avg=mean(GTF), s
 
 popcov <- rbind(natcov, lanmarcov, weedcov, cropcov)
 
-write.csv(x = CoV, file = "../figures/CoV.csv")
-write.csv(x = popcov, file = "../figures/popCoV.csv")
+write.csv(x = CoV, file = "../Figures/CoV.csv")
+write.csv(x = popcov, file = "../Figures/popCoV.csv")
 
 ```
 
