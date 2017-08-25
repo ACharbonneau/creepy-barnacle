@@ -592,9 +592,9 @@ STR_columns <- colnames(STR_geno)[seq(from = 3, to = 44, by=2)]
 
 for (i in 1:20) {
   STR_geno_shuffle <- STR_geno[ sample( nrow( STR_geno ), nrow( STR_geno ), FALSE ) ,]
-  write.table(c(STR_columns, "\n"), c(paste( "../MungedData/", i, "rand.txt", coll='', sep='')), 
+  write.table(c(STR_columns, "\n"), c(paste( "../MungedData/", i, "rand.str", coll='', sep='')), 
               quote = FALSE, sep = " ", row.names = FALSE, eol = " ", col.names = FALSE)
-  write.table( STR_geno_shuffle, paste( "../MungedData/", i, "rand.txt", coll='', sep=''), 
+  write.table( STR_geno_shuffle, paste( "../MungedData/", i, "rand.str", coll='', sep=''), 
                quote = FALSE, sep = " ", row.names = FALSE, col.names = FALSE, append = TRUE, na = "-9")
 }
 
