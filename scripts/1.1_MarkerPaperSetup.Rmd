@@ -528,10 +528,12 @@ CombinedDataSet$Pop <- revalue(CombinedDataSet$Pop, c(
 
 
 # Dropping one plant. It was the only CBES to germinate in that year/experiment, and it was really sick/weird. Since it's the only CBES plant in that experiment, it's also ruining all my calculations that rely on experiment level SD
+CombinedDataSet <- CombinedDataSet %>% mutate( arb_num= 1:nrow( CombinedDataSet ) )
 
-CombinedDataSet <- CombinedDataSet[ - as.numeric( row.names( CombinedDataSet[ CombinedDataSet$Experiment =="field2013" & CombinedDataSet$ID ==613 ,])), ]
 
-CombinedDataSet <- droplevels(CombinedDataSet)
+bob <- CombinedDataSet[ CombinedDataSet$Experiment =="field2013" & CombinedDataSet$ID ==613 ,]
+
+CombinedDataSet <- CombinedDataSet[ CombinedDataSet$arb_num != bob$arb_num ,]
 
 ```
 
