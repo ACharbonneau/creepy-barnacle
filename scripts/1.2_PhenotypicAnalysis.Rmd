@@ -631,7 +631,7 @@ JeffSat_fixed <- mutate(JeffSat_fixed, species = rownames(JeffSat_fixed), Mean =
 #Plotting
 
 ##Only Native range *R. raphanus*
-```{r PlotNatPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", fig.width=11, eval=F}
+```{r PlotNatPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", fig.width=11, eval=T}
 plot.new()
 Nat_overplot <- rbind( mutate(Nat_pop, Data = "Yes"), mutate( Nat_noV_pop, Data = "No"))
 
