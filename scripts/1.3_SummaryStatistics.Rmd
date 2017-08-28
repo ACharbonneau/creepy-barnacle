@@ -162,9 +162,11 @@ popHS_Cov$locals[popHS_Cov$Pop=="NCDE"] <- "raphNN"
 
 ggplot(popHS_Cov, aes(ExpHet, COV, col=locals)) + geom_point() + geom_smooth(method = 'lm', se = F)
 
+write.csv(popHS_Cov, "../Figures/PopHS_Cov.csv")
 groupHS_Cov <- full_join(hsgroup, groupcov)
 
 ggplot(groupHS_Cov, aes(ExpHet, COV, col=locals)) + geom_point() + geom_smooth(method = 'lm', se = F)
+write.csv(groupHS_Cov, "../Figures/GroupHS_Cov.csv")
 
 ```
 
