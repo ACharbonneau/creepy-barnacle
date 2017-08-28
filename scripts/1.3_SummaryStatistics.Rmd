@@ -22,6 +22,10 @@ packages("pegas")
 packages("pheatmap")
 packages("RColorBrewer")
 packages("poppr") 
+packages("plyr")
+packages("dplyr")
+packages("ggplot2")
+
 ```
 
 This script uses the input for STRUCTURE to do some population genetics.
@@ -32,7 +36,9 @@ This script uses the input for STRUCTURE to do some population genetics.
 
 ALLTHEALLELES <- read.structure(file = "../MungedData/1randSS.str", n.ind = 338, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 2, row.marknames = 1, NA.char = "-9", col.others = 3)
 
-
+groupcov <- read.csv(x = groupcov, file = "../Figures/GroupCoV.csv")
+expcov <- read.csv(x = ExpCoV, file = "../Figures/ExpCoV.csv")
+popcov <- read.csv(x = popcov, file = "../Figures/PopCoV.csv")
 
 ```
 
@@ -113,8 +119,55 @@ Hs(poplevel)
 
 Hs(grouplevel)
 
+hspop <- as.data.frame(as.matrix(Hs(poplevel)))
+colnames(hspop) <- "ExpHet"
+hspop$Pop <- rownames(hspop)
+
+hspop$Pop <- revalue(hspop$Pop, c(
+                               "M3AU" = "UKAU", 
+                               "AL"   = "UKAU", 
+                               "PG6"  = "UKAU",
+                               "SPEU" = "SPNK",
+                               "NELO" = "NEJS",
+                               "RACA" = "RAJS"
+                               ))
+
+
+
+                    
+hsgroup <- as.data.frame(as.matrix(Hs(grouplevel)))
+colnames(hsgroup) <- "ExpHet"
+hsgroup$locals <- rownames(hsgroup)
+
+hsgroup$locals <- revalue(hsgroup$locals, c(
+                               "European" = "european", 
+                               "Oilseed"   = "oleifera", 
+                               "Rattail"  = "caudatus",
+                               "Daikon" = "daikon",
+                               "rostratus" = "pugioniformis"
+                               ))
+                   
 
 ```
+
+##Expected Heterozygosity vs Coeffecient of Variation
+
+The weeds as a group have the highest heterozygosity, but a really low Coeffecient of variation. I wondered if they were anti-correlated.
+
+It seems not.
+
+```{r, echo=FALSE}
+popHS_Cov <- full_join(hspop, popcov)
+popHS_Cov$locals[popHS_Cov$Pop=="NCDE"] <- "raphNN"
+
+ggplot(popHS_Cov, aes(ExpHet, COV, col=locals)) + geom_point() + geom_smooth(method = 'lm', se = F)
+
+groupHS_Cov <- full_join(hsgroup, groupcov)
+
+ggplot(groupHS_Cov, aes(ExpHet, COV, col=locals)) + geom_point() + geom_smooth(method = 'lm', se = F)
+
+```
+
 
 ##PCA
 
