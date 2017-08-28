@@ -36,9 +36,9 @@ This script uses the input for STRUCTURE to do some population genetics.
 
 ALLTHEALLELES <- read.structure(file = "../MungedData/1randSS.str", n.ind = 338, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 2, row.marknames = 1, NA.char = "-9", col.others = 3)
 
-groupcov <- read.csv(x = groupcov, file = "../Figures/GroupCoV.csv")
-expcov <- read.csv(x = ExpCoV, file = "../Figures/ExpCoV.csv")
-popcov <- read.csv(x = popcov, file = "../Figures/PopCoV.csv")
+groupcov <- read.csv("../Figures/GroupCoV.csv")
+expcov <- read.csv("../Figures/ExpCoV.csv")
+popcov <- read.csv("../Figures/PopCoV.csv")
 
 ```
 
