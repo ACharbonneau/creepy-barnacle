@@ -47,7 +47,8 @@ Rscript ../scripts/3.2_STRUCTURE7.R
 
 cd for_clumpp
 for K in `seq 3 24`
-    do less ../../scripts/paramfile | sed "s/KGOESHERE/${K}/" > paramfile${K}
-    sed -e "s/INDFILEFGOESHERE/for_clump_k${K}.indfile/" paramfile${K}
+    do cat ../../scripts/paramfile | sed "s/KGOESHERE/${K}/" > paramfile${K}
+    sed -i "s/INDFILEFGOESHERE/for_clump_k${K}.indfile/" paramfile${K}
+		sed -i "s/OUTFILEGOESHERE/for_clump_k${K}.outfile/" paramfile${K}
     qsub ../../scripts/3.2_CLUMPP.qsub -N ${K}_CLUMPP -t ${K}
 done
