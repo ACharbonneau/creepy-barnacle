@@ -1,6 +1,6 @@
 #! /bin/bash
 # Start in STRUCTURE folder
-for i in `ls *_f`
+for i in  *_f
 	do echo $i
 	grep -A 2 "Estimated Ln Prob of Data" $i
 	done > AlltheProbabilities.txt
@@ -13,18 +13,17 @@ sed -i -E '/^([0-9]+)_.+-([0-9])+_f$/ N
 }
 }' AlltheProbabilities.txt
 
-for i in `*_f`
+for i in *_f
 	do grep -A 339 "Inferred ancestry of individuals" $i > $i.forparse
 done
 
-for i in `*forparse`
+for i in *_f.forparse
 	do python ../scripts/3.1_structureparse.py $i
 done
 
-for i in `seq 3 24`
-	do for x in *-${i}_f.forparse
-		do tail -n +3 ${x} | sort -k2 -n
-	done >> for_clumpp_k${i}.indfile
+for K in `seq 3 24`; do for REP in *-${K}_f.forparse
+	do tail -n +3 ${REP} | sort -k2 -n
+	done > for_clumpp_k${K}.indfile
 done
 
 
@@ -39,8 +38,16 @@ mv *_f.parsed parsed_data/
 mv *_f.forparse forparse
 mv *_f raw_output
 mv *.[eo]* error_output
+mv for_clumpp_k* for_clumpp/
 
 module load R/3.2.0 || exit
 
 Rscript ../scripts/3.2_STRUCTURE2015.R
 Rscript ../scripts/3.2_STRUCTURE7.R
+
+cd for_clumpp
+for K in `seq 3 24`
+    do less ../../scripts/paramfile | sed "s/KGOESHERE/${K}/" > paramfile${K}
+    sed -e "s/INDFILEFGOESHERE/for_clump_k${K}.indfile/" paramfile${K}
+    qsub ../../scripts/3.2_CLUMPP.qsub -N ${K}_CLUMPP -t ${K}
+done

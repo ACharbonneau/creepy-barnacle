@@ -7,6 +7,9 @@ mkdir MungedData
 mkdir STRUCTURE
 mkdir smartPCA
 
+wget https://web.stanford.edu/group/rosenberglab/software/CLUMPP_Linux64.1.1.2.tar.gz
+gunzip CLUMPP*tar.gz; tar xvf CLUMPP*.tar
+rm CLUMPP*.tar
 
 cd OriginalData || exit
 wget -L https://www.dropbox.com/s/29snqitigf2pss3/WeedEvo.zip
