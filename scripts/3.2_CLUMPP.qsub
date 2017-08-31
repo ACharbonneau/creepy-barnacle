@@ -25,4 +25,4 @@ cd ${PBS_O_WORKDIR}
 
 ### call your executable
 
-../../CLUMPP*/CLUMPP ../scripts/paramfile${PBS_ARRAYID} -k ${PBS_ARRAYID} for_clumpp_k${PBS_ARRAYID}.indfile
+../../CLUMPP*/CLUMPP paramfile${PBS_ARRAYID} -k ${PBS_ARRAYID} for_clumpp_k${PBS_ARRAYID}.indfile

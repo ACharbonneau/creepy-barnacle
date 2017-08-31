@@ -45,7 +45,7 @@ module load R/3.2.0 || exit
 Rscript ../scripts/3.2_STRUCTURE2015.R
 Rscript ../scripts/3.2_STRUCTURE7.R
 
-cd for_clumpp
+cd for_clumpp || exit
 for K in `seq 3 24`
     do cat ../../scripts/paramfile | sed "s/KGOESHERE/${K}/" > paramfile${K}
     sed -i "s/INDFILEFGOESHERE/for_clump_k${K}.indfile/" paramfile${K}
