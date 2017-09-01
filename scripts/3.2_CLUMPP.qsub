@@ -23,8 +23,8 @@ module load powertools
 #export BLCR_WAIT_SEC=$(( 4 * 60 * 60 - 60 * 5 ))
 export BLCR_WAIT_SEC=$(( 20 * 60 - 60 * 5 ))
 export PBS_JOBSCRIPT="$0"
-export output="${PBS_JOBNAME}_output.txt"
-export checkpoint="${PBS_JOBNAME}_checkfile.blcr"
+#export output="${PBS_JOBNAME}_output.txt"
+#export checkpoint="${PBS_JOBNAME}_checkfile.blcr"
 echo "Waiting ${BLCR_WAIT_SEC} seconds to run ${PBS_JOBSCRIPT}"
 
 if [ ! -f checkfile.blcr ]
