@@ -12,94 +12,23 @@ then
     exit 1
 fi
 
-#Berkly Lab Checkpoint Restart script to run a job continuously
-#Written by Dirk Colbry – edited by WRP 15/04/2016; AC 9/1/17
-
 
 #Runs in STRUCTURE folder
-cd ${PBS_O_WORKDIR}
 
-#Job restarts itself every 3:50 hrs or 13800 seconds
-export walltime="540"
+shopt -s expand_aliases
+cd $PBS_O_WORKDIR || exit
+module load powertools
 
-export output="output.txt"
+# 4 hours * 60 minutes * 6 seconds - 60 seconds * 5 minutes
+#export BLCR_WAIT_SEC=$(( 4 * 60 * 60 - 60 * 5 ))
+export BLCR_WAIT_SEC=$(( 20 * 60 - 60 * 5 ))
+export PBS_JOBSCRIPT="$0"
+echo "Waiting ${BLCR_WAIT_SEC} seconds to run ${PBS_JOBSCRIPT}"
 
-# Name if main checkpoint file
-export checkpoint="checkfile.blcr"
-
-### call your executable
-
-# Name if main checkpoint file
-export checkpoint="checkfile.blcr"
-
-if [ "${PBS_ARRAYID}" = "" ]
+if [ ! -f checkfile.blcr ]
 then
-	echo "Running for the first time"
-	#SET UP JOB,
-	#Runs once.  Include any job setup commands inside this if block before the cr_run command.
-
-  ../../CLUMPP*/CLUMPP paramfile${PBS_ARRAYID} -k ${PBS_ARRAYID} for_clumpp_k${PBS_ARRAYID}.indfile
-	export PID=$!
-	export next=1
-else
-	echo "Restarting ${PBS_ARRAYID}"
-	#Job running as a restart job
-	cr_restart --no-restore-pid ${checkpoint} >> ${output} 2>&1 &
-	export PID=$!
-	export next=$(($PBS_ARRAYID+1))
+  echo "Running for the first time"
+ 
 fi
 
-#function to run if the program times out
-checkpoint_timeout() {
-	echo "Timeout. Checkpointing Job"
-
-	time cr_checkpoint --term ${PID}
-	echo "**********"
-	tail ${output}
-	echo ""
-	echo "**********"
-
-	if [ ! "$?" == "0" ]
-	then
-		echo "Failed to checkpoint"
-		exit 2
-	fi
-
-	echo "Queueing Next Job"
-	chmod 644 context.${PID}
-	mv context.${PID} ${checkpoint}
-	qsub -t ${next} long_jerb_test.qsub
-
-	exit 0
-}
-
-#set checkpoint timeout
-(sleep ${walltime}; echo 'Timer Done'; checkpoint_timeout;) &
-timeout=$!
-echo "starting timer (${timeout}) for ${walltime} seconds"
-
-echo "Waiting on $PID"
-wait ${PID}
-RET=$?
-
-#Check to see if job checkpointed
-if [ "${RET}" = "143" ] #Job terminated due to cr_checkpoint
-then
-	echo "Job seems to have been checkpointed, waiting for checkpoint to complete."
-	wait ${timeout}
-	qstat -f ${PBS_JOBID}
-	exit 0
-fi
-
-## JOB completed
-
-#Kill timeout timer
-kill ${timeout}
-
-#Output the job statistics
-qstat -f ${PBS_JOBID}
-
-#Email the user that the job has completed
-qstat -f ${PBS_JOBID} | mail -s "JOB COMPLETE" $USER@msu.edu
-echo "Job completed with exit status ${RET}"
-exit 254
+../../CLUMPP*/CLUMPP paramfile${PBS_ARRAYID} -k ${PBS_ARRAYID} for_clumpp_k${PBS_ARRAYID}.indfile
