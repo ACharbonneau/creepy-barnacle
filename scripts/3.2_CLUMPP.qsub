@@ -1,5 +1,5 @@
 #!/bin/bash -login
-#PBS -l walltime=00:20:00
+#PBS -l walltime=04:00:00
 #PBS -l nodes=1:ppn=1
 #PBS -l feature=intel16
 #PBS -l mem=2gb
@@ -19,8 +19,8 @@ cd $PBS_O_WORKDIR || exit
 module load powertools
 
 # 4 hours * 60 minutes * 6 seconds - 60 seconds * 5 minutes
-#export BLCR_WAIT_SEC=$(( 4 * 60 * 60 - 60 * 5 ))
-export BLCR_WAIT_SEC=$(( 20 * 60 - 60 * 5 ))
+export BLCR_WAIT_SEC=$(( 4 * 60 * 60 - 60 * 5 ))
+#export BLCR_WAIT_SEC=$(( 20 * 60 - 60 * 5 ))
 export PBS_JOBSCRIPT="$0"
 export output="${PBS_JOBNAME}_output.txt"
 export checkpoint="${PBS_JOBNAME}_checkfile.blcr"
