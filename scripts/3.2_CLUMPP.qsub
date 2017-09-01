@@ -30,10 +30,6 @@ echo "Waiting ${BLCR_WAIT_SEC} seconds to run ${PBS_JOBSCRIPT}"
 if [ ! -f checkfile.blcr ]
 then
   echo "Running for the first time"
-  ../../CLUMPP*/CLUMPP paramfile${PBS_ARRAYID} -k ${PBS_ARRAYID} for_clumpp_k${PBS_ARRAYID}.indfile
-else
-  echo "Restarting ${PBS_JOBNAME}"
-#Job running as a restart job
-  cr_restart --no-restore-pid ${checkpoint} >> ${output} 2>&1 &
-  export PID=$!
 fi
+
+longjob ../../CLUMPP*/CLUMPP paramfile${PBS_ARRAYID} -k ${PBS_ARRAYID} for_clumpp_k${PBS_ARRAYID}.indfile
