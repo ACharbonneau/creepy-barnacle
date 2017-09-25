@@ -27,6 +27,8 @@ packages( ggthemes )
 packages( ggplot2 ) #plotting
 packages( reshape2 ) #munging
 packages( dplyr ) #munging
+packages( car ) #anova
+
 hmcols <- colorRampPalette(c("black", "white"))(100)
 
 #Standard Error of a proportion
@@ -47,6 +49,13 @@ FlowData$PlantDate <- as.Date( FlowData$PlantDate )
 FlowData$DOYPS <- ifelse( FlowData$DOYP < 78, FlowData$DOYP + 287, FlowData$DOYP - 78 )
 FlowData$DOYGS <- ifelse( FlowData$DOYG < 78, FlowData$DOYG + 287, FlowData$DOYG - 78 )
 
+#mean standardize numeric predictors
+FlowData$msDOYPS <- FlowData$DOYPS - mean(FlowData$DOYPS, na.rm=T)
+FlowData$msDOYGS <- FlowData$DOYGS - mean(FlowData$DOYGS, na.rm=T)
+FlowData$msDaysVernNoNA <- FlowData$DaysVernNoNA - mean(FlowData$DaysVernNoNA, na.rm=T)
+
+
+
 #Dropping PABS, MBBC, NTJO, Confusus and UKAU
 FlowData <- filter(FlowData, SubSpecies !="confusus" & Pop !="UKAU" &
                    Pop !="PABS" & Pop !="MBBC" & Pop !="NTJO")
@@ -62,20 +71,23 @@ Global parameters for MCMCglmm
 ```{r ModelParameters}
 
 nitt <- 1000000   # Number of iterations
-thin <- 1000       # Thinning interval
-burnin <- 5000   # burnin period
+thin <- 100       # Thinning interval
+burnin <- 10000   # burnin period
 pr <- TRUE       # save posterior distribution of random effects
 
 ```
+
+
+
 
 ```{r RrrSubset, echo=FALSE}
 # Data Subset for R.r. raphanistrum analysis
 #Only keep data for individuals that are Rrr, have a flowering date and germination date
 RrrData <- filter( FlowData, Taxonomy == "raphanistrum" & 
                              !is.na( SurviveGTF) & 
-                             !is.na( DOYGS )  ) %>% 
-           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, DOYGS, 
-                   DaysVernNoNA, Pop, Experiment, Habitat, PTF, DOYPS, PTG, 
+                             !is.na( msDOYGS )  ) %>% 
+           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, msDOYGS, 
+                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS, PTG, 
                    SurviveGTF, FlowWoVern)
     
 
@@ -93,9 +105,9 @@ RrrData <- droplevels( RrrData )
 NatData <- filter( FlowData, Geography != "nonNative" & 
                              Species != "sativus" & 
                              !is.na( SurviveGTF) & 
-                             !is.na( DOYGS )  ) %>% 
-           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, DOYGS, 
-                   DaysVernNoNA, Pop, Experiment, Habitat, PTF, DOYPS, 
+                             !is.na( msDOYGS )  ) %>% 
+           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, msDOYGS, 
+                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS, 
                    Species, SubSpecies, Taxonomy, SurviveGTF, FlowWoVern)
 
 NatData$ID <- row.names( NatData )
@@ -110,9 +122,9 @@ NatData <- droplevels( NatData )
 #Only keep data for individuals that are sativus, have a flowering date and germination date
 SatData <- filter( FlowData, Species == "sativus" & 
                              !is.na( SurviveGTF) & 
-                             !is.na( DOYGS ) ) %>% 
-           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, DOYGS, 
-                   DaysVernNoNA, Pop, Experiment, Habitat, PTF, DOYPS, 
+                             !is.na( msDOYGS ) ) %>% 
+           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, msDOYGS, 
+                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS, 
                    Species, SubSpecies, Taxonomy, SurviveGTF, FlowWoVern)
 
 SatData$Taxonomy <- relevel(SatData$Taxonomy, "european")
@@ -124,7 +136,7 @@ SatData <- droplevels( SatData )
 #Only keep data for individuals that are sativus, have a flowering date and germination date and were in the original data from Jeff
 JeffSatData <- filter( FlowData, Species == "sativus" & 
                              !is.na( SurviveGTF) & 
-                             !is.na( DOYGS )  &
+                             !is.na( msDOYGS )  &
                              ( Pop == "MABG" |
                                Pop == "RABG" |
                                Pop == "RACA" |
@@ -139,8 +151,8 @@ JeffSatData <- filter( FlowData, Species == "sativus" &
                                Pop == "SPNK" |
                                Pop == "TOBG" |
                                Pop == "WMBG" )) %>% 
-           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, DOYGS, 
-                   DaysVernNoNA, Pop, Experiment, Habitat, PTF, DOYPS, 
+           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, msDOYGS, 
+                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS, 
                    Species, SubSpecies, Taxonomy, SurviveGTF )
 
 JeffSatData$Taxonomy <- relevel(JeffSatData$Taxonomy, "european")
@@ -152,14 +164,15 @@ JeffSatData <- droplevels( JeffSatData )
 #Only keep data for individuals that are in experiment, have a flowering date and germination date
 
 RawData <- filter( FlowData, !is.na( GTF ) & 
-                             !is.na( DOYGS )  ) %>% 
-           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, DOYGS, 
-                   DaysVernNoNA, Pop, Experiment, Habitat, PTF, DOYPS, PTG, 
+                             !is.na( msDOYGS )  ) %>% 
+           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, msDOYGS, 
+                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS, PTG, 
                    SurviveGTF, FlowWoVern, Taxonomy, Species, Order, locals, ExCode)
     
 
 RawData$Geography <- relevel( RawData$Geography, "west" )
 RawData$Habitat <- relevel( RawData$Habitat, "natural" )
+RawData$Experiment <- relevel(RawData$Experiment, "field2013")
 RawData$Ag <- RawData$Habitat
 levels(RawData$Ag) <- c("nonag", "ag", "nonag", "nonag" )
 RawData <- droplevels( RawData )
@@ -171,8 +184,8 @@ RawData <- droplevels( RawData )
 # Numbers for what was planned/done regardless of who died
 
 ExtraRawData <- select( FlowData, ID, GTF, Geography, Seedstock, 
-                   GrowthEnvironment, DOYGS, DaysVernNoNA, 
-                   Pop, Experiment, Habitat, PTF, DOYPS, PTG, 
+                   GrowthEnvironment, msDOYGS, msDaysVernNoNA, 
+                   Pop, Experiment, Habitat, PTF, msDOYPS, PTG, 
                    SurviveGTF, FlowWoVern, Taxonomy, Species, 
                    Order, locals, ExCode)
 
@@ -187,12 +200,25 @@ ExtraRawData <- droplevels( ExtraRawData )
 
 ```{r unsubsettedmodeldata, echo=FALSE}
 AllModeled <- filter( FlowData, !is.na( SurviveGTF) & 
-                                !is.na( DOYGS )  ) %>% 
-           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, DOYGS, 
-                   DaysVernNoNA, Pop, Experiment, Habitat, PTF, DOYPS, 
+                                !is.na( msDOYGS )  ) %>% 
+           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, msDOYGS, 
+                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS, 
                    Species, SubSpecies, Taxonomy, SurviveGTF, FlowWoVern)
 
 AllModeled <- droplevels( AllModeled )
+```
+
+```{r, echo=FALSE}
+
+test1 <- lm(RawData$GTF ~ RawData$Experiment + RawData$Experiment:RawData$Pop)
+
+
+test2 <- lm(data = RawData, formula = SurviveGTF ~ Experiment + Seedstock + msDaysVernNoNA + Experiment:Pop)
+
+car::Anova(test1, test.statistic="F")
+car::Anova(test2, test.statistic="F")
+
+
 ```
 
 #Summary Data
@@ -290,9 +316,9 @@ Here, I'm using germination to flowering (or last alive date) as the response, w
 
 ```{r RrrModels, echo=TRUE, results="hide"}
 
-Rrr_lmer <- lmer( SurviveGTF ~ Geography + Seedstock + DOYGS + DaysVernNoNA + (1|Experiment) + (1|Geography:Pop), data=RrrData  )
+Rrr_lmer <- lmer( SurviveGTF ~ Geography + Seedstock + msDOYGS + msDaysVernNoNA + (1|Experiment) + (1|Geography:Pop), data=RrrData  )
 
-Rrr_glmm <- MCMCglmm( fixed = SurviveGTF ~ Geography  + Seedstock + DOYGS + DaysVernNoNA, 
+Rrr_glmm <- MCMCglmm( fixed = SurviveGTF ~ Geography  + Seedstock + msDOYGS + msDaysVernNoNA, 
                       random = ~ Experiment + Geography:Pop,
                       nitt = nitt,
                       thin = thin,
@@ -300,7 +326,7 @@ Rrr_glmm <- MCMCglmm( fixed = SurviveGTF ~ Geography  + Seedstock + DOYGS + Days
                       pr = pr, #save posterior distribution of random effects
                       data = RrrData)
 
-Rrr_glmm_noV <- MCMCglmm( fixed = SurviveGTF ~ Geography  + Seedstock + DOYGS, 
+Rrr_glmm_noV <- MCMCglmm( fixed = SurviveGTF ~ Geography  + Seedstock + msDOYGS, 
                       random = ~ Experiment + Geography:Pop,
                       nitt = nitt,
                       thin = thin,
@@ -316,10 +342,10 @@ This is the model that is roughly equivalent to the model we used to look at the
 
 ```{r RrNatModels, echo=TRUE, results="hide"}
 
-Nat_lmer <- lmer( SurviveGTF ~ SubSpecies + Seedstock + DaysVernNoNA + (1|Experiment) + (1|SubSpecies:Pop), data = NatData  )
+Nat_lmer <- lmer( SurviveGTF ~ SubSpecies + Seedstock + msDOYGS + msDaysVernNoNA + (1|Experiment) + (1|SubSpecies:Pop), data = NatData  )
 
 
-Nat_glmm <- MCMCglmm( fixed = SurviveGTF ~ SubSpecies + Seedstock + DaysVernNoNA, 
+Nat_glmm <- MCMCglmm( fixed = SurviveGTF ~ SubSpecies + Seedstock + msDOYGS + msDaysVernNoNA, 
                       random = ~ Experiment + SubSpecies:Pop, 
                       nitt = nitt,
                       thin = thin,
@@ -327,7 +353,7 @@ Nat_glmm <- MCMCglmm( fixed = SurviveGTF ~ SubSpecies + Seedstock + DaysVernNoNA
                       pr = pr, #save posterior distribution of random effects
                       data = NatData)
 
-Nat_glmm_noV <- MCMCglmm( fixed = SurviveGTF ~ SubSpecies + Seedstock, 
+Nat_glmm_noV <- MCMCglmm( fixed = SurviveGTF ~ SubSpecies + Seedstock + msDOYGS, 
                       random = ~ Experiment + SubSpecies:Pop, 
                       nitt = nitt,
                       thin = thin,
@@ -474,7 +500,7 @@ Rrr_noV_fixed <- mutate(Rrr_noV_fixed, species = rownames(Rrr_noV_fixed), Mean =
 
 ```{r NatModelMeans, echo=FALSE}
 
-Nat_pop_chains <- Nat_glmm$Sol[ , 13:27 ] + Nat_glmm$Sol[ , 1 ]
+Nat_pop_chains <- Nat_glmm$Sol[ , 14:28 ] + Nat_glmm$Sol[ , 1 ]
 
 # Calculating population level means
 
@@ -513,7 +539,7 @@ Nat_fixed <- mutate(Nat_fixed, species = rownames(Nat_fixed), Mean = colMeans.Na
 
 ```{r NoV_NatModelMeans, echo=FALSE}
 
-Nat_NoV_pop_chains <- Nat_glmm_noV$Sol[ , 12:26 ] + Nat_glmm_noV$Sol[ , 1 ]
+Nat_NoV_pop_chains <- Nat_glmm_noV$Sol[ , 13:27 ] + Nat_glmm_noV$Sol[ , 1 ]
 
 # Calculating population level means
 
@@ -631,7 +657,7 @@ JeffSat_fixed <- mutate(JeffSat_fixed, species = rownames(JeffSat_fixed), Mean =
 #Plotting
 
 ##Only Native range *R. raphanus*
-```{r PlotNatPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", fig.width=11, eval=F}
+```{r PlotNatPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", fig.width=11, eval=F, message=F}
 plot.new()
 Nat_overplot <- rbind( mutate(Nat_pop, Data = "Yes"), mutate( Nat_noV_pop, Data = "No"))
 
@@ -642,7 +668,7 @@ levels(Nat_overplot$SubSp)[levels(Nat_overplot$SubSp)=="raphanistrum"] <- "R.r.r
 
 NatPlot <- ggplot( Nat_overplot, aes( y = Mean, x = Pop, colour = Data ) ) + 
               geom_point( cex = 2.5) + 
-              geom_errorbar( aes( y = Mean, max = Upper, min = Lower, colour = Data), width = 0, cex = 1) + 
+              geom_errorbar( aes( y = Mean, x = Pop, max = Upper, min = Lower, colour = Data), width = 0, cex = 1) + 
               facet_grid( ~ SubSp, scales = "free", space = "free") +
               xlab( "Population" ) + 
               ylab( "Population means as \ndays from germination to flower" ) + 
@@ -1004,4 +1030,34 @@ lines(c(16.7,16.7), c(25,175), lty=6)
 
 ```
 
+```{r ExperimentalVar, echo=FALSE, fig.path="../Figures/", fig.keep="all", message=FALSE, warning=FALSE, fig.height=10, fig.width=14}
+
+group_by(RawData, Pop) %>%
+ggplot( aes(Pop:Experiment, GTF, col=Experiment)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+
+#group_by(RawData, Pop) %>%
+#ggplot( aes(Pop:Experiment, GTF, col=Experiment, group=Pop)) +
+#  geom_boxplot() +
+#  theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+
+group_by(RawData, Pop) %>%
+ggplot( aes(Experiment, GTF, col=Experiment)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  facet_wrap("Pop")
+
+```
+
+```{r SmallExperimentalVar, echo=FALSE, fig.path="../Figures/", fig.keep="all", message=FALSE, warning=FALSE, fig.height=10, fig.width=14}
+
+filter(RawData, Pop=="BINY"| Pop=="MAES"| Pop=="SAES") %>%
+group_by( Pop) %>%
+ggplot( aes(Experiment, GTF, col=Experiment)) +
+  geom_boxplot(varwidth=TRUE) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  facet_wrap("Pop")
+
+```
 
