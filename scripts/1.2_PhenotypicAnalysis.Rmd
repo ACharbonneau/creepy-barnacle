@@ -1,11 +1,17 @@
 ---
 title: "Phenotypic Analysis"
 author: "Amanda Charbonneau"
-date: "September 10, 2015"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document: 
-    number_sections: yes
-    toc: yes
+    theme: "cerulean"
+    number_sections: true
+    toc: true
+    toc_depth: 5
+    toc_float: true
+    collapsed: false
+    df_print: paged
+    code_folding: hide
 ---
 
 ```{r SourcePackages, include=FALSE}
@@ -54,7 +60,7 @@ FlowData$msDOYPS <- FlowData$DOYPS - mean(FlowData$DOYPS, na.rm=T)
 FlowData$msDOYGS <- FlowData$DOYGS - mean(FlowData$DOYGS, na.rm=T)
 FlowData$msDaysVernNoNA <- FlowData$DaysVernNoNA - mean(FlowData$DaysVernNoNA, na.rm=T)
 
-
+FlowData$BoltFlower <- ifelse(is.na(FlowData$GTF) == F,  FlowData$GTF, FlowData$DTB)
 
 #Dropping PABS, MBBC, NTJO, Confusus and UKAU
 FlowData <- filter(FlowData, SubSpecies !="confusus" & Pop !="UKAU" &
@@ -163,9 +169,9 @@ JeffSatData <- droplevels( JeffSatData )
 # Data Subset for raw data figure
 #Only keep data for individuals that are in experiment, have a flowering date and germination date
 
-RawData <- filter( FlowData, !is.na( GTF ) & 
+RawData <- filter( FlowData, !is.na( BoltFlower ) & 
                              !is.na( msDOYGS )  ) %>% 
-           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, msDOYGS, 
+           select( ID, GTF, BoltFlower, Geography, Seedstock, GrowthEnvironment, msDOYGS, 
                    msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS, PTG, 
                    SurviveGTF, FlowWoVern, Taxonomy, Species, Order, locals, ExCode)
     
@@ -208,19 +214,6 @@ AllModeled <- filter( FlowData, !is.na( SurviveGTF) &
 AllModeled <- droplevels( AllModeled )
 ```
 
-```{r, echo=FALSE}
-
-test1 <- lm(RawData$GTF ~ RawData$Experiment + RawData$Experiment:RawData$Pop)
-
-
-test2 <- lm(data = RawData, formula = SurviveGTF ~ Experiment + Seedstock + msDaysVernNoNA + Experiment:Pop)
-
-car::Anova(test1, test.statistic="F")
-car::Anova(test2, test.statistic="F")
-
-
-```
-
 #Summary Data
 
 Numbers of planted individuals (experiments as planned)
@@ -229,7 +222,7 @@ Total individuals: `r length(ExtraRawData$Pop)`
 
 Number of Pops: `r length(levels(ExtraRawData$Pop))`
 
-Indivduals per Pop: `r dplyr::count(ExtraRawData, Pop) %>% summarize(min(n))` - `r dplyr::count(ExtraRawData, Pop) %>% summarize(max(n))`
+Indivduals per Pop: `r (dplyr::count(ExtraRawData, Pop) %>% summarize(min=min(n)))$min` - `r (dplyr::count(ExtraRawData, Pop) %>% summarize(max=max(n)))$max`
 
 Populations modeled, overall: `r levels(AllModeled$Pop)` N= `r length(levels(AllModeled$Pop))`
 
@@ -247,7 +240,7 @@ Total individuals: `r length(RrrData$Pop)`
 
 Number of Pops: `r length(levels(RrrData$Pop))`
 
-Indivduals per Pop: `r dplyr::count(RrrData, Pop) %>% summarize(min(n))` - `r dplyr::count(RrrData, Pop) %>% summarize(max(n))`
+Indivduals per Pop: `r (dplyr::count(RrrData, Pop) %>% summarize(min=min(n)))$min` - `r (dplyr::count(RrrData, Pop) %>% summarize(max=max(n)))$max`
 
 ## Data Subset for Raphanus natives analysis
 Only keep data for individuals that are natives, have a flowering date and germination date.
@@ -257,7 +250,7 @@ Total individuals: `r length(NatData$Pop)`
 
 Number of Pops: `r length(levels(NatData$Pop))`
 
-Indivduals per Pop: `r dplyr::count(NatData, Pop) %>% summarize(min(n))` - `r dplyr::count(NatData, Pop) %>% summarize(max(n))`
+Indivduals per Pop: `r (dplyr::count(NatData, Pop) %>% summarize(min=min(n)))$min` - `r (dplyr::count(NatData, Pop) %>% summarize(max=max(n)))$max`
 
 ## Data Subset for sativus analysis
 Only keep data for individuals that are sativus, have a flowering date and germination date.
@@ -267,7 +260,7 @@ Total individuals: `r length(SatData$Pop)`
 
 Number of Pops: `r length(levels(SatData$Pop))`
 
-Indivduals per Pop: `r dplyr::count(SatData, Pop) %>% summarize(min(n))` - `r dplyr::count(SatData, Pop) %>% summarize(max(n))`
+Indivduals per Pop: `r (dplyr::count(SatData, Pop) %>% summarize(min=min(n)))$min` - `r (dplyr::count(SatData, Pop) %>% summarize(max=max(n)))$max`
 
 ## Raw numbers
 Combined data from the above datasets but NOT including +1 flowering date. 
@@ -277,7 +270,7 @@ Total individuals: `r length(RawData$Pop)`
 
 Number of Pops: `r length(levels(RawData$Pop))`
 
-Indivduals per Pop: `r dplyr::count(RawData, Pop) %>% summarize(min(n))` - `r dplyr::count(RawData, Pop) %>% summarize(max(n))`
+Indivduals per Pop: `r (dplyr::count(RawData, Pop) %>% summarize(min=min(n)))$min` - `r (dplyr::count(RawData, Pop) %>% summarize(max=max(n)))$max`
 
 ## Raw +1 numbers
 Combined data from the datasets used for modeling, DOES include +1 flowering date. 
@@ -286,7 +279,7 @@ Total individuals: `r length(AllModeled$Pop)`
 
 Number of Pops: `r length(levels(AllModeled$Pop))`
 
-Indivduals per Pop: `r dplyr::count(AllModeled, Pop) %>% summarize(min(n))` - `r dplyr::count(AllModeled, Pop) %>% summarize(max(n))`
+Indivduals per Pop: `r (dplyr::count(AllModeled, Pop) %>% summarize(min=min(n)))$min` - `r (dplyr::count(AllModeled, Pop) %>% summarize(max=max(n)))$max`
 
 
 
@@ -657,7 +650,7 @@ JeffSat_fixed <- mutate(JeffSat_fixed, species = rownames(JeffSat_fixed), Mean =
 #Plotting
 
 ##Only Native range *R. raphanus*
-```{r PlotNatPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", fig.width=11, eval=F, message=F}
+```{r PlotNatPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", fig.width=11, eval=F, message=F, warning=FALSE}
 plot.new()
 Nat_overplot <- rbind( mutate(Nat_pop, Data = "Yes"), mutate( Nat_noV_pop, Data = "No"))
 
@@ -685,7 +678,7 @@ NatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14
 mtext(text = expression(italic("R.pugioniformis")), side = 3, line = -.95, at=.21, cex = .8)
 ```
 
-```{r PlotNatMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last"}
+```{r PlotNatMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", warning=FALSE}
 
 Nat_fixed_overplot <- rbind( mutate(Nat_fixed, Data = "Yes")[2:6], mutate( Nat_NoV_fixed, Data = "No")[2:6] )
 
@@ -707,7 +700,7 @@ NatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14
 ```
 
 ##All *R.r. raphanistrum*
-```{r PlotRrrPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last"}
+```{r PlotRrrPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", warning=FALSE}
 Rrr_pop_overplot <- rbind( mutate(Rrr_pop, Data = "Yes"), mutate( Rrr_noV_pop, Data = "No"))
 
 Rrr_pop_overplot$Geography <- relevel(as.factor(Rrr_pop_overplot$Geography), ref="west")
@@ -728,7 +721,7 @@ RrrPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size=14, 
 
 ```
 
-```{r PlotRrrMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last"}
+```{r PlotRrrMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", warning=FALSE}
 Rrr_fixed_overplot <- rbind( mutate(Rrr_fixed, Data = "Yes")[2:6], mutate( Rrr_noV_fixed, Data = "No")[2:6] )
 
 Rrr_fixed_overplot$species <- relevel(as.factor(Rrr_fixed_overplot$species), ref="west")
@@ -750,7 +743,7 @@ RrrPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size=14, 
 ```
 
 ##Only crops *R. sativus*
-```{r PlotSatPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last"}
+```{r PlotSatPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", warning=FALSE}
 
 SatPlot <- ggplot( Sat_pop, aes( x = Pop, y = Mean) ) + 
               geom_point( cex = 2.5 ) + 
@@ -767,7 +760,7 @@ SatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14
 
 ```
 
-```{r PlotSatMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last"}
+```{r PlotSatMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", warning=FALSE}
 
 SatPlot <- ggplot( Sat_fixed, aes( x = species, y = Mean) ) + 
               geom_point( cex = 2.5 ) + 
@@ -784,7 +777,7 @@ SatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14
 ```
 
 ##Only crops genotyped subset *R. sativus*
-```{r PlotJeffSatPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last"}
+```{r PlotJeffSatPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", warning=FALSE}
 
 JeffSatPlot <- ggplot( JeffSat_pop, aes( x = Pop, y = Mean) ) + 
               geom_point( cex = 2.5 ) + 
@@ -801,7 +794,7 @@ JeffSatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size 
 
 ```
 
-```{r PlotJeffSatMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last"}
+```{r PlotJeffSatMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", warning=FALSE}
 
 JeffSatPlot <- ggplot( JeffSat_fixed, aes( x = species, y = Mean) ) + 
               geom_point( cex = 2.5 ) + 
@@ -817,7 +810,7 @@ JeffSatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size 
 
 ```
 
-```{r TableofVern, echo=FALSE, warning=FALSE, message=FALSE}
+```{r TableofVern, echo=FALSE, warning=FALSE, message=FALSE, warning=FALSE}
 
 # Building a table with percentage flowered without vernalization
 
@@ -851,28 +844,28 @@ PS_table <- filter(PS_table, N > 0)
 ```
 
 
-```{r RawDataSubsets, echo=FALSE}
+```{r RawDataSubsets, echo=FALSE, warning=FALSE}
 native.data <- filter(RawData, locals=="pugioniformis" | locals=="raphNatW" |
                                    locals=="raphNatE") %>% arrange(Order)
-natcov <- group_by(native.data, Pop, locals) %>% summarise(avg=mean(GTF), stdd=sd(GTF), min=min(GTF), max=max(GTF), COV=(stdd/avg * 100))
+natcov <- group_by(native.data, Pop, locals) %>% summarise(avg=mean(BoltFlower), stdd=sd(BoltFlower), min=min(BoltFlower), max=max(BoltFlower), COV=(stdd/avg * 100))
 
 lanmar.data <- filter(RawData, locals=="lanmar") %>% arrange(Order)
 
-lanmarcov <- group_by(lanmar.data, Pop, locals) %>% summarise(avg=mean(GTF), stdd=sd(GTF), min=min(GTF), max=max(GTF), COV=(stdd/avg * 100))
+lanmarcov <- group_by(lanmar.data, Pop, locals) %>% summarise(avg=mean(BoltFlower), stdd=sd(BoltFlower), min=min(BoltFlower), max=max(BoltFlower), COV=(stdd/avg * 100))
 
 weed.data <- filter(RawData, locals=="raphNN") %>% arrange(Order)
 
-weedcov <- group_by(weed.data, Pop, locals) %>% summarise(avg=mean(GTF), stdd=sd(GTF), min=min(GTF), max=max(GTF), COV=(stdd/avg * 100))
+weedcov <- group_by(weed.data, Pop, locals) %>% summarise(avg=mean(BoltFlower), stdd=sd(BoltFlower), min=min(BoltFlower), max=max(BoltFlower), COV=(stdd/avg * 100))
 
 crop.data <- filter(RawData, Species=="sativus") %>% arrange(Order)
 
-cropcov <- group_by(crop.data, Pop, locals) %>% summarise(avg=mean(GTF), stdd=sd(GTF), min=min(GTF), max=max(GTF), COV=(stdd/avg * 100))
+cropcov <- group_by(crop.data, Pop, locals) %>% summarise(avg=mean(BoltFlower), stdd=sd(BoltFlower), min=min(BoltFlower), max=max(BoltFlower), COV=(stdd/avg * 100))
 
-ExpCoV <- group_by(RawData, Pop, Experiment, locals) %>% summarise(avg=mean(GTF), stdd=sd(GTF), min=min(GTF), max=max(GTF), COV=(stdd/avg * 100))
+ExpCoV <- group_by(RawData, Pop, Experiment, locals) %>% summarise(avg=mean(BoltFlower), stdd=sd(BoltFlower), min=min(BoltFlower), max=max(BoltFlower), COV=(stdd/avg * 100))
 
-groupcov <- group_by(RawData, locals) %>% summarise(avg=mean(GTF), stdd=sd(GTF), min=min(GTF), max=max(GTF), COV=(stdd/avg * 100))
+groupcov <- group_by(RawData, locals) %>% summarise(avg=mean(BoltFlower), stdd=sd(BoltFlower), min=min(BoltFlower), max=max(BoltFlower), COV=(stdd/avg * 100))
 
-popcov <- group_by(RawData, Pop, locals) %>% summarise(avg=mean(GTF), stdd=sd(GTF), min=min(GTF), max=max(GTF), COV=(stdd/avg * 100))
+popcov <- group_by(RawData, Pop, locals) %>% summarise(avg=mean(BoltFlower), stdd=sd(BoltFlower), min=min(BoltFlower), max=max(BoltFlower), COV=(stdd/avg * 100))
 
 
 write.csv(x = groupcov, file = "../Figures/GroupCoV.csv")
@@ -882,18 +875,18 @@ write.csv(x = popcov, file = "../Figures/PopCoV.csv")
 ```
 
 
-```{r RawDataPlot, echo=FALSE, fig.path="../Figures/", fig.keep="last", message=FALSE, warning=FALSE, fig.height=8, fig.width=11}
+```{r RawDataPlot, echo=FALSE, fig.path="../Figures/", fig.keep="last", message=FALSE, warning=FALSE, fig.height=8, fig.width=11, warning=FALSE}
 
 #Everything is plotted twice so that the axis lines go behind the plots 
 
 # Plot landra
 par(mfrow=c(1,1), mar=c(0,0,0,0), cex=.7, las=1, fig=c(0.1,.3,.69,.97))
-boxplot(lanmar.data$GTF ~ lanmar.data$Order, frame=F, axes=F, ylim=c(0,350), 
+boxplot(lanmar.data$BoltFlower ~ lanmar.data$Order, frame=F, axes=F, ylim=c(0,350), 
         varwidth=TRUE, at=c(1, 1.8, 2.7))
 
 axis(side = 2, line=-1, tck=.95, col='gray85')
 
-boxplot(lanmar.data$GTF ~ lanmar.data$Order, add=T, frame=F, axes=F, ylim=c(0,350), 
+boxplot(lanmar.data$BoltFlower ~ lanmar.data$Order, add=T, frame=F, axes=F, ylim=c(0,350), 
         varwidth=TRUE, at=c(1, 1.8, 2.7),
         col=hmcols[c(PS_table$RPV[PS_table$Pop=="PBFR"],
                      PS_table$RPV[PS_table$Pop=="CBES"],
@@ -907,14 +900,14 @@ axis(side=3, at=2, labels=expression(italic("R.r. landra")), cex=2, tick=F, line
 # Plot RRR
 
 par(fig=c(0.3,1,.69,.97), cex=.7, new=TRUE)
-boxplot(native.data$GTF ~ native.data$Order, frame=F, axes=F, ylim=c(0,200),
+boxplot(native.data$BoltFlower ~ native.data$Order, frame=F, axes=F, ylim=c(0,200),
         varwidth=TRUE, boxwex=1.1, col="white", border="white", at=c(seq(from=1, to=10.9, by=.9)))
 
 axis(side = 2, line=-2.8, lty=0)
 
 axis(side = 2, line=-2, tck=.9, col="gray85", labels = F)
 
-boxplot(native.data$GTF ~ native.data$Order, add=T, frame=F, axes=F, ylim=c(0,200),
+boxplot(native.data$BoltFlower ~ native.data$Order, add=T, frame=F, axes=F, ylim=c(0,200),
         varwidth=TRUE, boxwex=1.1,  at=c(seq(from=1, to=10.9, by=.9)), col=hmcols[c(
         PS_table$RPV[PS_table$Pop=="AFFR"], PS_table$RPV[PS_table$Pop=="DEES"],
         PS_table$RPV[PS_table$Pop=="HCES"], PS_table$RPV[PS_table$Pop=="HMES"],
@@ -947,16 +940,16 @@ lines(c(10.5,10.5), c(25,175), lty=6)
 # Plot weeds
 
 par(fig=c(0.1,.8,.37,.70), new=TRUE, cex=.7)
-boxplot(weed.data$GTF ~ weed.data$Order, frame=F, axes=F, ylim=c(0,200))
+boxplot(weed.data$BoltFlower ~ weed.data$Order, frame=F, axes=F, ylim=c(0,200))
 axis(side = 2, line=-1, tck=.9, col="gray85", yaxp=c(0, 150, 3))
 
-boxplot(weed.data$GTF ~ weed.data$Order, add=T, frame=F, axes=F, ylim=c(0,200),
+boxplot(weed.data$BoltFlower ~ weed.data$Order, add=T, frame=F, axes=F, ylim=c(0,200),
         col=hmcols[c(
         PS_table$RPV[PS_table$Pop=="AUFI"], PS_table$RPV[PS_table$Pop=="BINY"],
         PS_table$RPV[PS_table$Pop=="COAU"], PS_table$RPV[PS_table$Pop=="KAMI"], 
         PS_table$RPV[PS_table$Pop=="MAFI"], PS_table$RPV[PS_table$Pop=="NAAU"],
         PS_table$RPV[PS_table$Pop=="WEAU"])],
-        ylim=c(0, 120), varwidth=TRUE)
+        varwidth=TRUE)
 
 axis(side = 1, at=c(1:7), tick = F, line=-1,
      label=c("Finland\n(AUFI)", "New York\n(BINY)",
@@ -984,12 +977,12 @@ polygon(c(.4,6,6,.4), c(0,0,170,170))
 
 par(fig=c(0.1,1,.03,.31), new=TRUE, cex=.7)
 
-boxplot(crop.data$GTF ~ crop.data$Order, frame=F, axes=F, ylim=c(0,200),
+boxplot(crop.data$BoltFlower ~ crop.data$Order, frame=F, axes=F, ylim=c(0,200),
         varwidth=TRUE, boxwex=.7, at=c(seq(from=.9, to=18.9, by=.9)))
 axis(side = 2, line=-1, tck=.95, col='gray85')
 par(new=TRUE, cex=.7)
 
-boxplot(crop.data$GTF ~ crop.data$Order, add=T, frame=F, axes=F, ylim=c(0,200),
+boxplot(crop.data$BoltFlower ~ crop.data$Order, add=T, frame=F, axes=F, ylim=c(0,200),
         varwidth=TRUE, boxwex=.7, at=c(seq(from=.9, to=18.9, by=.9)), col=hmcols[c(
         PS_table$RPV[PS_table$Pop=="CGBC"], PS_table$RPV[PS_table$Pop=="FGBC"],
         PS_table$RPV[PS_table$Pop=="MYJO"], PS_table$RPV[PS_table$Pop=="NEJS"],
@@ -1030,10 +1023,151 @@ lines(c(16.7,16.7), c(25,175), lty=6)
 
 ```
 
-```{r ExperimentalVar, echo=FALSE, fig.path="../Figures/", fig.keep="all", message=FALSE, warning=FALSE, fig.height=10, fig.width=14}
+```{r RawDataDotPlot, echo=FALSE, fig.path="../Figures/", fig.keep="last", message=FALSE, warning=FALSE, fig.height=8, fig.width=11, warning=FALSE}
 
-group_by(RawData, Pop) %>%
-ggplot( aes(Pop:Experiment, GTF, col=Experiment)) +
+#Everything is plotted twice so that the axis lines go behind the plots 
+
+# Plot landra
+par(mfrow=c(1,1), mar=c(0,0,0,0), cex=.7, las=1, fig=c(0.1,.3,.69,.97))
+
+
+plot(lanmar.data$GTF ~ lanmar.data$Order, add=T, frame=F, axes=F, ylim=c(0,350), 
+         at=c(1, 1.8, 2.7), pch=16,
+        bg=hmcols[c(PS_table$RPV[PS_table$Pop=="PBFR"],
+                     PS_table$RPV[PS_table$Pop=="CBES"],
+                     PS_table$RPV[PS_table$Pop=="SAES"])])
+axis(side = 2, line=-1, tck=.95, bg='gray85')
+
+axis(side = 1, at=c(1, 1.8, 2.7), tick = F, line=-.6, labels=c("France\n(PBFR)","Spain\n(CBES)",
+                                              "Spain\n(SAES)"))
+par(cex=.9)
+axis(side=3, at=2, labels=expression(italic("R.r. landra")), cex=2, tick=F, line=-1)
+
+# Plot RRR
+
+par(fig=c(0.3,1,.69,.97), cex=.7, new=TRUE)
+
+
+plot(native.data$GTF ~ native.data$Order, add=T, frame=F, axes=F, ylim=c(0,200), pch=16,
+         wex=1.1,  at=c(seq(from=1, to=10.9, by=.9)), bg=hmcols[c(
+        PS_table$RPV[PS_table$Pop=="AFFR"], PS_table$RPV[PS_table$Pop=="DEES"],
+        PS_table$RPV[PS_table$Pop=="HCES"], PS_table$RPV[PS_table$Pop=="HMES"],
+        PS_table$RPV[PS_table$Pop=="IMES"], PS_table$RPV[PS_table$Pop=="MAES"],
+        PS_table$RPV[PS_table$Pop=="GHIL"], PS_table$RPV[PS_table$Pop=="HZIL"],
+        PS_table$RPV[PS_table$Pop=="REIL"], PS_table$RPV[PS_table$Pop=="TYIL"],
+        PS_table$RPV[PS_table$Pop=="ZYIL"], PS_table$RPV[PS_table$Pop=="GMIL"])])
+ axis(side = 2, line=-2.8, lty=0)
+
+axis(side = 2, line=-2, tck=.9, bg="gray85", labels = F)
+       
+axis(side = 1, at=c(seq(from=1, to=10.9, by=.9)), tick = F, line=-.8, labels=c( 
+                                "France\n(AFFR)", "Spain\n(DEES)", 
+                                "Spain\n(HCES)", "Spain\n(HMES)", 
+                                "Spain\n(IMES)", "Spain\n(MAES)", 
+                                "Israel\n(GHIL)", "Israel\n(HZIL)", 
+                                "Israel\n(REIL)", "Israel\n(TYIL)",
+                                "Israel\n(ZYIL)", "Israel\n(GMIL)"))
+
+
+
+par(cex=.9)
+
+axis(side=3, at=3.5, labels="Western", cex=2, tick=F, line=-3)
+axis(side=3, at=8.5, labels="Eastern", cex=2, tick=F, line=-3)
+
+axis(side=3, at=10.7, labels=expression(italic("R. pugioniformis")), cex=2, tick=F, line=-1)
+axis(side=3, at=6, labels=expression(paste(italic("R.r. raphanistrum")," inside native range")), cex=1.2, tick=F, line=-1)
+
+lines(c(6.1,6.1), c(50,150), lty=3)
+lines(c(10.5,10.5), c(25,175), lty=6)
+
+# Plot weeds
+
+par(fig=c(0.1,.8,.37,.70), new=TRUE, cex=.7)
+
+plot(weed.data$GTF ~ weed.data$Order, add=T, frame=F, axes=F, ylim=c(0,200), pch=16,
+        bg=hmcols[c(
+        PS_table$RPV[PS_table$Pop=="AUFI"], PS_table$RPV[PS_table$Pop=="BINY"],
+        PS_table$RPV[PS_table$Pop=="COAU"], PS_table$RPV[PS_table$Pop=="KAMI"], 
+        PS_table$RPV[PS_table$Pop=="MAFI"], PS_table$RPV[PS_table$Pop=="NAAU"],
+        PS_table$RPV[PS_table$Pop=="WEAU"])],
+        varwidth=TRUE)
+axis(side = 2, line=-1, tck=.9, bg="gray85", yaxp=c(0, 150, 3))
+
+axis(side = 1, at=c(1:7), tick = F, line=-1,
+     label=c("Finland\n(AUFI)", "New York\n(BINY)",
+             "Australia 1\n(COAU)", "Michigan\n(KAMI)",
+             "Finland\n(MAFI)", "Australia 3\n(NAAU)",
+             "Australia 2\n(WEAU)" ))
+
+
+par(las=3)
+mtext(text="Flowering Time in Days", side = 2, adj = 0, line = 2 )
+par(las=1)
+
+par(cex=1)
+axis(side = 3, at=4.5, tick = F, line=-5, labels=expression(paste(italic("R.r. raphanistrum")," outside native range")))
+
+par(fig=c(0.8,1,.4,.65), new=TRUE, cex=.7)
+
+
+gradient.rect(4.5, 2, 5.5, 130, col=hmcols, gradient = "vertical", border=NA)
+text(3, 150, labels = "Flowered without\ncold treatment", cex=1.2)
+text(2.5, 10, labels="0% of population")
+text(2.5, 120, labels="100% of population")
+polygon(c(.4,6,6,.4), c(0,0,170,170))
+
+
+par(fig=c(0.1,1,.03,.31), new=TRUE, cex=.7)
+
+par(new=TRUE, cex=.7)
+
+plot(crop.data$GTF ~ crop.data$Order, add=T, frame=F, axes=F, ylim=c(0,200), pch=16,
+         wex=.7, at=c(seq(from=.9, to=18.9, by=.9)), bg=hmcols[c(
+        PS_table$RPV[PS_table$Pop=="CGBC"], PS_table$RPV[PS_table$Pop=="FGBC"],
+        PS_table$RPV[PS_table$Pop=="MYJO"], PS_table$RPV[PS_table$Pop=="NEJS"],
+        PS_table$RPV[PS_table$Pop=="TOBG"], PS_table$RPV[PS_table$Pop=="WMBG"],
+        PS_table$RPV[PS_table$Pop=="CBBG"], PS_table$RPV[PS_table$Pop=="DAJO"],
+        PS_table$RPV[PS_table$Pop=="ESNK"], PS_table$RPV[PS_table$Pop=="FRSI"],
+        PS_table$RPV[PS_table$Pop=="LBBC"], PS_table$RPV[PS_table$Pop=="RABS"], 
+        PS_table$RPV[PS_table$Pop=="RBBC"], PS_table$RPV[PS_table$Pop=="SPNK"], 
+        PS_table$RPV[PS_table$Pop=="ADOL"], PS_table$RPV[PS_table$Pop=="AROL"], 
+        PS_table$RPV[PS_table$Pop=="COOL"], PS_table$RPV[PS_table$Pop=="OIBG"], 
+        PS_table$RPV[PS_table$Pop=="MABG"], PS_table$RPV[PS_table$Pop=="RABG"], 
+        PS_table$RPV[PS_table$Pop=="RAJS"])])
+axis(side = 2, line=-1, tck=.95, bg='gray85')
+
+axis(side = 1, at=c(seq(from=.9, to=19, by=1.8)), tick = F, line=-1.5, ylim=c(0, 300),
+     label=c("CGBC","MYJO","TOBG","CBBG","ESNK",
+             "LBBC","RBBC","ADOL","COOL","MABG","RAJS"))
+
+axis(side = 1, at=c(seq(from=1.8, to=19, by=1.8)), tick = F, line=-1.5, ylim=c(0, 300),
+     label=c("FGBC","NEJS","WMBG","DAJO","FRSI",
+             "RABS","SPNK","AROL","OIBG","RABG"))
+
+par(cex=1)
+axis(side = 3, at=9.5, tick = F, line=-1, labels=expression(italic("R. sativus")))
+
+par(cex=.9)
+axis(side=3, at=2.7, tick=F, labels = "Daikon", line=-4)
+axis(side=3, at=9.5, tick=F, labels="European", line=-4)
+axis(side=3, at=15, tick=F, labels="Oilseed", line=-4)
+axis(side=3, at=18, tick=F, labels="Rattail", line=-4)
+
+
+lines(c(5.85,5.85), c(25,175), lty=6)
+lines(c(13.1,13.1), c(25,175), lty=6)
+lines(c(16.7,16.7), c(25,175), lty=6)
+
+
+
+
+```
+
+```{r ExperimentalVar, echo=FALSE, fig.path="../Figures/", fig.keep="all", message=FALSE, warning=FALSE, fig.height=10, fig.width=14, warning=FALSE}
+
+group_by(FlowData, Pop) %>%
+ggplot( aes(Pop:Experiment, SurviveGTF, col=Experiment)) +
   geom_boxplot() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
 
@@ -1042,22 +1176,44 @@ ggplot( aes(Pop:Experiment, GTF, col=Experiment)) +
 #  geom_boxplot() +
 #  theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
 
-group_by(RawData, Pop) %>%
-ggplot( aes(Experiment, GTF, col=Experiment)) +
+group_by(FlowData, Pop) %>%
+ggplot( aes(Experiment, SurviveGTF, col=Experiment)) +
   geom_boxplot() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   facet_wrap("Pop")
 
 ```
 
-```{r SmallExperimentalVar, echo=FALSE, fig.path="../Figures/", fig.keep="all", message=FALSE, warning=FALSE, fig.height=10, fig.width=14}
+```{r SmallExperimentalVar, echo=FALSE, fig.path="../Figures/", fig.keep="all", message=FALSE, warning=FALSE, fig.height=10, fig.width=14, warning=FALSE}
 
-filter(RawData, Pop=="BINY"| Pop=="MAES"| Pop=="SAES") %>%
+filter(FlowData, Pop=="BINY"| Pop=="MAES"| Pop=="SAES") %>%
+  filter(!is.na(BoltFlower)) %>%
 group_by( Pop) %>%
-ggplot( aes(Experiment, GTF, col=Experiment)) +
-  geom_boxplot(varwidth=TRUE) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  facet_wrap("Pop")
+ggplot( aes(Experiment, BoltFlower, col=Experiment)) +
+  geom_jitter(width = .2) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 14),
+        axis.text.y = element_text(size = 14),
+        legend.title = element_text( size=18, face="bold"),
+        legend.text = element_text( size = 16),
+        strip.text =  element_text( size = 14)) +
+  facet_wrap("Pop", scales = "free_x") +
+  guides(colour = guide_legend(override.aes = list(size=8)))
+
+```
+
+Testing some ANOVA models
+
+
+```{r, echo=FALSE, warning=FALSE}
+
+test1 <- lm(RawData$GTF ~ RawData$Experiment + RawData$Experiment:RawData$Pop)
+
+
+test2 <- lm(data = RawData, formula = SurviveGTF ~ Experiment + Seedstock + msDaysVernNoNA + Experiment:Pop)
+
+car::Anova(test1, test.statistic="F")
+car::Anova(test2, test.statistic="F")
+
 
 ```
 
