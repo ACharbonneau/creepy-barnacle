@@ -39,6 +39,15 @@ pca.lab <- droplevels(pca.lab)
 pdf(file="../Figures/SmartPCA.pdf", width=10, height=8.5)
 
 
+## Compute variance explained
+
+pca.eval <- data.table::fread("Marker.eval")
+
+v1var <- (pca.eval[1,1] / sum(pca.eval)) * 100
+v2var <- (pca.eval[2,1] / sum(pca.eval)) * 100
+
+v1_10var <- (sum(pca.eval[1:10,]) / sum(pca.eval)) * 100
+
 #Divergence <- read.table("../OrigOutput/Marker.log", skip=60, header = T, nrows = 9)
 
 #Differences <- read.table("../OrigOutput/Marker.log", skip=581, header = T, nrows = 36, row.names = NULL)
@@ -116,7 +125,8 @@ par( xpd=TRUE, mar=c(5.1, 5.1, 5.1, 10))
 plot((species.order$V1 ), 
 	(species.order$V2 * -1),
 	type="n", 
-	xlab="Eigenvector 1\n23% of variance", ylab="Eigenvector 2\n16% of variance", cex.lab=1.1, 
+	xlab=paste("Eigenvector 1; ", round(v1var, 2), "% of variance", sep = ""), 
+	           ylab=paste("Eigenvector 2; ", round(v2var, 2),"% of variance", sep = ""), cex.lab=1.1, 
 	xlim=c(-0.12, 0.10), ylim=c(-0.2, 0.1) #newpops, w/o NZIL
 )
 
