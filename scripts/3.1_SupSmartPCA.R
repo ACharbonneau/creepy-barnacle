@@ -246,7 +246,7 @@ legend(-0.1, 3, legend=levels(droplevels(rost.data$new.name)),
 rect(3.5, 0, 6.5, 3, col="white")
 
 legend(3.6, 3, legend=levels(droplevels(CropD.data$new.name)), 
-       pch=CropD.sym, col=CropD.col, title="Crop", cex=.9, bty="n" ) 
+       pch=CropD.sym, col=CropD.col, title=expression(italic("R. sativus")), cex=.9, bty="n" ) 
 
 legend(3.6, 2, legend=levels(droplevels(CropE.data$new.name)), 
        pch=CropE.sym, col=CropE.col, cex=.9, bty="n" )  

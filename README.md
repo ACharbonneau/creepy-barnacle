@@ -19,7 +19,6 @@ Clone this repo:
 Run 0_PaperSetup.sh, from inside the new repo:
 
 > cd creepy-barnacle
-
 > bash scripts/0_PaperSetup.sh
 
 That will download the raw dataset, build a coherent dataframe from it, and run all of the flowering time analysis, as well as produce the files needed to run STRUCTURE and SmartPCA. Files used downstream go into the MungedData folder, figures and html output will be in Figures.
@@ -43,9 +42,12 @@ From inside STRUCTURE folder:
 From the smartPCA folder:
 
 > cd ../smartPCA
+
 > module load R/3.2.0
-> Rscript 3_SmartPCAPlot.R
-> Rscript 3.1_SupSmartPCA.R
+
+> Rscript ../scripts/3_SmartPCAPlot.R
+
+
 
 Assuming all the parts ran correctly, the Figures folder should contain all figures from the paper, plus several unused supplemental ones, and html files explaining the analysis.
 
@@ -78,10 +80,6 @@ Assuming all the parts ran correctly, the Figures folder should contain all figu
 - 1.2_PhenotypicAnalysis.Rmd  
 
 	Completes flowering time analysis
-	
-- 1.3_SummaryStatistics.Rmd
-
-	Calculates heterozygosity and Fst	
 
 #### Genotypic Analysis
 
@@ -113,7 +111,7 @@ Assuming all the parts ran correctly, the Figures folder should contain all figu
 
 - 3.2_STRUCTURE7.R
 
-	R script for generating STRUCTURE plot for main paper figure, where coloring matches the SmartPCA plot. This script plots 1_STRUCTURE-7_f.parsed by default. Due to the randomization of input files, the coloring will not *always* match the SmartPCA. However, the color palette will. If you require a matched figure, but don't get it, replace the 1_STRUCTURE-7_f.parsed on line 6 of the code with any randomization number from 1-20, as in: 20_STRUCTURE-7_f.parsed and re-run the plotting function. 
+	R script for generating STRUCTURE plot for main paper figure, where coloring matches the SmartPCA plot
 
 ##### SmartPCA
 
