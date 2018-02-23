@@ -18,4 +18,4 @@ packages(rmarkdown)
 
 rmarkdown::render('../scripts/1.1_MarkerPaperSetup.Rmd', output_file = '../Figures/MarkerPaperSetup.html')
 rmarkdown::render('../scripts/1.2_PhenotypicAnalysis.Rmd', output_file = '../Figures/PhenotypicAnalysis.html')
-rmarkdown::render('../scripts/1.3_SummaryStatistics.Rmd', output_file= '../Figures/SummaryStatistics.html')
+rmarkdown::render('../scripts/1.3_SummaryStatistics_html.Rmd', output_file= '../Figures/SummaryStatistics_html')
