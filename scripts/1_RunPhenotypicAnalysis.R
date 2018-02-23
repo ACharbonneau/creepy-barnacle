@@ -1,7 +1,6 @@
 # This runs MarkerPaperSetup.Rmd on CultivarGH2013.csv, IsraelSpainPops2013GH.csv,
 # LaleField2005.csv, 2012FieldData.csv, 2003QstParents.csv, 2004QstOffspring.csv,
 # 2013plantsSpring.csv, and Summer2010dataSummary.csv
-# Then runs PhenotypicAnalysis.Rmd
 
 
 # Install function for packages
@@ -18,4 +17,3 @@ packages(rmarkdown)
 
 rmarkdown::render('../scripts/1.1_MarkerPaperSetup.Rmd', output_file = '../Figures/MarkerPaperSetup.html')
 rmarkdown::render('../scripts/1.2_PhenotypicAnalysis.Rmd', output_file = '../Figures/PhenotypicAnalysis.html')
-rmarkdown::render('../scripts/1.3_SummaryStatistics_html.Rmd', output_file= '../Figures/SummaryStatistics_html')

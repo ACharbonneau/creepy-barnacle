@@ -1,0 +1,438 @@
+---
+title: "PopGen"
+author: "Amanda Charbonneau"
+date: '`r Sys.Date()`'
+output:
+  html_document:
+    code_folding: hide
+    collapsed: no
+    df_print: paged
+    number_sections: yes
+    theme: cerulean
+    toc: yes
+    toc_depth: 5
+    toc_float: yes
+  html_notebook:
+    toc: yes
+    toc_depth: 5
+runtime: shiny
+---
+
+
+```{r, echo=FALSE, message=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+# Install function for packages    
+packages<-function(x){
+  x<-as.character(match.call()[[2]])
+  if (!require(x,character.only=TRUE)){
+    install.packages(pkgs=x,repos="http://cran.r-project.org")
+    require(x,character.only=TRUE)
+  }
+}
+packages("phangorn")
+packages("adegenet")
+packages("hierfstat")
+packages("pegas")
+packages("pheatmap")
+packages("RColorBrewer")
+packages("poppr")
+packages("plyr")
+packages("dplyr")
+packages("ggplot2")
+packages("shiny")
+
+
+```
+
+This script uses the input for STRUCTURE to do some population genetics.
+
+```{r, echo=FALSE, message=FALSE}
+
+#has population names and group names
+
+ALLTHEALLELES <- read.structure(file = "../MungedData/1randSS.str", n.ind = 338, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 2, row.marknames = 1, NA.char = "-9", col.others = c(2,3))
+
+strata(ALLTHEALLELES) <- data.frame(other(ALLTHEALLELES))
+
+colnames(strata(ALLTHEALLELES)) <- c("Pop", "Group")
+
+poppr_ATA <- as.genclone(ALLTHEALLELES)
+
+
+groupcov <- read.csv("../Figures/GroupCoV.csv")
+expcov <- read.csv("../Figures/ExpCoV.csv")
+popcov <- read.csv("../Figures/PopCoV.csv")
+
+```
+
+
+
+```{r, echo=FALSE,message=FALSE}
+#Genind has only individual information, genpop has population level info as well
+
+poplevel <- genind2genpop(ALLTHEALLELES)
+
+poplevelfreq <- tab(poplevel, freq=T)
+
+write.csv(poplevelfreq, "../Figures/PopulationLevelAlleleFreq.csv")
+
+grouplevel <- genind2genpop(x = ALLTHEALLELES, pop = ALLTHEALLELES@other$X[,2])
+grouplevelfreq <- tab(grouplevel, freq=T)
+
+write.csv(grouplevelfreq, "../Figures/GroupLevelAlleleFreq.csv")
+```
+#Summary of the marker data
+
+##Individuals per Group
+
+```{r, echo=FALSE}
+
+table(strata(ALLTHEALLELES, ~Group))
+
+```
+
+
+##Data missingness.
+
+There's a lot of missingness. At one point I ran a manual jackknife of STRUCTURE by both markers and populations to see if dropping any one made a difference. It didn't. I don't understand how it can be robust with that much missing, but it seems to be.
+
+```{r, echo=FALSE, message=FALSE, fig.height=6}
+
+bob <- info_table(ALLTHEALLELES, plot=TRUE, scaled=T)
+
+#data_sets <- c(ALLTHEALLELES, FilterATA)
+
+#inputPanel(
+#  selectInput( "LocusSet", "Loci:", choices=c("All Loci"=1, "Filtered Loci"=2), selected=2)
+#)
+
+#renderPlot( info_table( data_sets[[as.numeric(input$LocusSet)]], plot = TRUE, scaled = T))
+```
+
+
+
+##Comparing expected and observed heterozygosity per marker
+```{r, echo=FALSE, message=FALSE}
+
+summary(ALLTHEALLELES)
+
+ALLSUM <- adegenet::summary(ALLTHEALLELES)
+
+stats::bartlett.test( list( ALLSUM$Hexp, ALLSUM$Hobs ) )
+
+stats::t.test(ALLSUM$Hexp,ALLSUM$Hobs,pair=T,var.equal=TRUE,alter="greater")
+
+```
+
+
+
+## Summary stats per population
+
+```{r, echo=FALSE, message=FALSE}
+
+inputPanel(
+  selectInput("popname", "Population:", choices = c("ADOL"=1,"AFFR"=2,"AROL"=3,"AUFI"=4,"BINY"=5,"CBBG"=6,"CBES"=7,"COAU"=8,"COOL"=9,"DAJO"=10,"DEES"=11,"ESNK"=12,"GHIL"=13,"GMIL"=14,"HCES"=15,"HMES"=16,"HZIL"=17,"IMES"=18,"MABG"=19,"MAES"=20,"MYJO"=21,"NCDE"=22,"NELO"=23,"PBFR"=24,"RABG"=25,"RACA"=26,"REIL"=27,"SAES"=28,"SPEU"=29,"TOBG"=30,"TYIL"=31,"WEAU"=32,"WMBG"=33,"ZYIL"=34)))
+
+renderPrint({ adegenet::summary(seppop(ALLTHEALLELES)[[ as.numeric(input$popname) ]]) })
+
+```
+
+
+##Summary stats for all markers
+```{r, echo=FALSE}
+basic.stats(ALLTHEALLELES)
+
+```
+
+##Do markers appear to be in HWE across dataset?
+
+```{r, echo=FALSE}
+
+hw.test(ALLTHEALLELES, res='matrix', B=1000)
+
+```
+##Do markers appear to be in HWE by population?
+
+Blue is population in departure from HWE at marker at a p < .05
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+#https://grunwaldlab.github.io/Population_Genetics_in_R/Locus_Stats.html
+
+nanhwe.pop <- seppop(ALLTHEALLELES) %>% lapply(hw.test, B = 0)
+
+nanhwe.mat <- sapply(nanhwe.pop, "[", i = TRUE, j = 3) # Take the third column with all rows
+
+alpha  <- 0.05
+newmat <- nanhwe.mat
+newmat[newmat > alpha] <- 1
+
+pheatmap(newmat)
+```
+
+##Comparing expected heterozygosity per population and per group
+
+```{r, echo=FALSE}
+Hs(poplevel)
+
+Hs(grouplevel)
+
+hspop <- as.data.frame(as.matrix(Hs(poplevel)))
+colnames(hspop) <- "ExpHet"
+hspop$Pop <- rownames(hspop)
+
+hspop$Pop <- revalue(hspop$Pop, c(
+                               "SPEU" = "SPNK",
+                               "NELO" = "NEJS",
+                               "RACA" = "RAJS"
+                               ))
+
+
+
+
+hsgroup <- as.data.frame(as.matrix(Hs(grouplevel)))
+colnames(hsgroup) <- "ExpHet"
+hsgroup$locals <- rownames(hsgroup)
+
+hsgroup$locals <- revalue(hsgroup$locals, c(
+                               "European" = "european",
+                               "Oilseed"   = "oleifera",
+                               "Rattail"  = "caudatus",
+                               "Daikon" = "daikon",
+                               "rostratus" = "pugioniformis"
+                               ))
+
+
+```
+
+##Expected Heterozygosity vs Coeffecient of Variation
+
+The weeds as a group have the highest heterozygosity, but a really low Coeffecient of variation. I wondered if they were anti-correlated.
+
+It seems not.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+popHS_Cov <- full_join(hspop, popcov)
+popHS_Cov$locals[popHS_Cov$Pop=="NCDE"] <- "raphNN"
+
+ggplot(popHS_Cov, aes(ExpHet, COV, col=locals)) + geom_point() + geom_smooth(method = 'lm', se = F) + ggtitle("By Population")
+
+write.csv(popHS_Cov, "../Figures/PopHS_Cov.csv")
+groupHS_Cov <- full_join(hsgroup, groupcov)
+
+ggplot(groupHS_Cov, aes(ExpHet, COV, col=locals)) + geom_point() + geom_smooth(method = 'lm', se = F) + ggtitle("By Group")
+write.csv(groupHS_Cov, "../Figures/GroupHS_Cov.csv")
+
+```
+
+
+##PCA
+
+A fun little pca that tries to make boundries around pops (using the dudi.pca function from ade4). Labels seem unmoveable though, so I can't get it to format nicely for use. Looks essentially the same as the paper one, even though it's using the dataset in a completely different format/program/etc. So that's nice.
+
+```{r, echo=FALSE}
+testpca <- scaleGen(ALLTHEALLELES, NA.method="mean")
+dim(testpca)
+
+pca1 <- dudi.pca(testpca,cent=FALSE,scale=FALSE,scannf=FALSE,nf=3)
+#barplot(pca1$eig[1:50],main="PCA eigenvalues", col=heat.colors(50))
+
+
+col <- funky(34)
+s.class(pca1$li, pop(ALLTHEALLELES),xax=1,yax=2, col=transp(col,.6), axesell=FALSE,
+        cstar=1, cpoint=1, grid=FALSE, clabel = .5)
+
+
+#colorplot(pca1$li, pca1$li, transp=TRUE, cex=3, xlab="PC 1", ylab="PC 2")
+#title("PCA of microbov dataset\naxes 1-2")
+#abline(v=0,h=0,col="grey", lty=2)
+```
+
+
+```{r, echo=FALSE, eval=FALSE}
+
+#Playing with adegnet tutorial: An introduction to adegenet 2.1.0 6/14/2017
+
+ca1 <- dudi.coa(tab(poplevel),scannf=FALSE,nf=3)
+barplot(ca1$eig,main="Correspondance Analysis eigenvalues",
+        col=heat.colors(length(ca1$eig)))
+
+ s.label(ca1$li, sub="CA 1-2",csub=2)
+
+
+set.seed(1)
+s.label(ca1$li*1.2, sub="CA 1-2",csub=2, clab=0, cpoint="")
+textplot(ca1$li[,1], ca1$li[,2], words=popNames(poplevel),
+         cex=1.4, new=FALSE, xpd=TRUE)
+add.scatter.eig(ca1$eig,nf=3,xax=1,yax=2,posi="bottomright")
+```
+
+##Populations clustered by genetic distance. Euclidean method.
+
+Makes some expected groupings: landra, weeds(BINY, AUFI, NCDE), most of the crops
+Has Australian weeds clustered with native RRR's instead of other weeds. Sort of like STRUCTURE
+
+```{r, echo=FALSE}
+sampleDists <- dist.genpop(poplevel, method = 1, diag = T, upper = T)
+sampleDistMatrix <- as.matrix(sampleDists)
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows="euclidean",
+         clustering_distance_cols="euclidean",
+         cluster_rows = T,
+         cluster_cols = T,
+         col=colors)
+```
+
+##Same clustering method, just using groups instead of pops.
+
+
+```{r, echo=FALSE}
+sampleDists <- dist.genpop(grouplevel, method = 1, diag = T, upper = T)
+sampleDistMatrix <- as.matrix(sampleDists)
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows="euclidean",
+         clustering_distance_cols="euclidean",
+         cluster_rows = T,
+         cluster_cols = T,
+         col=colors)
+```
+
+##Fstatistics
+
+These are the three Fstatistics for the overall dataset. You are supposed to read each value as 'column/row'. These are calculated as Nei's pairwise Fst between all pairs of populations using a genind object. Heretozygosities are weighted by group sizes. I have zero idea what it is doing with missing data points, or if these are remotely accurate.
+
+```{r, echo=FALSE}
+fstat(ALLTHEALLELES)
+```
+
+Pairwise Fst for all populations. This is output as a csv file, which is much easier to read.
+
+This is the Fst numbers, just as a clustered heatmap so you can see patterns more easily.
+
+```{r, echo=FALSE, warning=FALSE}
+
+popfst <- pairwise.fst(ALLTHEALLELES)
+
+attr(popfst, "Labels") <- unique(as.character(ALLTHEALLELES$pop))
+
+write.csv(as.data.frame(as.matrix(popfst)), "../Figures/PairwiseFst.csv", sep = "'", quote = F, row.names = TRUE, col.names = TRUE )
+
+```
+
+
+
+```{r, echo=FALSE}
+
+pheatmap(as.matrix(popfst), cluster_rows = T, cluster_cols = T,
+         clustering_distance_rows = "euclidean",
+         clustering_distance_cols = "euclidean" )
+```
+
+
+
+##Allele by Pop
+
+I don't remember why I made this, but it's a clustered heatmap of the population level allele frequencies. The columns are alleles. A lot of alleles are at low frequency, and then a handful at very high frequency. Columns where it's all blue with one red or yellow row indicate private alleles. Mostly red/yellow columns indicate alleles that are common. Columnes that are mostly blue indicate low frequency alleles.
+
+
+```{r, echo=FALSE}
+pheatmap(poplevelfreq, cluster_rows=TRUE, show_rownames=TRUE, cluster_cols=T, show_colnames = F)
+```
+##Allele by Group
+
+Again, same type of plot, just using groups instead of populations. There are a few alleles private to groups, and a lot of very low frequency alleles.
+
+```{r, echo=FALSE}
+pheatmap(grouplevelfreq, cluster_rows=TRUE, show_rownames=TRUE, cluster_cols=T, show_colnames = F)
+```
+
+
+```{r, echo=FALSE, eval=FALSE}
+
+## K means clustering
+
+#Just to see what happens. I have no idea what this figure means.
+
+disana <- dapc(ALLTHEALLELES, pop=ALLTHEALLELES@other$X[,2], n.pca=40, n.da=15, scale=FALSE,
+          truenames=TRUE, var.contrib=TRUE, var.loadings=FALSE, pca.info=TRUE,
+          pca.select=c("nbEig","percVar"), perc.pca=NULL)
+
+
+scatter(disana, cell=2, pch="")
+
+
+kmeans <- find.clusters(ALLTHEALLELES, n.pca=40, n.clust=NULL,
+              stat="BIC", choose.n.clust=FALSE,
+              criterion="diffNgroup",
+              max.n.clust=20, n.iter=1e5,
+              n.start=10, scale=FALSE, truenames=TRUE)
+
+
+```
+
+
+```{r, message=T, error=TRUE, warning=TRUE, fig.height=8}
+
+
+
+inputPanel(
+  selectInput("Grouplevel", "Grouping:", choices = c("Pop"="~Pop", "Group"="~Group", "Group/Pop"="~Group/Pop" ), selected = "~Group"),
+  selectInput("miss", "Missing Data options:", choices=c("loci", "ignore", "zero", "mean", "geno"), selected = "geno"),
+  sliderInput("cutoff", "Missingness Cutoff:", min=0, max=1, value=.05, step=.05),
+  checkboxGroupInput("goodloci", "Choose Loci to use:", choices = c("DWRD_124", "DWRD_112", "DWRD_61",  "DWRD_177", "DWRD_107",
+"DWRD_123", "DWRD_121", "DWRD_158", "DWRD_48",  "DWRD_180",
+"DWRD_97",  "DWRD_205", "DWRD_27",  "Bn26a",    "BRMS005", "Na10H06",
+"Ra1H08", "Ra2E11", "Na14E08", "Bn35d", "Na12E05"), selected = c("DWRD_124", "DWRD_112", "DWRD_61",  "DWRD_177", "DWRD_107",
+"DWRD_123", "DWRD_121", "DWRD_158", "DWRD_48",  "DWRD_180",
+"DWRD_97",  "DWRD_205", "DWRD_27",  "Bn26a",    "BRMS005", "Na10H06",
+"Ra1H08", "Ra2E11", "Na14E08", "Bn35d", "Na12E05")),
+checkboxGroupInput("goodgroups", "Choose groups to use:", choices=c("RRR_Native_West", "RRR_Native_East", "RRR_Weed", "Rr_Landra", "RS_Daikon", "RS_European", "RS_Oilseed", "RS_Rattail", "Rostratus" ), selected = c("RRR_Native_West", "RRR_Native_East", "RRR_Weed", "Rr_Landra", "RS_Daikon", "RS_European", "RS_Oilseed", "RS_Rattail", "Rostratus")))
+
+renderText( { goodgroups <- c(input$goodgroups)
+              goodloci <- c(input$goodloci)
+              FilterATA <- ALLTHEALLELES[loc=goodloci]
+              Allpops_filter_ATA <- as.genclone(FilterATA)
+              poppr_filter_ATA <- popsub(Allpops_filter_ATA, sublist = c(input$goodgroups))
+  capture.output(
+    poppr.amova(poppr_filter_ATA, as.formula(input$Grouplevel), filter = T,
+                missing = input$miss, cutoff= as.numeric(input$cutoff)),
+                type=c("message"))})
+
+
+renderPlot({  RRR_Native_West <- c("AFFR", "MAES","HCES", "HMES","IMES", "DEES")
+RRR_Native_East <- c("GHIL", "HZIL", "REIL", "TYIL", "ZYIL")
+RRR_Weed <- c("AUFI", "BINY", "COAU", "WEAU", "NCDE")
+Rr_Landra <- c("CBES", "SAES", "PBFR")
+RS_Daikon <- c("MYJO", "NELO", "TOBG", "WMBG")
+RS_European <- c("DAJO", "ESNK", "SPEU", "CBBG")
+RS_Oilseed <- c("AROL", "COOL", "ADOL")
+RS_Rattail <- c("RABG", "RACA", "MABG")
+Rostratus <- c("GMIL")
+goodloci <- c(input$goodloci)
+              goodgroups <- c(input$goodgroups)
+              FilterATA <- ALLTHEALLELES[loc=goodloci]
+              Allpops_filter_ATA <- as.genclone(FilterATA)
+              poppr_filter_ATA <- popsub(Allpops_filter_ATA, sublist = goodgroups)
+              AMOVA_ATA <- poppr.amova(poppr_filter_ATA, as.formula(input$Grouplevel), filter = T,
+                                       missing = input$miss, cutoff= as.numeric(input$cutoff))
+              amova.test <- randtest( AMOVA_ATA ) # Test for significance
+              plot(amova.test) })
+
+renderPrint( {goodloci <- c(input$goodloci)
+              FilterATA <- ALLTHEALLELES[loc=goodloci]
+              Allpops_filter_ATA <- as.genclone(FilterATA)
+              poppr_filter_ATA <- popsub(Allpops_filter_ATA, sublist = c(input$goodgroups))
+              AMOVA_ATA <- poppr.amova(poppr_filter_ATA, as.formula(input$Grouplevel), filter = T, missing = input$miss, cutoff= as.numeric(input$cutoff))
+  randtest( AMOVA_ATA )})
+
+renderPrint( {goodloci <- c(input$goodloci)
+              FilterATA <- ALLTHEALLELES[loc=goodloci]
+              Allpops_filter_ATA <- as.genclone(FilterATA)
+              poppr_filter_ATA <- popsub(Allpops_filter_ATA, sublist = c(input$goodgroups))
+              poppr.amova(poppr_filter_ATA, as.formula(input$Grouplevel), filter = T, missing = input$miss, cutoff= as.numeric(input$cutoff)) })
+
+```

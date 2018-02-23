@@ -1,5 +1,5 @@
 rm( list=ls())
-# Install function for packages    
+# Install function for packages
 packages<-function(x){
   x<-as.character(match.call()[[2]])
   if (!require(x,character.only=TRUE)){
@@ -16,7 +16,7 @@ packages(ggplot2)
 pdf(file="../Figures/SuppSmartPCA.pdf", width=10, height=8.5)
 
 
-labels.dat <- read.csv("../OriginalData/MarkerPopOrder.csv", header=F, 
+labels.dat <- read.csv("../OriginalData/MarkerPopOrder.csv", header=F,
                        col.names=c("Individual", "Type", "Pop", "Order", "Name", "Species", "Color", "Vernalization", "DTF", "Bins", "locals"))
 #Just for making supplement
 biallele <- read.table("../MungedData//AllBialleleGeno.csv", sep = ",", header = T)
@@ -39,9 +39,9 @@ pca.lab$new.name <- factor( paste( pca.lab$Name, " (", pca.lab$Pop, ")", sep="" 
 add.alpha <- function(col, alpha=.7){
   if(missing(col))
     stop("Please provide a vector of colours.")
-  apply(sapply(col, col2rgb)/255, 2, 
-        function(x) 
-          rgb(x[1], x[2], x[3], alpha=alpha))  
+  apply(sapply(col, col2rgb)/255, 2,
+        function(x)
+          rgb(x[1], x[2], x[3], alpha=alpha))
 }
 
 col_pal <- brewer.pal(9, "Set1")
@@ -103,104 +103,104 @@ tempar <- par()$mar
 
 par( xpd=TRUE, mar=c(5.1, 5.1, 5.1, 10))
 
-plot((species.order$PC1 ), 
+plot((species.order$PC1 ),
      (species.order$PC2 * -1),
-     type="n", 
-     xlab="PC1", ylab="PC2", cex.lab=1.1, 
+     type="n",
+     xlab="PC1", ylab="PC2", cex.lab=1.1,
      xlim=c(-4, 4), ylim=c(-5, 3) #newpops, w/o NZIL
 )
 
 par(new=TRUE)
-plot((raphNN.data$PC1 ), 
-     (raphNN.data$PC2 * -1), 
-     pch=raphNN.sym[droplevels(raphNN.data$new.name)], 
+plot((raphNN.data$PC1 ),
+     (raphNN.data$PC2 * -1),
+     pch=raphNN.sym[droplevels(raphNN.data$new.name)],
      col=raphNN.col, bg=ALLTHECOLORS[8],
      lwd=2.5,
      xlim=c(-4, 4), ylim=c(-5, 3),#newpops, w/o NZIL
      axes=FALSE, xlab="", ylab="", cex=1.7)
 
-par(new=TRUE)	
-plot((lanmar.data$PC1 ), 
-     (lanmar.data$PC2 * -1), 
-     pch=lanmar.sym[droplevels(lanmar.data$new.name)], 
+par(new=TRUE)
+plot((lanmar.data$PC1 ),
+     (lanmar.data$PC2 * -1),
+     pch=lanmar.sym[droplevels(lanmar.data$new.name)],
      col=lanmar.col,
      lwd=2.5,
      xlim=c(-4, 4), ylim=c(-5, 3),#newpops, w/o NZIL
      axes=FALSE, xlab="", ylab="", cex=1.7)
 
 par(new=TRUE)
-plot((CropD.data$PC1 ), 
-     (CropD.data$PC2 * -1), 
-     pch=CropD.sym[droplevels(CropD.data$new.name)], 
+plot((CropD.data$PC1 ),
+     (CropD.data$PC2 * -1),
+     pch=CropD.sym[droplevels(CropD.data$new.name)],
      lwd=2.5,
-     col=CropD.col, 
+     col=CropD.col,
      xlim=c(-4, 4), ylim=c(-5, 3),#newpops, w/o NZIL
      axes=FALSE, xlab="", ylab="", cex=1.7)
 
 par(new=TRUE)
-plot((CropE.data$PC1 ), 
-     (CropE.data$PC2 * -1), 
-     pch=CropE.sym[droplevels(CropE.data$new.name)], 
+plot((CropE.data$PC1 ),
+     (CropE.data$PC2 * -1),
+     pch=CropE.sym[droplevels(CropE.data$new.name)],
      lwd=2.5,
-     col=CropE.col, 
+     col=CropE.col,
      xlim=c(-4, 4), ylim=c(-5, 3),#newpops, w/o NZIL
      axes=FALSE, xlab="", ylab="", cex=1.7)
 
 par(new=TRUE)
-plot((CropO.data$PC1 ), 
-     (CropO.data$PC2 * -1), 
-     pch=CropO.sym[droplevels(CropO.data$new.name)], 
+plot((CropO.data$PC1 ),
+     (CropO.data$PC2 * -1),
+     pch=CropO.sym[droplevels(CropO.data$new.name)],
      lwd=2.5,
-     col=CropO.col, 
+     col=CropO.col,
      xlim=c(-4, 4), ylim=c(-5, 3),#newpops, w/o NZIL
      axes=FALSE, xlab="", ylab="", cex=1.7)
 
 par(new=TRUE)
-plot((CropR.data$PC1 ), 
-     (CropR.data$PC2 * -1), 
-     pch=CropR.sym[droplevels(CropR.data$new.name)], 
+plot((CropR.data$PC1 ),
+     (CropR.data$PC2 * -1),
+     pch=CropR.sym[droplevels(CropR.data$new.name)],
      bg=ALLTHECOLORS[8],
      lwd=2.5,
-     col=CropR.col, 
+     col=CropR.col,
      xlim=c(-4, 4), ylim=c(-5, 3),#newpops, w/o NZIL
      axes=FALSE, xlab="", ylab="", cex=1.7)
 
 par(new=TRUE)
-plot((raphNatW.data$PC1 ), 
-     (raphNatW.data$PC2 * -1), 
-     pch=raphNatW.sym[droplevels(raphNatW.data$new.name)], 
-     col=raphNatW.col, 
+plot((raphNatW.data$PC1 ),
+     (raphNatW.data$PC2 * -1),
+     pch=raphNatW.sym[droplevels(raphNatW.data$new.name)],
+     col=raphNatW.col,
      lwd=2.5,
      xlim=c(-4, 4), ylim=c(-5, 3),#newpops, w/o NZIL
-     axes=FALSE, xlab="", ylab="", cex=1.7)	
+     axes=FALSE, xlab="", ylab="", cex=1.7)
 
 par(new=TRUE)
-plot((raphNatE.data$PC1 ), 
-     (raphNatE.data$PC2 * -1), 
-     pch=raphNatE.sym[droplevels(raphNatE.data$new.name)], 
-     col=raphNatE.col, 
+plot((raphNatE.data$PC1 ),
+     (raphNatE.data$PC2 * -1),
+     pch=raphNatE.sym[droplevels(raphNatE.data$new.name)],
+     col=raphNatE.col,
      lwd=2.5,
      xlim=c(-4, 4), ylim=c(-5, 3),#newpops, w/o NZIL
-     axes=FALSE, xlab="", ylab="", cex=1.7)	
+     axes=FALSE, xlab="", ylab="", cex=1.7)
 
 par(new=TRUE)
-plot((rost.data$PC1 ), 
-     (rost.data$PC2 * -1), 
-     pch=rost.sym[droplevels(rost.data$new.name)], 
+plot((rost.data$PC1 ),
+     (rost.data$PC2 * -1),
+     pch=rost.sym[droplevels(rost.data$new.name)],
      bg=ALLTHECOLORS[8],
      col=rost.col,
      lwd=2.5,
      xlim=c(-4, 4), ylim=c(-5, 3),#newpops, w/o NZIL
-     axes=FALSE, xlab="", ylab="", cex=1.5)		
+     axes=FALSE, xlab="", ylab="", cex=1.5)
 
 par(new=TRUE)
-plot((conf.data$PC1 ), 
-     (conf.data$PC2 * -1), 
-     pch=conf.sym[droplevels(conf.data$new.name)], 
+plot((conf.data$PC1 ),
+     (conf.data$PC2 * -1),
+     pch=conf.sym[droplevels(conf.data$new.name)],
      col=conf.col,
      lwd=2.5,
      xlim=c(-4, 4), ylim=c(-5, 3),#newpops, w/o NZIL
-     axes=FALSE, xlab="", ylab="", cex=1.7)	
+     axes=FALSE, xlab="", ylab="", cex=1.7)
 
 ########### Plots for paper ####################
 
@@ -208,14 +208,14 @@ plot((conf.data$PC1 ),
 
 rect(2.2, -3.5, 4.6, -2, col="white")
 
-legend(2.5,-2.2, legend=levels(droplevels(lanmar.data$new.name)), 
+legend(2.5,-2.2, legend=levels(droplevels(lanmar.data$new.name)),
        pch=lanmar.sym, col=col_pal[7], title=expression(italic("R.r. landra")),
        title.adj=.2,cex=.9, bty="n" )
 
 
 # Non Natives
 rect(-3.2, -4.5, -.7, -2.2, col="white")
-legend( -2.9,-2.65, legend=levels(droplevels(raphNN.data$new.name)), 
+legend( -2.9,-2.65, legend=levels(droplevels(raphNN.data$new.name)),
         pch=raphNN.sym, col=raphNN.col, pt.bg=ALLTHECOLORS[8], title.adj=.2,
         title = expression( italic("R.r. raphanistrum")), cex=.9, bty="n" )
 
@@ -225,10 +225,10 @@ text(-2., -2.5, "Non-native" , cex=.9)
 # Native RRR
 rect(-4.2, 2.1, -.8, 4.1, col="white")
 
-legend(-4.2, 3.8, legend=levels(droplevels(raphNatW.data$new.name)), 
+legend(-4.2, 3.8, legend=levels(droplevels(raphNatW.data$new.name)),
        pch=raphNatW.sym, col=raphNatW.col, cex=.9, bty="n" )
 
-legend(-2.5, 3.8, legend=levels(droplevels(raphNatE.data$new.name)), 
+legend(-2.5, 3.8, legend=levels(droplevels(raphNatE.data$new.name)),
        pch=raphNatE.sym, col=raphNatE.col, bty="n" )
 
 text(-3.1, 3.9, expression( "Native" ), cex=.9)
@@ -236,7 +236,7 @@ text(-2.05, 3.88, expression(italic("R.r. raphanistrum")), cex=.9)
 
 ## R. pugioniformis
 rect(-.2, 2.3, 1.5, 3.1, col="white")
-legend(-0.1, 3, legend=levels(droplevels(rost.data$new.name)), 
+legend(-0.1, 3, legend=levels(droplevels(rost.data$new.name)),
        pch=rost.sym, pt.bg=ALLTHECOLORS[8],
        col="black", title=expression(italic("R. pugioniformis")), cex=.9, bty = "n" )
 
@@ -245,18 +245,17 @@ legend(-0.1, 3, legend=levels(droplevels(rost.data$new.name)),
 # Crops
 rect(3.5, 0, 6.5, 3, col="white")
 
-legend(3.6, 3, legend=levels(droplevels(CropD.data$new.name)), 
-       pch=CropD.sym, col=CropD.col, title=expression(italic("R. sativus")), cex=.9, bty="n" ) 
+legend(3.6, 3, legend=levels(droplevels(CropD.data$new.name)),
+       pch=CropD.sym, col=CropD.col, title=expression(italic("R. sativus")), cex=.9, bty="n" )
 
-legend(3.6, 2, legend=levels(droplevels(CropE.data$new.name)), 
-       pch=CropE.sym, col=CropE.col, cex=.9, bty="n" )  
+legend(3.6, 2, legend=levels(droplevels(CropE.data$new.name)),
+       pch=CropE.sym, col=CropE.col, cex=.9, bty="n" )
 
-legend(3.6, 1.2, legend=levels(droplevels(CropO.data$new.name)), 
-       pch=CropO.sym, col=CropO.col, cex=.9, bty="n" )  
+legend(3.6, 1.2, legend=levels(droplevels(CropO.data$new.name)),
+       pch=CropO.sym, col=CropO.col, cex=.9, bty="n" )
 
-legend(3.6, .7, legend=levels(droplevels(CropR.data$new.name)), 
-       pch=CropR.sym, col=CropR.col, pt.bg=ALLTHECOLORS[8], cex=.9, bty="n" )  
+legend(3.6, .7, legend=levels(droplevels(CropR.data$new.name)),
+       pch=CropR.sym, col=CropR.col, pt.bg=ALLTHECOLORS[8], cex=.9, bty="n" )
 
 
 dev.off()
-

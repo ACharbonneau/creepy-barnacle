@@ -35,7 +35,7 @@ for line in open_file:
             if col < len(line)-1:
                 file_output.write(",")
         file_output.write("\n")
-            
+
 
 file_input.close()
 file_output.close()

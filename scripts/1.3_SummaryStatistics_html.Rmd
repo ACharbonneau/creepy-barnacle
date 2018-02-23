@@ -36,7 +36,7 @@ packages("hierfstat")
 packages("pegas")
 packages("pheatmap")
 packages("RColorBrewer")
-packages("poppr") 
+packages("poppr")
 packages("plyr")
 packages("dplyr")
 packages("ggplot2")
@@ -159,14 +159,14 @@ basic.stats(ALLTHEALLELES)
 
 ```
 
-## Do markers appear to be in HWE across dataset? 
+## Do markers appear to be in HWE across dataset?
 
 ```{r, echo=FALSE}
 
 hw.test(ALLTHEALLELES, res='matrix', B=1000)
 
 ```
-## Do markers appear to be in HWE by population? 
+## Do markers appear to be in HWE by population?
 
 Blue is population in departure from HWE at marker at a p < .05
 
@@ -204,19 +204,19 @@ hspop$Pop <- revalue(hspop$Pop, c(
 
 
 
-                    
+
 hsgroup <- as.data.frame(as.matrix(Hs(grouplevel)))
 colnames(hsgroup) <- "ExpHet"
 hsgroup$locals <- rownames(hsgroup)
 
 hsgroup$locals <- revalue(hsgroup$locals, c(
-                               "European" = "european", 
-                               "Oilseed"   = "oleifera", 
+                               "European" = "european",
+                               "Oilseed"   = "oleifera",
                                "Rattail"  = "caudatus",
                                "Daikon" = "daikon",
                                "rostratus" = "pugioniformis"
                                ))
-                   
+
 
 ```
 
@@ -282,7 +282,7 @@ textplot(ca1$li[,1], ca1$li[,2], words=popNames(poplevel),
 add.scatter.eig(ca1$eig,nf=3,xax=1,yax=2,posi="bottomright")
 ```
 
-## Populations clustered by genetic distance. Euclidean method. 
+## Populations clustered by genetic distance. Euclidean method.
 
 Makes some expected groupings: landra, weeds(BINY, AUFI, NCDE), most of the crops
 Has Australian weeds clustered with native RRR's instead of other weeds. Sort of like STRUCTURE
@@ -340,7 +340,7 @@ write.csv(as.data.frame(as.matrix(popfst)), "../Figures/PairwiseFst.csv", sep = 
 
 ```{r, echo=FALSE}
 
-pheatmap(as.matrix(popfst), cluster_rows = T, cluster_cols = T, 
+pheatmap(as.matrix(popfst), cluster_rows = T, cluster_cols = T,
          clustering_distance_rows = "euclidean",
          clustering_distance_cols = "euclidean" )
 ```
@@ -368,7 +368,7 @@ pheatmap(grouplevelfreq, cluster_rows=TRUE, show_rownames=TRUE, cluster_cols=T, 
 
 ## K means clustering
 
-#Just to see what happens. I have no idea what this figure means. 
+#Just to see what happens. I have no idea what this figure means.
 
 disana <- dapc(ALLTHEALLELES, pop=ALLTHEALLELES@other$X[,2], n.pca=40, n.da=15, scale=FALSE,
           truenames=TRUE, var.contrib=TRUE, var.loadings=FALSE, pca.info=TRUE,
@@ -593,7 +593,7 @@ pca.lab <- cbind(PCA.ind, PCA.dat)
 
 #Get other useful labels and join
 
-labels.dat <- read.csv("../OriginalData/MarkerPopOrder.csv", header=F, 
+labels.dat <- read.csv("../OriginalData/MarkerPopOrder.csv", header=F,
                        col.names=c("Individual", "Type", "Pop", "Order", "Name", "Species", "Color", "Vernalization", "DTF", "Bins", "locals"))
 
 pca.lab <- full_join(pca.lab, labels.dat)
@@ -618,7 +618,7 @@ car::Anova( mod )
 
 #### MANOVA of PCs 1-10
 
-PC1 doesn't capture all the differences between groups, so here I'm doing a MANOVA of PCs 1-10, which is ~30% of the variation in the molecular data (I just found that the numbers I was getting from SmartPCA weren't %variance explained like I thought, so I've recalculated it): 
+PC1 doesn't capture all the differences between groups, so here I'm doing a MANOVA of PCs 1-10, which is ~30% of the variation in the molecular data (I just found that the numbers I was getting from SmartPCA weren't %variance explained like I thought, so I've recalculated it):
 
 ```{r}
 
@@ -663,8 +663,8 @@ If I plot V1 vs V2, it looks essentially like a centroid-only version of the PCA
 add.alpha <- function(col, alpha=.7){
   if(missing(col))
     stop("Please provide a vector of colours.")
-  apply(sapply(col, col2rgb)/255, 2, 
-        function(x) 
+  apply(sapply(col, col2rgb)/255, 2,
+        function(x)
           rgb(x[1], x[2], x[3], alpha=alpha))  
 }
 
@@ -687,7 +687,7 @@ rostratus <-  ALLTHECOLORS[10]
 MmodCo$colors <- c(NonNatives, Daikon, European, lanmar, Oilseed, raphNatE, raphNatW, Rattail, rostratus)
 
 
-plot(MmodCo$V1, MmodCo$V2, col=MmodCo$colors, pch=16, cex=1.2) 
+plot(MmodCo$V1, MmodCo$V2, col=MmodCo$colors, pch=16, cex=1.2)
 
 legend("bottomleft", legend = c("NonNatives", "Daikon", "European", "lanmar", "Oilseed", "raphNatE", "raphNatW", "Rattail", "rostratus"), col=MmodCo$colors, pch=16)
 
@@ -710,9 +710,3 @@ S <-  var(MmodCo[,1:8])
 mahalanobis(MmodCo[,1:8], center = F, cov = S)
 
 ```
-
-
-
-
-
-

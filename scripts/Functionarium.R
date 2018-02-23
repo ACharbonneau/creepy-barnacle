@@ -74,24 +74,24 @@ PRsq <- function( model ){
 		variable.name <- rep(NA, model.length )
 		partial.Rsq <- rep(NA, model.length )
 		univariate.Model.Rsq <- rep(NA, model.length )
-			
+
 	for (i in 1:model.length){
 		variable.name[i] <- variables[i]
 		drop <- parse( text=variables[i] )
 		new.formula <- as.formula( paste( ".~.-", variables[i], sep=""))
 		new.model <- update(model, new.formula )
 		partial.Rsq[i] <- (var(new.model$resid) - residual.variance)/ var(new.model$resid)
-		
+
 		new.formula.univariate <- as.formula( paste( ".~", variables[i], sep=""))
 		univariate.model <- update(model, new.formula.univariate)
 		univariate.Model.Rsq[i] <- summary(univariate.model)$r.sq
 		}
-	
+
 	R2 <- Rsq( model )
 	adj.R2 <- summary(model)$adj.r
-	
+
 	partials <- data.frame(partial.Rsq, univariate.Model.Rsq )
 	row.names(partials) <- variable.name
-	
+
 	list(FullModelRsquared=R2, FullModelAdjustedR2 = adj.R2, partials=partials	)
 }

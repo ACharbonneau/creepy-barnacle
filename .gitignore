@@ -7,9 +7,10 @@ figures/
 output/
 OrigOutput/
 OriginalData/
-MolEcoSubmission/
+JournalSubs/
 MungedData/
 STRUCTURE/
 rename.txt
 smartPCA/
 withtemp.qsub
+*.html

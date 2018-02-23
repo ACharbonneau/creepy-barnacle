@@ -3,7 +3,7 @@ title: "Phenotypic Analysis"
 author: "Amanda Charbonneau"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  html_document: 
+  html_document:
     theme: "cerulean"
     number_sections: true
     toc: true
@@ -89,13 +89,13 @@ pr <- TRUE       # save posterior distribution of random effects
 ```{r RrrSubset, echo=FALSE}
 # Data Subset for R.r. raphanistrum analysis
 #Only keep data for individuals that are Rrr, have a flowering date and germination date
-RrrData <- filter( FlowData, Taxonomy == "raphanistrum" & 
-                             !is.na( SurviveGTF) & 
-                             !is.na( msDOYGS )  ) %>% 
-           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, msDOYGS, 
-                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS, PTG, 
+RrrData <- filter( FlowData, Taxonomy == "raphanistrum" &
+                             !is.na( SurviveGTF) &
+                             !is.na( msDOYGS )  ) %>%
+           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, msDOYGS,
+                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS, PTG,
                    SurviveGTF, FlowWoVern)
-    
+
 
 RrrData$Geography <- relevel( RrrData$Geography, "west" )
 RrrData$Habitat <- relevel( RrrData$Habitat, "natural" )
@@ -108,12 +108,12 @@ RrrData <- droplevels( RrrData )
 ```{r RrNativeSubset, echo=FALSE}
 # Data Subset for Raphanus natives analysis
 #Only keep data for individuals that are natives, have a flowering date and germination date
-NatData <- filter( FlowData, Geography != "nonNative" & 
-                             Species != "sativus" & 
-                             !is.na( SurviveGTF) & 
-                             !is.na( msDOYGS )  ) %>% 
-           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, msDOYGS, 
-                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS, 
+NatData <- filter( FlowData, Geography != "nonNative" &
+                             Species != "sativus" &
+                             !is.na( SurviveGTF) &
+                             !is.na( msDOYGS )  ) %>%
+           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, msDOYGS,
+                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS,
                    Species, SubSpecies, Taxonomy, SurviveGTF, FlowWoVern)
 
 NatData$ID <- row.names( NatData )
@@ -126,11 +126,11 @@ NatData <- droplevels( NatData )
 ```{r SativusSubset, echo=FALSE}
 # Data Subset for sativus analysis
 #Only keep data for individuals that are sativus, have a flowering date and germination date
-SatData <- filter( FlowData, Species == "sativus" & 
-                             !is.na( SurviveGTF) & 
-                             !is.na( msDOYGS ) ) %>% 
-           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, msDOYGS, 
-                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS, 
+SatData <- filter( FlowData, Species == "sativus" &
+                             !is.na( SurviveGTF) &
+                             !is.na( msDOYGS ) ) %>%
+           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, msDOYGS,
+                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS,
                    Species, SubSpecies, Taxonomy, SurviveGTF, FlowWoVern)
 
 SatData$Taxonomy <- relevel(SatData$Taxonomy, "european")
@@ -140,8 +140,8 @@ SatData <- droplevels( SatData )
 ```{r JeffSativusSubset, echo=FALSE}
 # Data Subset for sativus analysis
 #Only keep data for individuals that are sativus, have a flowering date and germination date and were in the original data from Jeff
-JeffSatData <- filter( FlowData, Species == "sativus" & 
-                             !is.na( SurviveGTF) & 
+JeffSatData <- filter( FlowData, Species == "sativus" &
+                             !is.na( SurviveGTF) &
                              !is.na( msDOYGS )  &
                              ( Pop == "MABG" |
                                Pop == "RABG" |
@@ -156,9 +156,9 @@ JeffSatData <- filter( FlowData, Species == "sativus" &
                                Pop == "NELO" |
                                Pop == "SPNK" |
                                Pop == "TOBG" |
-                               Pop == "WMBG" )) %>% 
-           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, msDOYGS, 
-                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS, 
+                               Pop == "WMBG" )) %>%
+           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, msDOYGS,
+                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS,
                    Species, SubSpecies, Taxonomy, SurviveGTF )
 
 JeffSatData$Taxonomy <- relevel(JeffSatData$Taxonomy, "european")
@@ -169,12 +169,12 @@ JeffSatData <- droplevels( JeffSatData )
 # Data Subset for raw data figure
 #Only keep data for individuals that are in experiment, have a flowering date and germination date
 
-RawData <- filter( FlowData, !is.na( BoltFlower ) & 
-                             !is.na( msDOYGS )  ) %>% 
-           select( ID, GTF, BoltFlower, Geography, Seedstock, GrowthEnvironment, msDOYGS, 
-                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS, PTG, 
+RawData <- filter( FlowData, !is.na( BoltFlower ) &
+                             !is.na( msDOYGS )  ) %>%
+           select( ID, GTF, BoltFlower, Geography, Seedstock, GrowthEnvironment, msDOYGS,
+                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS, PTG,
                    SurviveGTF, FlowWoVern, Taxonomy, Species, Order, locals, ExCode)
-    
+
 
 RawData$Geography <- relevel( RawData$Geography, "west" )
 RawData$Habitat <- relevel( RawData$Habitat, "natural" )
@@ -189,10 +189,10 @@ RawData <- droplevels( RawData )
 # Data Subset for table of experiments
 # Numbers for what was planned/done regardless of who died
 
-ExtraRawData <- select( FlowData, ID, GTF, Geography, Seedstock, 
-                   GrowthEnvironment, msDOYGS, msDaysVernNoNA, 
-                   Pop, Experiment, Habitat, PTF, msDOYPS, PTG, 
-                   SurviveGTF, FlowWoVern, Taxonomy, Species, 
+ExtraRawData <- select( FlowData, ID, GTF, Geography, Seedstock,
+                   GrowthEnvironment, msDOYGS, msDaysVernNoNA,
+                   Pop, Experiment, Habitat, PTF, msDOYPS, PTG,
+                   SurviveGTF, FlowWoVern, Taxonomy, Species,
                    Order, locals, ExCode)
 
 ExtraRawData$Geography <- relevel( ExtraRawData$Geography, "west" )
@@ -205,10 +205,10 @@ ExtraRawData <- droplevels( ExtraRawData )
 ```
 
 ```{r unsubsettedmodeldata, echo=FALSE}
-AllModeled <- filter( FlowData, !is.na( SurviveGTF) & 
-                                !is.na( msDOYGS )  ) %>% 
-           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, msDOYGS, 
-                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS, 
+AllModeled <- filter( FlowData, !is.na( SurviveGTF) &
+                                !is.na( msDOYGS )  ) %>%
+           select( ID, GTF, Geography, Seedstock, GrowthEnvironment, msDOYGS,
+                   msDaysVernNoNA, Pop, Experiment, Habitat, PTF, msDOYPS,
                    Species, SubSpecies, Taxonomy, SurviveGTF, FlowWoVern)
 
 AllModeled <- droplevels( AllModeled )
@@ -232,7 +232,7 @@ Populations in Raw figure: `r levels(RawData$Pop)` N= `r length(levels(RawData$P
 
 Individuals in Raw figure: `r length(RawData$Pop)`
 
-##Data Subset for R.r. raphanistrum analysis. 
+##Data Subset for R.r. raphanistrum analysis.
 Only kept data for individuals that are Rrr, have a flowering date and germination date.
 This includes individuals that were given a +1 flowering date:
 
@@ -263,7 +263,7 @@ Number of Pops: `r length(levels(SatData$Pop))`
 Indivduals per Pop: `r (dplyr::count(SatData, Pop) %>% summarize(min=min(n)))$min` - `r (dplyr::count(SatData, Pop) %>% summarize(max=max(n)))$max`
 
 ## Raw numbers
-Combined data from the above datasets but NOT including +1 flowering date. 
+Combined data from the above datasets but NOT including +1 flowering date.
 This was used to create the flowering boxplot figure
 
 Total individuals: `r length(RawData$Pop)`
@@ -273,7 +273,7 @@ Number of Pops: `r length(levels(RawData$Pop))`
 Indivduals per Pop: `r (dplyr::count(RawData, Pop) %>% summarize(min=min(n)))$min` - `r (dplyr::count(RawData, Pop) %>% summarize(max=max(n)))$max`
 
 ## Raw +1 numbers
-Combined data from the datasets used for modeling, DOES include +1 flowering date. 
+Combined data from the datasets used for modeling, DOES include +1 flowering date.
 
 Total individuals: `r length(AllModeled$Pop)`
 
@@ -289,7 +289,7 @@ dplyr::count( ExtraRawData, ExCode, Pop ) %>% dplyr::count( ExCode )
 
 ```
 
-Individuals per Experiment: 
+Individuals per Experiment:
 
 ```{r IndExp, echo=FALSE}
 dplyr::count( ExtraRawData, Experiment, ExCode )
@@ -311,7 +311,7 @@ Here, I'm using germination to flowering (or last alive date) as the response, w
 
 Rrr_lmer <- lmer( SurviveGTF ~ Geography + Seedstock + msDOYGS + msDaysVernNoNA + (1|Experiment) + (1|Geography:Pop), data=RrrData  )
 
-Rrr_glmm <- MCMCglmm( fixed = SurviveGTF ~ Geography  + Seedstock + msDOYGS + msDaysVernNoNA, 
+Rrr_glmm <- MCMCglmm( fixed = SurviveGTF ~ Geography  + Seedstock + msDOYGS + msDaysVernNoNA,
                       random = ~ Experiment + Geography:Pop,
                       nitt = nitt,
                       thin = thin,
@@ -319,7 +319,7 @@ Rrr_glmm <- MCMCglmm( fixed = SurviveGTF ~ Geography  + Seedstock + msDOYGS + ms
                       pr = pr, #save posterior distribution of random effects
                       data = RrrData)
 
-Rrr_glmm_noV <- MCMCglmm( fixed = SurviveGTF ~ Geography  + Seedstock + msDOYGS, 
+Rrr_glmm_noV <- MCMCglmm( fixed = SurviveGTF ~ Geography  + Seedstock + msDOYGS,
                       random = ~ Experiment + Geography:Pop,
                       nitt = nitt,
                       thin = thin,
@@ -331,23 +331,23 @@ Rrr_glmm_noV <- MCMCglmm( fixed = SurviveGTF ~ Geography  + Seedstock + msDOYGS,
 
 ##Model for just native-range *Raphanus*
 
-This is the model that is roughly equivalent to the model we used to look at the differences between the ***R.r. raphanistrum*** plants, just using **SubSpecies** instead of **Geography**. 
+This is the model that is roughly equivalent to the model we used to look at the differences between the ***R.r. raphanistrum*** plants, just using **SubSpecies** instead of **Geography**.
 
 ```{r RrNatModels, echo=TRUE, results="hide"}
 
 Nat_lmer <- lmer( SurviveGTF ~ SubSpecies + Seedstock + msDOYGS + msDaysVernNoNA + (1|Experiment) + (1|SubSpecies:Pop), data = NatData  )
 
 
-Nat_glmm <- MCMCglmm( fixed = SurviveGTF ~ SubSpecies + Seedstock + msDOYGS + msDaysVernNoNA, 
-                      random = ~ Experiment + SubSpecies:Pop, 
+Nat_glmm <- MCMCglmm( fixed = SurviveGTF ~ SubSpecies + Seedstock + msDOYGS + msDaysVernNoNA,
+                      random = ~ Experiment + SubSpecies:Pop,
                       nitt = nitt,
                       thin = thin,
                       burnin = burnin,
                       pr = pr, #save posterior distribution of random effects
                       data = NatData)
 
-Nat_glmm_noV <- MCMCglmm( fixed = SurviveGTF ~ SubSpecies + Seedstock + msDOYGS, 
-                      random = ~ Experiment + SubSpecies:Pop, 
+Nat_glmm_noV <- MCMCglmm( fixed = SurviveGTF ~ SubSpecies + Seedstock + msDOYGS,
+                      random = ~ Experiment + SubSpecies:Pop,
                       nitt = nitt,
                       thin = thin,
                       burnin = burnin,
@@ -363,8 +363,8 @@ This is the model that is roughly equivalent to the model we used to look at the
 Sat_lmer <- lmer( SurviveGTF ~ Taxonomy + (1|Experiment) + (1|Taxonomy:Pop), data=SatData  )
 
 
-Sat_glmm <- MCMCglmm( fixed = SurviveGTF ~ Taxonomy, 
-                      random = ~ Experiment + Taxonomy:Pop, 
+Sat_glmm <- MCMCglmm( fixed = SurviveGTF ~ Taxonomy,
+                      random = ~ Experiment + Taxonomy:Pop,
                       nitt = nitt,
                       thin = thin,
                       burnin = burnin,
@@ -372,8 +372,8 @@ Sat_glmm <- MCMCglmm( fixed = SurviveGTF ~ Taxonomy,
                       data = SatData)
 
 
-JeffSat_glmm <- MCMCglmm( fixed = SurviveGTF ~ Taxonomy, 
-                      random = ~ Experiment + Taxonomy:Pop, 
+JeffSat_glmm <- MCMCglmm( fixed = SurviveGTF ~ Taxonomy,
+                      random = ~ Experiment + Taxonomy:Pop,
                       nitt = nitt,
                       thin = thin,
                       burnin = burnin,
@@ -428,11 +428,11 @@ Rrr_pop_chains[ ,c(6, 9, 15, 16, 18) ] <- Rrr_pop_chains[ ,c(6, 9, 15, 16, 18) ]
 #nonNative effect
 Rrr_pop_chains[ , c( 2, 3, 4, 11, 13, 14, 17 ) ] <- Rrr_pop_chains[ , c( 2, 3, 4, 11, 13, 14, 17 ) ] + Rrr_glmm$Sol[, 3]
 
-Rrr_pop <- as.data.frame( cbind( colMeans( Rrr_pop_chains ), 
+Rrr_pop <- as.data.frame( cbind( colMeans( Rrr_pop_chains ),
                           as.data.frame( HPDinterval( Rrr_pop_chains ) ) ))
 
 
-Rrr_pop[,4:6] <- data.frame( matrix( 
+Rrr_pop[,4:6] <- data.frame( matrix(
                   unlist( strsplit( rownames( Rrr_pop ), split = ".", fixed = TRUE ) ),
                   nrow=18, byrow=T ) )
 
@@ -443,12 +443,12 @@ Rrr_pop <- arrange( Rrr_pop, Geography )
 # Calculating Geographic region level means
 
 Rrr_fixed_chains <- mutate( data.frame( Rrr_glmm$Sol ),
-                            west = X.Intercept., 
-                            east = X.Intercept. + Geographyeast, 
+                            west = X.Intercept.,
+                            east = X.Intercept. + Geographyeast,
                             nonNative = X.Intercept. + GeographynonNative ) %>%
                     select( west, east, nonNative )
 
-Rrr_fixed <- data.frame( cbind( colMeans( Rrr_fixed_chains ), 
+Rrr_fixed <- data.frame( cbind( colMeans( Rrr_fixed_chains ),
                          data.frame( HPDinterval( as.mcmc(Rrr_fixed_chains) ) ) ) )
 
 Rrr_fixed <- mutate(Rrr_fixed, species = rownames(Rrr_fixed), Mean = colMeans.Rrr_fixed_chains.)
@@ -468,9 +468,9 @@ Rrr_noV_pop_chains[ ,c(6, 9, 15, 16, 18) ] <- Rrr_noV_pop_chains[ ,c(6, 9, 15, 1
 #nonNative effect
 Rrr_noV_pop_chains[ , c( 2, 3, 4, 11, 13, 14, 17 ) ] <- Rrr_noV_pop_chains[ , c( 2, 3, 4, 11, 13, 14, 17 ) ] + Rrr_glmm_noV$Sol[, 3]
 
-Rrr_noV_pop <- as.data.frame( cbind( colMeans( Rrr_noV_pop_chains ), 
+Rrr_noV_pop <- as.data.frame( cbind( colMeans( Rrr_noV_pop_chains ),
                           as.data.frame( HPDinterval( Rrr_noV_pop_chains ) ) ))
-Rrr_noV_pop[,4:6] <- data.frame( matrix( 
+Rrr_noV_pop[,4:6] <- data.frame( matrix(
                   unlist( strsplit( rownames( Rrr_noV_pop ), split = ".", fixed = TRUE ) ),
                   nrow=18, byrow=T ) )
 colnames(Rrr_noV_pop) <- c( "Mean", "Lower", "Upper", "Group", "Geography", "Pop" )
@@ -479,12 +479,12 @@ Rrr_noV_pop <- arrange( Rrr_noV_pop, Geography )
 # Calculating Geographic region level means
 
 Rrr_noV_fixed_chains <- mutate( data.frame( Rrr_glmm_noV$Sol ),
-                            west = X.Intercept., 
-                            east = X.Intercept. + Geographyeast, 
+                            west = X.Intercept.,
+                            east = X.Intercept. + Geographyeast,
                             nonNative = X.Intercept. + GeographynonNative ) %>%
                     select( west, east, nonNative )
 
-Rrr_noV_fixed <- data.frame( cbind( colMeans( Rrr_noV_fixed_chains ), 
+Rrr_noV_fixed <- data.frame( cbind( colMeans( Rrr_noV_fixed_chains ),
                          data.frame( HPDinterval( as.mcmc(Rrr_noV_fixed_chains) ) ) ) )
 Rrr_noV_fixed <- mutate(Rrr_noV_fixed, species = rownames(Rrr_noV_fixed), Mean = colMeans.Rrr_noV_fixed_chains.)
 
@@ -505,24 +505,24 @@ Nat_pop_chains[ , c( 2, 11, 13 ) ] <- Nat_pop_chains[ , c( 2, 11, 13 ) ] + Nat_g
 Nat_pop_chains[ , 5 ] <- Nat_pop_chains[ , 5 ] + Nat_glmm$Sol[, 3]
 
 
-Nat_pop <- as.data.frame( cbind( colMeans( Nat_pop_chains ), 
+Nat_pop <- as.data.frame( cbind( colMeans( Nat_pop_chains ),
                           as.data.frame( HPDinterval( Nat_pop_chains ) ) ))
-Nat_pop[,4:6] <- data.frame( matrix( 
+Nat_pop[,4:6] <- data.frame( matrix(
                   unlist( strsplit( rownames( Nat_pop ), split = ".", fixed = TRUE ) ),
                   nrow = 15, byrow = T ) )
 colnames( Nat_pop ) <- c( "Mean", "Lower", "Upper", "Group", "SubSp", "Pop" )
-Nat_pop <- arrange( Nat_pop, SubSp ) 
+Nat_pop <- arrange( Nat_pop, SubSp )
 
 # Calculating Geographic region level means
 
 Nat_fixed_chains <- mutate( data.frame( Nat_glmm$Sol ),
-                            raphanistrum = X.Intercept., 
-                            landra = X.Intercept. + 
+                            raphanistrum = X.Intercept.,
+                            landra = X.Intercept. +
                             SubSpecieslandra,
                             pugioniformis = X.Intercept. + SubSpeciespugioniformis ) %>%
                     select( raphanistrum, landra, pugioniformis)
 
-Nat_fixed <- data.frame( cbind( colMeans( Nat_fixed_chains ), 
+Nat_fixed <- data.frame( cbind( colMeans( Nat_fixed_chains ),
                          data.frame( HPDinterval( as.mcmc( Nat_fixed_chains ) ) ) ) )
 Nat_fixed <- mutate(Nat_fixed, species = rownames(Nat_fixed), Mean = colMeans.Nat_fixed_chains.)
 
@@ -543,23 +543,23 @@ Nat_NoV_pop_chains[ , c( 2, 11, 13 ) ] <- Nat_NoV_pop_chains[ , c( 2, 11, 13 ) ]
 Nat_NoV_pop_chains[ , 5 ] <- Nat_NoV_pop_chains[ , 5 ] + Nat_glmm_noV$Sol[, 3]
 
 
-Nat_noV_pop <- as.data.frame( cbind( colMeans( Nat_NoV_pop_chains ), 
+Nat_noV_pop <- as.data.frame( cbind( colMeans( Nat_NoV_pop_chains ),
                           as.data.frame( HPDinterval( Nat_NoV_pop_chains ) ) ))
-Nat_noV_pop[,4:6] <- data.frame( matrix( 
+Nat_noV_pop[,4:6] <- data.frame( matrix(
                   unlist( strsplit( rownames( Nat_noV_pop ), split = ".", fixed = TRUE ) ),
                   nrow = 15, byrow = T ) )
 colnames( Nat_noV_pop ) <- c( "Mean", "Lower", "Upper", "Group", "SubSp", "Pop" )
-Nat_noV_pop <- arrange( Nat_noV_pop, SubSp ) 
+Nat_noV_pop <- arrange( Nat_noV_pop, SubSp )
 
 # Calculating Geographic region level means
 
 Nat_NoV_fixed_chains <- mutate( data.frame( Nat_glmm_noV$Sol ),
-                            raphanistrum = X.Intercept., 
+                            raphanistrum = X.Intercept.,
                             landra = X.Intercept. + SubSpecieslandra,
                             pugioniformis = X.Intercept. + SubSpeciespugioniformis ) %>%
                     select( raphanistrum, landra, pugioniformis)
 
-Nat_NoV_fixed <- data.frame( cbind( colMeans( Nat_NoV_fixed_chains ), 
+Nat_NoV_fixed <- data.frame( cbind( colMeans( Nat_NoV_fixed_chains ),
                          data.frame( HPDinterval( as.mcmc( Nat_NoV_fixed_chains ) ) ) ) )
 Nat_NoV_fixed <- mutate(Nat_NoV_fixed, species = rownames(Nat_NoV_fixed), Mean = colMeans.Nat_NoV_fixed_chains.)
 
@@ -582,9 +582,9 @@ Sat_pop_chains[ , c( 4, 8, 12, 13, 20, 21 ) ] <- Sat_pop_chains[ , c( 4, 8, 12, 
 # oleifera effect
 Sat_pop_chains[ , c( 1, 2, 5, 14 ) ] <- Sat_pop_chains[ , c( 1, 2, 5, 14 ) ] + Sat_glmm$Sol[ , 4 ]
 
-Sat_pop <- as.data.frame( cbind( colMeans( Sat_pop_chains ), 
+Sat_pop <- as.data.frame( cbind( colMeans( Sat_pop_chains ),
                           as.data.frame( HPDinterval( Sat_pop_chains ) ) ))
-Sat_pop[ , 4:6 ] <- data.frame( matrix( 
+Sat_pop[ , 4:6 ] <- data.frame( matrix(
                   unlist( strsplit( rownames( Sat_pop ), split = ".", fixed = TRUE ) ),
                   nrow = 21, byrow = T ) )
 
@@ -601,7 +601,7 @@ Sat_fixed_chains <- mutate( data.frame( Sat_glmm$Sol ),
                             oleifera = X.Intercept. + Taxonomyoleifera ) %>%
                     select( european, caudatus, daikon, oleifera )
 
-Sat_fixed <- data.frame( cbind( colMeans( Sat_fixed_chains ), 
+Sat_fixed <- data.frame( cbind( colMeans( Sat_fixed_chains ),
                          data.frame( HPDinterval( as.mcmc( Sat_fixed_chains ) ) ) ) )
 Sat_fixed <- mutate(Sat_fixed, species = rownames(Sat_fixed), Mean = colMeans.Sat_fixed_chains.)
 ```
@@ -622,9 +622,9 @@ JeffSat_pop_chains[ , c( 8, 11, 12) ] <- JeffSat_pop_chains[ , c( 8, 11, 12 ) ] 
 # oleifera effect
 JeffSat_pop_chains[ , c( 1, 2, 4 ) ] <- JeffSat_pop_chains[ , c( 1, 2, 4 ) ] + JeffSat_glmm$Sol[ , 4 ]
 
-JeffSat_pop <- as.data.frame( cbind( colMeans( JeffSat_pop_chains ), 
+JeffSat_pop <- as.data.frame( cbind( colMeans( JeffSat_pop_chains ),
                           as.data.frame( HPDinterval( JeffSat_pop_chains ) ) ))
-JeffSat_pop[ ,4:6 ] <- data.frame( matrix( 
+JeffSat_pop[ ,4:6 ] <- data.frame( matrix(
                   unlist( strsplit( rownames( JeffSat_pop ), split = ".", fixed = TRUE ) ),
                   nrow = 12, byrow = T ) )
 colnames( JeffSat_pop ) <- c( "Mean", "Lower", "Upper", "Group", "Variety", "Pop" )
@@ -641,7 +641,7 @@ JeffSat_fixed_chains <- mutate( data.frame( JeffSat_glmm$Sol ),
                             oleifera = X.Intercept. + Taxonomyoleifera ) %>%
                     select( european, caudatus, daikon, oleifera )
 
-JeffSat_fixed <- data.frame( cbind( colMeans( JeffSat_fixed_chains ), 
+JeffSat_fixed <- data.frame( cbind( colMeans( JeffSat_fixed_chains ),
                          data.frame( HPDinterval( as.mcmc( JeffSat_fixed_chains ) ) ) ) )
 JeffSat_fixed <- mutate(JeffSat_fixed, species = rownames(JeffSat_fixed), Mean = colMeans.JeffSat_fixed_chains.)
 ```
@@ -659,20 +659,20 @@ levels(Nat_overplot$SubSp)[levels(Nat_overplot$SubSp)=="pugioniformis"] <- ""
 levels(Nat_overplot$SubSp)[levels(Nat_overplot$SubSp)=="landra"] <- "R.r.landra"
 levels(Nat_overplot$SubSp)[levels(Nat_overplot$SubSp)=="raphanistrum"] <- "R.r.raphanistrum"
 
-NatPlot <- ggplot( Nat_overplot, aes( y = Mean, x = Pop, colour = Data ) ) + 
-              geom_point( cex = 2.5) + 
-              geom_errorbar( aes( y = Mean, x = Pop, max = Upper, min = Lower, colour = Data), width = 0, cex = 1) + 
+NatPlot <- ggplot( Nat_overplot, aes( y = Mean, x = Pop, colour = Data ) ) +
+              geom_point( cex = 2.5) +
+              geom_errorbar( aes( y = Mean, x = Pop, max = Upper, min = Lower, colour = Data), width = 0, cex = 1) +
               facet_grid( ~ SubSp, scales = "free", space = "free") +
-              xlab( "Population" ) + 
-              ylab( "Population means as \ndays from germination to flower" ) + 
+              xlab( "Population" ) +
+              ylab( "Population means as \ndays from germination to flower" ) +
               labs(color='Vernalization\nModeled') +
               scale_colour_grey(start = .7, end = .2) +
-              ggtitle( expression( "Only Native-range"~italic( "Raphanus" ) ) ) 
+              ggtitle( expression( "Only Native-range"~italic( "Raphanus" ) ) )
 
 NatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
                                  axis.text.y = element_text( size = 14 ),
                                  axis.title.y = element_text( size = 14 ),
-                                 strip.text.x = element_text( angle = 0, size = 9, face = "italic" ) ) 
+                                 strip.text.x = element_text( angle = 0, size = 9, face = "italic" ) )
 
 
 mtext(text = expression(italic("R.pugioniformis")), side = 3, line = -.95, at=.21, cex = .8)
@@ -682,19 +682,19 @@ mtext(text = expression(italic("R.pugioniformis")), side = 3, line = -.95, at=.2
 
 Nat_fixed_overplot <- rbind( mutate(Nat_fixed, Data = "Yes")[2:6], mutate( Nat_NoV_fixed, Data = "No")[2:6] )
 
-NatPlot <- ggplot( Nat_fixed_overplot, aes(y = Mean, x = species, colour = Data)) + 
-              geom_point( cex = 2.5) + 
-              geom_errorbar( aes( y = Mean, max = upper, min = lower, colour = Data), width = 0, cex = 1) + 
-              xlab( "Species or Sub-Species" ) + 
-              ylab( "Means as \ndays from germination to flower" ) + 
+NatPlot <- ggplot( Nat_fixed_overplot, aes(y = Mean, x = species, colour = Data)) +
+              geom_point( cex = 2.5) +
+              geom_errorbar( aes( y = Mean, max = upper, min = lower, colour = Data), width = 0, cex = 1) +
+              xlab( "Species or Sub-Species" ) +
+              ylab( "Means as \ndays from germination to flower" ) +
               labs(color='Vernalization\nModeled') +
               scale_colour_grey(start = .7, end = .2) +
-              ggtitle( expression( "Mean days to flower for all"~italic( "Raphanus" ) ) ) 
+              ggtitle( expression( "Mean days to flower for all"~italic( "Raphanus" ) ) )
 
 NatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05, face = "italic" ),
                                  axis.text.y = element_text( size = 14 ),
                                  axis.title.y = element_text( size = 14 ),
-                                 strip.text.x = element_text( angle = 0, size = 10, face = "italic" ) ) 
+                                 strip.text.x = element_text( angle = 0, size = 10, face = "italic" ) )
 
 
 ```
@@ -705,19 +705,19 @@ Rrr_pop_overplot <- rbind( mutate(Rrr_pop, Data = "Yes"), mutate( Rrr_noV_pop, D
 
 Rrr_pop_overplot$Geography <- relevel(as.factor(Rrr_pop_overplot$Geography), ref="west")
 
-RrrPlot <- ggplot( Rrr_pop_overplot, aes( x = Pop, y = Mean, col = Data ) ) + 
-              geom_point( cex = 2.5 ) + 
+RrrPlot <- ggplot( Rrr_pop_overplot, aes( x = Pop, y = Mean, col = Data ) ) +
+              geom_point( cex = 2.5 ) +
               geom_errorbar( aes( y = Mean, max = Upper, min = Lower, col = Data), width = 0, cex = 1 ) +  
               facet_grid( ~Geography, scales = "free", space = "free" ) +
-              xlab( "Population" ) + 
+              xlab( "Population" ) +
               ylab( "Population means as \ndays from germination to flower" ) +                       labs(color='Vernalization\nModeled') +
               scale_colour_grey(start = .7, end = .2) +
-              ggtitle( expression( "All" ~ italic( "R.r. raphanistrum" ) ) ) 
+              ggtitle( expression( "All" ~ italic( "R.r. raphanistrum" ) ) )
 
 RrrPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size=14, hjust = -.05 ),
                                  axis.text.y = element_text( size = 14 ),
                                  axis.title.y = element_text( size = 14 ),
-                                 strip.text.x = element_text( angle = 0, size = 10 ) ) 
+                                 strip.text.x = element_text( angle = 0, size = 10 ) )
 
 ```
 
@@ -726,32 +726,32 @@ Rrr_fixed_overplot <- rbind( mutate(Rrr_fixed, Data = "Yes")[2:6], mutate( Rrr_n
 
 Rrr_fixed_overplot$species <- relevel(as.factor(Rrr_fixed_overplot$species), ref="west")
 
-RrrPlot <- ggplot( Rrr_fixed_overplot, aes( x = species, y = Mean, col = Data ) ) + 
-              geom_point( cex = 2.5 ) + 
+RrrPlot <- ggplot( Rrr_fixed_overplot, aes( x = species, y = Mean, col = Data ) ) +
+              geom_point( cex = 2.5 ) +
               geom_errorbar( aes( y = Mean, max = upper, min = lower, col = Data), width = 0, cex = 1 ) +  
-              xlab( "Geographic Origin" ) + 
-              ylab( "Means as \ndays from germination to flower" ) + 
+              xlab( "Geographic Origin" ) +
+              ylab( "Means as \ndays from germination to flower" ) +
               labs(color='Vernalization\nModeled') +
               scale_colour_grey(start = .7, end = .2) +
-              ggtitle( expression( "Geographic means of" ~ italic( "R.r. raphanistrum" ) ) ) 
+              ggtitle( expression( "Geographic means of" ~ italic( "R.r. raphanistrum" ) ) )
 
 RrrPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size=14, hjust = -.05 ),
                                  axis.text.y = element_text( size = 14 ),
                                  axis.title.y = element_text( size = 14 ),
-                                 strip.text.x = element_text( angle = 0, size = 10 ) ) 
+                                 strip.text.x = element_text( angle = 0, size = 10 ) )
 
 ```
 
 ##Only crops *R. sativus*
 ```{r PlotSatPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", warning=FALSE}
 
-SatPlot <- ggplot( Sat_pop, aes( x = Pop, y = Mean) ) + 
-              geom_point( cex = 2.5 ) + 
+SatPlot <- ggplot( Sat_pop, aes( x = Pop, y = Mean) ) +
+              geom_point( cex = 2.5 ) +
               geom_errorbar( aes( y = Mean, max = Upper, min = Lower ), col = "gray40", width=0, cex=1 ) +  
               facet_grid( ~ Variety, scales = "free", space = "free" ) +
-              xlab( "Population" ) + 
-              ylab( "Population means as \ndays from germination to flower" ) + 
-              ggtitle( expression( "Only crops" ~ ( italic( "R. sativus" ) ) ) ) 
+              xlab( "Population" ) +
+              ylab( "Population means as \ndays from germination to flower" ) +
+              ggtitle( expression( "Only crops" ~ ( italic( "R. sativus" ) ) ) )
 
 SatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
                                  axis.text.y = element_text( size = 14 ),
@@ -762,12 +762,12 @@ SatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14
 
 ```{r PlotSatMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", warning=FALSE}
 
-SatPlot <- ggplot( Sat_fixed, aes( x = species, y = Mean) ) + 
-              geom_point( cex = 2.5 ) + 
+SatPlot <- ggplot( Sat_fixed, aes( x = species, y = Mean) ) +
+              geom_point( cex = 2.5 ) +
               geom_errorbar( aes( y = Mean, max = upper, min = lower ), col = "gray40", width=0, cex=1 ) +  
-              xlab( "Crop variety" ) + 
-              ylab( "Means as \ndays from germination to flower" ) + 
-              ggtitle( expression( "Crop" ~ ( italic( "R. sativus" ) ) ~ "variety means" ) ) 
+              xlab( "Crop variety" ) +
+              ylab( "Means as \ndays from germination to flower" ) +
+              ggtitle( expression( "Crop" ~ ( italic( "R. sativus" ) ) ~ "variety means" ) )
 
 SatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
                                  axis.text.y = element_text( size = 14 ),
@@ -779,13 +779,13 @@ SatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14
 ##Only crops genotyped subset *R. sativus*
 ```{r PlotJeffSatPopMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", warning=FALSE}
 
-JeffSatPlot <- ggplot( JeffSat_pop, aes( x = Pop, y = Mean) ) + 
-              geom_point( cex = 2.5 ) + 
+JeffSatPlot <- ggplot( JeffSat_pop, aes( x = Pop, y = Mean) ) +
+              geom_point( cex = 2.5 ) +
               geom_errorbar( aes( y = Mean, max = Upper, min = Lower ), col = "gray40", width=0, cex=1 ) +  
               facet_grid( ~ Variety, scales = "free", space = "free" ) +
-              xlab( "Population" ) + 
-              ylab( "Population means as \ndays from germination to flower" ) + 
-              ggtitle( expression( "Only crops" ~ ( italic( "R. sativus" ) ) ) ) 
+              xlab( "Population" ) +
+              ylab( "Population means as \ndays from germination to flower" ) +
+              ggtitle( expression( "Only crops" ~ ( italic( "R. sativus" ) ) ) )
 
 JeffSatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
                                  axis.text.y = element_text( size = 14 ),
@@ -796,12 +796,12 @@ JeffSatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size 
 
 ```{r PlotJeffSatMeans, echo=FALSE, fig.path="../Figures/", fig.keep="last", warning=FALSE}
 
-JeffSatPlot <- ggplot( JeffSat_fixed, aes( x = species, y = Mean) ) + 
-              geom_point( cex = 2.5 ) + 
+JeffSatPlot <- ggplot( JeffSat_fixed, aes( x = species, y = Mean) ) +
+              geom_point( cex = 2.5 ) +
               geom_errorbar( aes( y = Mean, max = upper, min = lower ), col = "gray40", width=0, cex=1 ) +  
-              xlab( "Crop variety" ) + 
-              ylab( "Means as \ndays from germination to flower" ) + 
-              ggtitle( expression( "Crop" ~ ( italic( "R. sativus" ) ) ~ "variety means" ) ) 
+              xlab( "Crop variety" ) +
+              ylab( "Means as \ndays from germination to flower" ) +
+              ggtitle( expression( "Crop" ~ ( italic( "R. sativus" ) ) ~ "variety means" ) )
 
 JeffSatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size = 14, hjust = -.05 ),
                                  axis.text.y = element_text( size = 14 ),
@@ -814,21 +814,21 @@ JeffSatPlot + theme_bw() + theme( axis.text.x = element_text( angle = -50, size 
 
 # Building a table with percentage flowered without vernalization
 
-PS_data <-  filter(FlowData, !is.na(SurviveGTF)) %>% 
-              select( FlowWoVern, Pop) %>% 
-              mutate( FlowWoVern = replace( FlowWoVern, is.na( FlowWoVern ) == T, "No")) 
+PS_data <-  filter(FlowData, !is.na(SurviveGTF)) %>%
+              select( FlowWoVern, Pop) %>%
+              mutate( FlowWoVern = replace( FlowWoVern, is.na( FlowWoVern ) == T, "No"))
 
 
 PS_table <- data.frame( cbind( "No" = table(PS_data, useNA = "no")[1,],
-                               "Yes" = table(PS_data, useNA = "no")[2,] ) ) 
+                               "Yes" = table(PS_data, useNA = "no")[2,] ) )
 
 MD_table <- select( FlowData, Pop, Taxonomy, Geography, SurviveGTF) %>%
             group_by( Taxonomy, Geography, Pop) %>%
-            summarize(MeanGTF=mean(SurviveGTF, na.rm=T)) 
+            summarize(MeanGTF=mean(SurviveGTF, na.rm=T))
 
 
 PS_table <- tbl_df( mutate( PS_table, PnoVern = ( Yes / (Yes + No) ) * 100,
-                      N = Yes + No, 
+                      N = Yes + No,
                       Pop = factor(rownames(PS_table) ),
                       SEPnoVern = SEP( PnoVern/100, N )))
 
@@ -877,16 +877,16 @@ write.csv(x = popcov, file = "../Figures/PopCoV.csv")
 
 ```{r RawDataPlot, echo=FALSE, fig.path="../Figures/", fig.keep="last", message=FALSE, warning=FALSE, fig.height=8, fig.width=11, warning=FALSE}
 
-#Everything is plotted twice so that the axis lines go behind the plots 
+#Everything is plotted twice so that the axis lines go behind the plots
 
 # Plot landra
 par(mfrow=c(1,1), mar=c(0,0,0,0), cex=.7, las=1, fig=c(0.1,.3,.69,.97))
-boxplot(lanmar.data$BoltFlower ~ lanmar.data$Order, frame=F, axes=F, ylim=c(0,350), 
+boxplot(lanmar.data$BoltFlower ~ lanmar.data$Order, frame=F, axes=F, ylim=c(0,350),
         varwidth=TRUE, at=c(1, 1.8, 2.7))
 
 axis(side = 2, line=-1, tck=.95, col='gray85')
 
-boxplot(lanmar.data$BoltFlower ~ lanmar.data$Order, add=T, frame=F, axes=F, ylim=c(0,350), 
+boxplot(lanmar.data$BoltFlower ~ lanmar.data$Order, add=T, frame=F, axes=F, ylim=c(0,350),
         varwidth=TRUE, at=c(1, 1.8, 2.7),
         col=hmcols[c(PS_table$RPV[PS_table$Pop=="PBFR"],
                      PS_table$RPV[PS_table$Pop=="CBES"],
@@ -915,12 +915,12 @@ boxplot(native.data$BoltFlower ~ native.data$Order, add=T, frame=F, axes=F, ylim
         PS_table$RPV[PS_table$Pop=="GHIL"], PS_table$RPV[PS_table$Pop=="HZIL"],
         PS_table$RPV[PS_table$Pop=="REIL"], PS_table$RPV[PS_table$Pop=="TYIL"],
         PS_table$RPV[PS_table$Pop=="ZYIL"], PS_table$RPV[PS_table$Pop=="GMIL"])])
-        
-axis(side = 1, at=c(seq(from=1, to=10.9, by=.9)), tick = F, line=-.8, labels=c( 
-                                "France\n(AFFR)", "Spain\n(DEES)", 
-                                "Spain\n(HCES)", "Spain\n(HMES)", 
-                                "Spain\n(IMES)", "Spain\n(MAES)", 
-                                "Israel\n(GHIL)", "Israel\n(HZIL)", 
+
+axis(side = 1, at=c(seq(from=1, to=10.9, by=.9)), tick = F, line=-.8, labels=c(
+                                "France\n(AFFR)", "Spain\n(DEES)",
+                                "Spain\n(HCES)", "Spain\n(HMES)",
+                                "Spain\n(IMES)", "Spain\n(MAES)",
+                                "Israel\n(GHIL)", "Israel\n(HZIL)",
                                 "Israel\n(REIL)", "Israel\n(TYIL)",
                                 "Israel\n(ZYIL)", "Israel\n(GMIL)"))
 
@@ -946,7 +946,7 @@ axis(side = 2, line=-1, tck=.9, col="gray85", yaxp=c(0, 150, 3))
 boxplot(weed.data$BoltFlower ~ weed.data$Order, add=T, frame=F, axes=F, ylim=c(0,200),
         col=hmcols[c(
         PS_table$RPV[PS_table$Pop=="AUFI"], PS_table$RPV[PS_table$Pop=="BINY"],
-        PS_table$RPV[PS_table$Pop=="COAU"], PS_table$RPV[PS_table$Pop=="KAMI"], 
+        PS_table$RPV[PS_table$Pop=="COAU"], PS_table$RPV[PS_table$Pop=="KAMI"],
         PS_table$RPV[PS_table$Pop=="MAFI"], PS_table$RPV[PS_table$Pop=="NAAU"],
         PS_table$RPV[PS_table$Pop=="WEAU"])],
         varwidth=TRUE)
@@ -989,11 +989,11 @@ boxplot(crop.data$BoltFlower ~ crop.data$Order, add=T, frame=F, axes=F, ylim=c(0
         PS_table$RPV[PS_table$Pop=="TOBG"], PS_table$RPV[PS_table$Pop=="WMBG"],
         PS_table$RPV[PS_table$Pop=="CBBG"], PS_table$RPV[PS_table$Pop=="DAJO"],
         PS_table$RPV[PS_table$Pop=="ESNK"], PS_table$RPV[PS_table$Pop=="FRSI"],
-        PS_table$RPV[PS_table$Pop=="LBBC"], PS_table$RPV[PS_table$Pop=="RABS"], 
-        PS_table$RPV[PS_table$Pop=="RBBC"], PS_table$RPV[PS_table$Pop=="SPNK"], 
-        PS_table$RPV[PS_table$Pop=="ADOL"], PS_table$RPV[PS_table$Pop=="AROL"], 
-        PS_table$RPV[PS_table$Pop=="COOL"], PS_table$RPV[PS_table$Pop=="OIBG"], 
-        PS_table$RPV[PS_table$Pop=="MABG"], PS_table$RPV[PS_table$Pop=="RABG"], 
+        PS_table$RPV[PS_table$Pop=="LBBC"], PS_table$RPV[PS_table$Pop=="RABS"],
+        PS_table$RPV[PS_table$Pop=="RBBC"], PS_table$RPV[PS_table$Pop=="SPNK"],
+        PS_table$RPV[PS_table$Pop=="ADOL"], PS_table$RPV[PS_table$Pop=="AROL"],
+        PS_table$RPV[PS_table$Pop=="COOL"], PS_table$RPV[PS_table$Pop=="OIBG"],
+        PS_table$RPV[PS_table$Pop=="MABG"], PS_table$RPV[PS_table$Pop=="RABG"],
         PS_table$RPV[PS_table$Pop=="RAJS"])])
 
 axis(side = 1, at=c(seq(from=.9, to=19, by=1.8)), tick = F, line=-1.5, ylim=c(0, 300),
@@ -1025,13 +1025,13 @@ lines(c(16.7,16.7), c(25,175), lty=6)
 
 ```{r RawDataDotPlot, echo=FALSE, fig.path="../Figures/", fig.keep="last", message=FALSE, warning=FALSE, fig.height=8, fig.width=11, warning=FALSE}
 
-#Everything is plotted twice so that the axis lines go behind the plots 
+#Everything is plotted twice so that the axis lines go behind the plots
 
 # Plot landra
 par(mfrow=c(1,1), mar=c(0,0,0,0), cex=.7, las=1, fig=c(0.1,.3,.69,.97))
 
 
-plot(lanmar.data$GTF ~ lanmar.data$Order, add=T, frame=F, axes=F, ylim=c(0,350), 
+plot(lanmar.data$GTF ~ lanmar.data$Order, add=T, frame=F, axes=F, ylim=c(0,350),
          at=c(1, 1.8, 2.7), pch=16,
         bg=hmcols[c(PS_table$RPV[PS_table$Pop=="PBFR"],
                      PS_table$RPV[PS_table$Pop=="CBES"],
@@ -1059,12 +1059,12 @@ plot(native.data$GTF ~ native.data$Order, add=T, frame=F, axes=F, ylim=c(0,200),
  axis(side = 2, line=-2.8, lty=0)
 
 axis(side = 2, line=-2, tck=.9, bg="gray85", labels = F)
-       
-axis(side = 1, at=c(seq(from=1, to=10.9, by=.9)), tick = F, line=-.8, labels=c( 
-                                "France\n(AFFR)", "Spain\n(DEES)", 
-                                "Spain\n(HCES)", "Spain\n(HMES)", 
-                                "Spain\n(IMES)", "Spain\n(MAES)", 
-                                "Israel\n(GHIL)", "Israel\n(HZIL)", 
+
+axis(side = 1, at=c(seq(from=1, to=10.9, by=.9)), tick = F, line=-.8, labels=c(
+                                "France\n(AFFR)", "Spain\n(DEES)",
+                                "Spain\n(HCES)", "Spain\n(HMES)",
+                                "Spain\n(IMES)", "Spain\n(MAES)",
+                                "Israel\n(GHIL)", "Israel\n(HZIL)",
                                 "Israel\n(REIL)", "Israel\n(TYIL)",
                                 "Israel\n(ZYIL)", "Israel\n(GMIL)"))
 
@@ -1088,7 +1088,7 @@ par(fig=c(0.1,.8,.37,.70), new=TRUE, cex=.7)
 plot(weed.data$GTF ~ weed.data$Order, add=T, frame=F, axes=F, ylim=c(0,200), pch=16,
         bg=hmcols[c(
         PS_table$RPV[PS_table$Pop=="AUFI"], PS_table$RPV[PS_table$Pop=="BINY"],
-        PS_table$RPV[PS_table$Pop=="COAU"], PS_table$RPV[PS_table$Pop=="KAMI"], 
+        PS_table$RPV[PS_table$Pop=="COAU"], PS_table$RPV[PS_table$Pop=="KAMI"],
         PS_table$RPV[PS_table$Pop=="MAFI"], PS_table$RPV[PS_table$Pop=="NAAU"],
         PS_table$RPV[PS_table$Pop=="WEAU"])],
         varwidth=TRUE)
@@ -1129,11 +1129,11 @@ plot(crop.data$GTF ~ crop.data$Order, add=T, frame=F, axes=F, ylim=c(0,200), pch
         PS_table$RPV[PS_table$Pop=="TOBG"], PS_table$RPV[PS_table$Pop=="WMBG"],
         PS_table$RPV[PS_table$Pop=="CBBG"], PS_table$RPV[PS_table$Pop=="DAJO"],
         PS_table$RPV[PS_table$Pop=="ESNK"], PS_table$RPV[PS_table$Pop=="FRSI"],
-        PS_table$RPV[PS_table$Pop=="LBBC"], PS_table$RPV[PS_table$Pop=="RABS"], 
-        PS_table$RPV[PS_table$Pop=="RBBC"], PS_table$RPV[PS_table$Pop=="SPNK"], 
-        PS_table$RPV[PS_table$Pop=="ADOL"], PS_table$RPV[PS_table$Pop=="AROL"], 
-        PS_table$RPV[PS_table$Pop=="COOL"], PS_table$RPV[PS_table$Pop=="OIBG"], 
-        PS_table$RPV[PS_table$Pop=="MABG"], PS_table$RPV[PS_table$Pop=="RABG"], 
+        PS_table$RPV[PS_table$Pop=="LBBC"], PS_table$RPV[PS_table$Pop=="RABS"],
+        PS_table$RPV[PS_table$Pop=="RBBC"], PS_table$RPV[PS_table$Pop=="SPNK"],
+        PS_table$RPV[PS_table$Pop=="ADOL"], PS_table$RPV[PS_table$Pop=="AROL"],
+        PS_table$RPV[PS_table$Pop=="COOL"], PS_table$RPV[PS_table$Pop=="OIBG"],
+        PS_table$RPV[PS_table$Pop=="MABG"], PS_table$RPV[PS_table$Pop=="RABG"],
         PS_table$RPV[PS_table$Pop=="RAJS"])])
 axis(side = 2, line=-1, tck=.95, bg='gray85')
 
@@ -1169,12 +1169,12 @@ lines(c(16.7,16.7), c(25,175), lty=6)
 group_by(FlowData, Pop) %>%
 ggplot( aes(Pop:Experiment, SurviveGTF, col=Experiment)) +
   geom_boxplot() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 #group_by(RawData, Pop) %>%
 #ggplot( aes(Pop:Experiment, GTF, col=Experiment, group=Pop)) +
 #  geom_boxplot() +
-#  theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+#  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 group_by(FlowData, Pop) %>%
 ggplot( aes(Experiment, SurviveGTF, col=Experiment)) +
@@ -1216,4 +1216,3 @@ car::Anova(test2, test.statistic="F")
 
 
 ```
-

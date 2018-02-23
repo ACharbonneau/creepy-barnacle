@@ -236,7 +236,7 @@ cult_2013sub <- data.frame(rep("Cult2013", length(cult_2013$Cultivar)),  	#Exper
                          rep("No", length(cult_2013$Cultivar)),		#Vernalized
                          rep(NA, length(cult_2013$Cultivar)),		#DaysVern
                          rep(NA, length(cult_2013$Cultivar)),		#TimesVern
-                         ifelse(is.na(cult_2013$FlwrTime) == T, (as.POSIXct("12/2/13", format="%m/%d/%y") - cult_2013$Germ) + 1, 
+                         ifelse(is.na(cult_2013$FlwrTime) == T, (as.POSIXct("12/2/13", format="%m/%d/%y") - cult_2013$Germ) + 1,
                                 round(cult_2013$FlowerDate - cult_2013$Germ)))   #SurviveGTF
 ```
 #####Vernalization Data
@@ -295,7 +295,7 @@ IS_2013sub <- data.frame(rep("IS2013", length(IS_2013$Population)),		#Experiment
                          rep(NA, length(IS_2013$Population)),		#DaysVern
                          rep(NA, length(IS_2013$Population)),		#TimesVern
                          IS_2013$GTF)  #SurviveGTF
-                                                  
+
 lalesub <- data.frame(rep("Lale05", length(lale2005$population)),		#Experiment
                       lale2005$ExCode, #Experiment Code
                       paste(lale2005$family, lale2005$sibling, sep=""),		#ID
@@ -313,10 +313,10 @@ lalesub <- data.frame(rep("Lale05", length(lale2005$population)),		#Experiment
                       ifelse(lale2005$First_FlowerDate > as.POSIXct("12/31/05", format="%m/%d/%y"), 150, NA),  #Nov 16- Apr 15		#DaysVern
                       ifelse(lale2005$First_FlowerDate > as.POSIXct("12/31/05", format="%m/%d/%y"), 1, NA),		#TimesVern
                       ifelse(is.na(lale2005$DaysGermToFlwr) == T & is.na(lale2005$OvuleDate) == F, NA,    
-                          ifelse(is.na(lale2005$DaysGermToFlwr) == T & lale2005$Mortality_Date > as.POSIXct("11/29/05", format="%m/%d/%y"), 
-                                 (lale2005$Mortality_Date + 86400) - lale2005$Germination_Date, 
+                          ifelse(is.na(lale2005$DaysGermToFlwr) == T & lale2005$Mortality_Date > as.POSIXct("11/29/05", format="%m/%d/%y"),
+                                 (lale2005$Mortality_Date + 86400) - lale2005$Germination_Date,
                                   lale2005$DaysGermToFlwr))) #SurviveGTF
-	
+
 p2012sub <- data.frame(rep("field2012", length(plants2012$Code)),		#Experiment
                        plants2012$ExCode, #Experiment Code
                        paste(plants2012$Row, plants2012$Column, sep=""),		#ID
@@ -333,7 +333,7 @@ p2012sub <- data.frame(rep("field2012", length(plants2012$Code)),		#Experiment
                        ifelse(plants2012$Flowering_Date > as.POSIXct("12/31/12", format="%m/%d/%y"), "Yes", "No"),		#Vernalized
                        ifelse(plants2012$Flowering_Date > as.POSIXct("12/31/12", format="%m/%d/%y"), 168, NA), #Oct 29 - Apr 15		#DaysVern
                        ifelse(plants2012$Survive_winter=="No", NA, 1),		#TimesVern
-                       
+
                        ifelse(is.na(plants2012$Died_By) == F & plants2012$Died_before_flowering == 1, NA, #Did you die in summer?, Yes = NA
                             ifelse(is.na(plants2012$Days_Germ_to_Flow) == F, plants2012$Days_Germ_to_Flow, #Did you flower by fall? Yes = GTF
                                   ifelse(is.na(plants2012$SpringAliveDate) == T, (as.POSIXct("9/12/12", format="%m/%d/%y") - plants2012$Germ_Date) + 1, #Did you die of winter Yes= FallDate
@@ -434,7 +434,7 @@ ParseData <- function( mydata ) {
   mydata$DTB <- round(mydata$DTB)
   mydata$GTF <- round(mydata$GTF)
   mydata$SurviveGTF <- round(mydata$SurviveGTF)
-  mydata$Seedstock <- ifelse(  (mydata$Experiment == "IS2013" & mydata$Pop == "MAES") | 
+  mydata$Seedstock <- ifelse(  (mydata$Experiment == "IS2013" & mydata$Pop == "MAES") |
                                        (mydata$Experiment == "Lale05" & mydata$Pop != "PBFR") |
                                        (mydata$Experiment == "qst2004"), "Greenhouse",      
                                           "Field")
@@ -459,7 +459,7 @@ CombinedDataSet <- data.frame(rbind(cult_2013sub, IS_2013sub, lalesub, p2012sub,
 To create the **Subspecies**, **Species**, **Geography**, **Taxonomy**, **Habitat**, **SpecificOrigin** and **RegionOrigin** columns, I made a series of assignment lists based on population names, as in:
 ```{r Assign1, echo=TRUE}
 SubSpeciesList <- c(ADOL="sativus", AROL="sativus", CBBG="sativus", COOL="sativus", DAJO="sativus", ESNK="sativus", MABG="sativus", MYJO="sativus", NELO="sativus", OIBG="sativus", RABG="sativus", RACA="sativus", SPEU="sativus", TOBG="sativus", WMBG="sativus", AFFR="raphanistrum", DEES="raphanistrum", GHIL="raphanistrum", HCES="raphanistrum", HMES="raphanistrum", HZIL="raphanistrum", IMES="raphanistrum", MAES="raphanistrum", ZYIL="raphanistrum", AUFI="raphanistrum", COAU="raphanistrum", KAMI="raphanistrum", PBFR="landra", SAES="landra", AL="raphanistrum", BINY="raphanistrum", CBES="landra", GMIL="pugioniformis", M3AU="raphanistrum", N3="raphanistrum", NZIL="confusus", PG6="raphanistrum", REIL="raphanistrum", MAFI="raphanistrum", NAAU="raphanistrum", WEAU="raphanistrum", CGBC="sativus", FGBC="sativus", FRSI="sativus", LBBC="sativus", MBBC="sativus", NTJO="sativus", PABS="sativus", RABS="sativus", RBBC="sativus", SPNK="sativus", TYIL="raphanistrum")
-                    
+
 ```
 
 ```{r Assign2, echo=FALSE}
@@ -478,7 +478,7 @@ RegionOriginList <- c(ADOL="oleifera", AROL="oleifera", CBBG="european", COOL="o
 
 LocationList <- c(ADOL="oleifera", AROL="oleifera", CBBG="european", COOL="oleifera", DAJO="european", ESNK="european", MABG="caudatus", MYJO="daikon", NELO="daikon", OIBG="oleifera", RABG="caudatus", RACA="caudatus", SPEU="european", TOBG="daikon", WMBG="daikon", AFFR="raphNatW", DEES="raphNatW", GHIL="raphNatE", HCES="raphNatW", HMES="raphNatW", HZIL="raphNatE", IMES="raphNatW", MAES="raphNatW", ZYIL="raphNatE", AUFI="raphNN", COAU="raphNN", KAMI="raphNN", PBFR="lanmar", SAES="lanmar",  AL="raphNN", BINY="raphNN", CBES="lanmar", GMIL="pugioniformis", M3AU="raphNN", N3="raphNN", NZIL="none", PG6="raphNN", REIL="raphNatE", MAFI="raphNN", NAAU="raphNN", WEAU="raphNN", CGBC="daikon", FGBC="daikon", FRSI="european", LBBC="european", MBBC="european", NTJO="european", PABS="european", RABS="european", RBBC="european", SPNK="european", TYIL="raphNatE")
 
-OrderList <- c(ADOL=18, AROL=19, CBBG=7, COOL=20, DAJO=8, ESNK=9, MABG=22, MYJO=3, NELO=4,OIBG=21, RABG=23, RACA=24, SPEU=17, TOBG=5, WMBG=6, AFFR=4, DEES=5, GHIL=10, HCES=6, HMES=7, HZIL=11, IMES=8, MAES=9, ZYIL=14, AUFI=1, COAU=3, KAMI=4, PBFR=1, SAES=3,  AL=7, BINY=2, CBES=2, GMIL=15, M3AU=7, N3=7, NZIL=16, PG6=7, REIL=12, MAFI=5, NAAU=6, WEAU=7, CGBC=1,FGBC=2, FRSI=10, LBBC=11, MBBC=12, NTJO=13, PABS=14, RABS=15, RBBC=16,SPNK=17, TYIL=13) 
+OrderList <- c(ADOL=18, AROL=19, CBBG=7, COOL=20, DAJO=8, ESNK=9, MABG=22, MYJO=3, NELO=4,OIBG=21, RABG=23, RACA=24, SPEU=17, TOBG=5, WMBG=6, AFFR=4, DEES=5, GHIL=10, HCES=6, HMES=7, HZIL=11, IMES=8, MAES=9, ZYIL=14, AUFI=1, COAU=3, KAMI=4, PBFR=1, SAES=3,  AL=7, BINY=2, CBES=2, GMIL=15, M3AU=7, N3=7, NZIL=16, PG6=7, REIL=12, MAFI=5, NAAU=6, WEAU=7, CGBC=1,FGBC=2, FRSI=10, LBBC=11, MBBC=12, NTJO=13, PABS=14, RABS=15, RBBC=16,SPNK=17, TYIL=13)
 
 ```
 
@@ -513,12 +513,12 @@ CombinedDataSet$PTG <- round(CombinedDataSet$GermDate - CombinedDataSet$PlantDat
 
 CombinedDataSet <- droplevels(CombinedDataSet[CombinedDataSet$Pop != "N3",])
 
-#SPEU is now SPNK; NELO now NEJS; RACA now RAJS. -JKC 
+#SPEU is now SPNK; NELO now NEJS; RACA now RAJS. -JKC
 #Don't know which ID the three Austrailan pops really were
 
 CombinedDataSet$Pop <- revalue(CombinedDataSet$Pop, c(
-                               "M3AU" = "UKAU", 
-                               "AL"   = "UKAU", 
+                               "M3AU" = "UKAU",
+                               "AL"   = "UKAU",
                                "PG6"  = "UKAU",
                                "SPEU" = "SPNK",
                                "NELO" = "NEJS",
@@ -557,13 +557,13 @@ BialleleGene <- dplyr::full_join( JustSNPs, JustSSRFix )
 # Genotype 2-> 2 2
 for( i in 3:15 ) {
   colN <- ncol(JustMeta)
-  
+
   JustMeta[, colN + 1] <- ifelse( JustSNPs[,i]==0, 1, ifelse( JustSNPs[,i]==1, 1, ifelse( JustSNPs[,i]==2, 2, -9 )))
-  
+
   colnames(JustMeta)[ colN + 1] <- colnames(JustSNPs[i])
-  
+
   JustMeta[, colN + 2 ] <- ifelse( JustSNPs[,i]==0, 1, ifelse( JustSNPs[,i]==1, 2, ifelse( JustSNPs[,i]==2, 2, -9 )))
-  
+
     colnames(JustMeta)[ colN + 2] <- paste(colnames(JustSNPs[i]), "_2", sep="")
 }
 
@@ -582,11 +582,11 @@ write.table(t(BialleleGene[, c(3:ncol(BialleleGene))]), "../MungedData/Marker.ge
 
 write.table(cbind(BialleleGene$SSR.ID, rep("U", length(BialleleGene$Pop)), BialleleGene$Pop), "../MungedData/Marker.ind", row.names = F, quote = F, col.names = F, sep = "\t")
 
-write.table(cbind( colnames(BialleleGene)[ 3:123 ], 
-       c(rep(1,3), rep(2,3), rep(6,3), 8, 4, 9, 9, 
-         rep(5,40), rep(7,16), rep(10,7), rep(1, 22), 
+write.table(cbind( colnames(BialleleGene)[ 3:123 ],
+       c(rep(1,3), rep(2,3), rep(6,3), 8, 4, 9, 9,
+         rep(5,40), rep(7,16), rep(10,7), rep(1, 22),
          rep(3,9), rep(6,14)), rep(0, 121), rep(0, 121)),
-       "../MungedData/Marker.snp", 
+       "../MungedData/Marker.snp",
        row.names = F, quote = F, col.names = F, sep = "\t")
 
 #STRUCTURE files
@@ -600,29 +600,29 @@ STR_labeled <- STR_geno
 
 STR_sum <- left_join(STR_labeled, MarkerPop, by=c("SSR.ID"="V1"))
 
-STR_sum <- select(STR_sum, SSR.ID, Pop, V11, DWRD_124, DWRD_124_2, DWRD_112, 
-                  DWRD_112_2, DWRD_61, DWRD_61_2, DWRD_177, DWRD_177_2, DWRD_107, 
-                  DWRD_107_2, DWRD_123, DWRD_123_2, DWRD_121, DWRD_121_2, DWRD_158, 
-                  DWRD_158_2, DWRD_48, DWRD_48_2, DWRD_180, DWRD_180_2, DWRD_97, 
-                  DWRD_97_2, DWRD_205, DWRD_205_2, DWRD_27, DWRD_27_2, Bn26a, 
-                  Bn26a_2, BRMS005, BRMS005_2, Na10H06, Na10H06_2, Ra1H08, 
-                  Ra1H08_2, Ra2E11, Ra2E11_2, Na14E08, Na14E08_2, Bn35d, Bn35d_2, 
+STR_sum <- select(STR_sum, SSR.ID, Pop, V11, DWRD_124, DWRD_124_2, DWRD_112,
+                  DWRD_112_2, DWRD_61, DWRD_61_2, DWRD_177, DWRD_177_2, DWRD_107,
+                  DWRD_107_2, DWRD_123, DWRD_123_2, DWRD_121, DWRD_121_2, DWRD_158,
+                  DWRD_158_2, DWRD_48, DWRD_48_2, DWRD_180, DWRD_180_2, DWRD_97,
+                  DWRD_97_2, DWRD_205, DWRD_205_2, DWRD_27, DWRD_27_2, Bn26a,
+                  Bn26a_2, BRMS005, BRMS005_2, Na10H06, Na10H06_2, Ra1H08,
+                  Ra1H08_2, Ra2E11, Ra2E11_2, Na14E08, Na14E08_2, Bn35d, Bn35d_2,
                   Na12E05, Na12E05_2)
 
 STR_geno$Pop <- as.numeric(STR_geno$Pop)
 
 for (i in 1:20) {
   STR_geno_shuffle <- STR_geno[ sample( nrow( STR_geno ), nrow( STR_geno ), FALSE ) ,]
-  write.table(matrix(STR_columns, nrow=1), c(paste( "../MungedData/", i, "rand.str", coll='', sep='')), 
+  write.table(matrix(STR_columns, nrow=1), c(paste( "../MungedData/", i, "rand.str", coll='', sep='')),
               quote = FALSE, sep = " ", row.names = FALSE, eol = "\n", col.names = FALSE)
-  write.table( STR_geno_shuffle, paste( "../MungedData/", i, "rand.str", coll='', sep=''), 
+  write.table( STR_geno_shuffle, paste( "../MungedData/", i, "rand.str", coll='', sep=''),
                quote = FALSE, sep = " ", row.names = FALSE, col.names = FALSE, append = TRUE, na = "-9")
 }
 
 #Need to write out a version with character metadata for summary stats. It's just easier.
-write.table(matrix(STR_columns, nrow=1), "../MungedData/1randSS.str", 
+write.table(matrix(STR_columns, nrow=1), "../MungedData/1randSS.str",
               quote = FALSE, sep =" ", row.names = FALSE, eol = "\n", col.names = FALSE)
-write.table( STR_sum, paste( "../MungedData/1randSS.str", coll='', sep=''), 
+write.table( STR_sum, paste( "../MungedData/1randSS.str", coll='', sep=''),
                quote = FALSE, sep = " ", row.names = FALSE, col.names = FALSE, append = TRUE, na = "-9")
 
 ```
@@ -664,7 +664,7 @@ table(CombinedDataSet$Experiment)
 
 ####Plots of pivitol data
 Note that the "SurviveGTF" data has a new spike in individuals that flowered around 170 days, which
-is caused by creating flowering dates for plants that didn't flower, but were healthy before they 
+is caused by creating flowering dates for plants that didn't flower, but were healthy before they
 froze to death
 
 ```{r, echo=FALSE}
@@ -681,8 +681,8 @@ legend(400, 800, legend = c("SurviveGTF", "GTF"), pch=16, col = c(rgb(1,0,0, alp
 
 ```
 
-Plot showing latency of germination by experiment. Most experiments had several individuals that 
-took a very long time to germinate, so using "Planting to Flowering" in the model instead of 
+Plot showing latency of germination by experiment. Most experiments had several individuals that
+took a very long time to germinate, so using "Planting to Flowering" in the model instead of
 "Germination to Flowering" is going to cause serious issues.
 
 ```{r, echo=FALSE}
@@ -705,4 +705,3 @@ Barplot showing number of individuals per population
 par(las=2, cex.axis=.6)
 plot(CombinedDataSet$Pop)
 ```
-

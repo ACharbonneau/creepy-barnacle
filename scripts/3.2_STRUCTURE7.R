@@ -54,9 +54,9 @@ col_pal_no_alpha <- c(col6[6], col_pal_no_alpha[c(2:5)], col_pal_no_alpha[1], co
 add.alpha <- function(col, alpha=.7){
   if(missing(col))
     stop("Please provide a vector of colours.")
-  apply(sapply(col, col2rgb)/255, 2, 
-        function(x) 
-          rgb(x[1], x[2], x[3], alpha=alpha))  
+  apply(sapply(col, col2rgb)/255, 2,
+        function(x)
+          rgb(x[1], x[2], x[3], alpha=alpha))
 }
 
 col_pal <- add.alpha(col_pal_no_alpha)
@@ -65,29 +65,29 @@ K_text <- paste("STRUCTURE Plot K=", K, sep="")
 
 par(mfrow=c(1,1), mar=c(0,0,0,0))
 par(fig=c(0,1,.8,.89)) #new=TRUE)
-barplot(native.table, col=col_pal[1:K], xaxt="n", yaxt="n", 
+barplot(native.table, col=col_pal[1:K], xaxt="n", yaxt="n",
         space=c(rep(0,10),1, rep(0,9), 1, rep(0,9), 1,rep(0,9)))
 axis(side=3, at=22, labels=c(K_text), cex=3, tick=F, line=.8)
 axis(side=3, at=16, labels=expression(italic("R.r. landra")), cex.axis=.9, tick=F, line=-1)
 axis(side=3, at=38, labels=expression(italic("R. pugioniformis")), cex.axis=.9, tick=F, line=-1)
 axis(side=1, at=c(5,16,27,38), labels=c("Spain (CBES)",
                                         "Spain (SAES)",
-                                        "France (PBFR)", 
+                                        "France (PBFR)",
                                         "Israel (GMIL)"), tick=F, line=-1.3, cex.axis=.6)
 
 
 par(fig=c(0,.56,.63,.72), new=TRUE)
-barplot(raphNatW.table, col=col_pal[1:K], xaxt="n", yaxt="n", 
+barplot(raphNatW.table, col=col_pal[1:K], xaxt="n", yaxt="n",
         space=c(rep(0,10), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9)))
 axis(side=3, at=33, labels=expression(paste(italic("Western R.r. raphanistrum")," inside native range")), cex.axis=.9, tick=F, line=-1)
-axis(side=1, at=c(4.5,16,27,38,49,60), tick=F, labels=c("France (AFFR)", 
+axis(side=1, at=c(4.5,16,27,38,49,60), tick=F, labels=c("France (AFFR)",
                                                                        "Spain (MAES)",
                                                                        "Spain (DEES)",
                                                                        "Spain (HCES)",
                                                                        "Spain (HMES)",
                                                                        "Spain (IMES)"), line=-1.3, cex.axis=.6)
 par(fig=c(.55,1,.63,.72), new=TRUE)
-barplot(raphNatE.table, col=col_pal[1:K], xaxt="n", yaxt="n", 
+barplot(raphNatE.table, col=col_pal[1:K], xaxt="n", yaxt="n",
         space=c(rep(0,10), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9)))
 axis(side=3, at=27, labels=expression(paste(italic("Eastern R.r. raphanistrum")," inside native range")), cex.axis=.9, tick=F, line=-1)
 axis(side=1, at=c(5,16,27,38,49), tick=F, labels=c("Israel (TYIL)",
@@ -97,12 +97,12 @@ axis(side=1, at=c(5,16,27,38,49), tick=F, labels=c("Israel (TYIL)",
                                                                        "Israel (ZYIL)"), line=-1.3, cex.axis=.6)
 
 par(fig=c(0,1,.46,.55), new=TRUE)
-barplot(weed.table, col=col_pal[1:K], xaxt="n", yaxt="n", 
+barplot(weed.table, col=col_pal[1:K], xaxt="n", yaxt="n",
         space=c(rep(0,10), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9), 1, rep(0,9)))
 axis(side=3, at=27, labels=expression(paste(italic("R.r. raphanistrum")," outside native range")), cex.axis=.9, tick=F, line=-1)
-axis(side=1, at=c(5,16,27,38,49), tick=F, labels=c("Germany (NCDE)", 
-                                                   "Finland (AUFI)", 
-                                                   "New York (BINY)", 
+axis(side=1, at=c(5,16,27,38,49), tick=F, labels=c("Germany (NCDE)",
+                                                   "Finland (AUFI)",
+                                                   "New York (BINY)",
                                                    "Australia 1 (COAU)",
                                                    "Australia 2 (WEAU)"), line=-1.3, cex.axis=.6)
 
@@ -110,29 +110,29 @@ par(fig=c(0,.5,.29,.38), new=TRUE)
 barplot(daikon.table, col=col_pal[1:K], xaxt="n", yaxt="n",
         space=c(rep(0,10), 1, rep(0,9), 1, rep(0,9), 1,rep(0,9)) )
 axis(side=3, at=22, labels=paste("Daikon (", expression(italic("R. sativus")),")", sep=""), cex.axis=.9, tick=F, line=-1)
-axis(side=1, at=c(5,16,27,38), tick=F, labels=c("Miyashige (MYJO)", 
-                                                "New Crown (NEJS)", #SPEU is now SPNK; NELO now NEJS; RACA now RAJS. -JKC 
-                                                "Tokinashi (TOBG)", 
+axis(side=1, at=c(5,16,27,38), tick=F, labels=c("Miyashige (MYJO)",
+                                                "New Crown (NEJS)", #SPEU is now SPNK; NELO now NEJS; RACA now RAJS. -JKC
+                                                "Tokinashi (TOBG)",
                                                 "Watermelon (WMBG)"), line=-1.3, cex.axis=.6)
 
 
 par(fig=c(.5,1,.29,.38), new=TRUE)
-barplot(european.table, col=col_pal[1:K], xaxt="n", yaxt="n", 
+barplot(european.table, col=col_pal[1:K], xaxt="n", yaxt="n",
         space=c(rep(0,10),1, rep(0,9), 1, rep(0,8), 1,rep(0,9)) )
 axis(side=3, at=22, labels=paste("European (", expression(italic("R. sativus")),")", sep=""), cex.axis=.9, tick=F, line=-1)
-axis(side=1, at=c(5,16,27,37), tick=F, labels=c("Cherry Belle (CBBG)", 
-                                                "D'avignon (DAJO)", 
-                                                "Early S.G. (ESNK)", 
+axis(side=1, at=c(5,16,27,37), tick=F, labels=c("Cherry Belle (CBBG)",
+                                                "D'avignon (DAJO)",
+                                                "Early S.G. (ESNK)",
                                                 "Sparkler (SPNK)" ), line=-1.3, cex.axis=.6)
 
 par(fig=c(0,1,.12,.21), new=TRUE)
-barplot(oilrat.table, col=col_pal[1:K], xaxt="n", yaxt="n", 
+barplot(oilrat.table, col=col_pal[1:K], xaxt="n", yaxt="n",
         space=c(rep(0,10),1, rep(0,9), 1, rep(0,9), 3,rep(0,9), 1, rep(0,9), 1, rep(0,8)) )
 axis(side=3, at=c(16,51), labels=c(paste("Oilseed (", expression(italic("R. sativus")),")", sep=""), paste("Rattail (", expression(italic("R. sativus")),")", sep="")), cex.axis=.9, tick=F, line=-1)
-axis(side=1, at=c(5,16,27,40,51,62), tick=F, labels=c("Arena (AROL)", 
-                                                      "Colonel (COOL)", 
-                                                      "Adagio (ADOL)", 
-                                                      "Madras podding (MABG)", 
-                                                      "Rattail (RABG)", 
+axis(side=1, at=c(5,16,27,40,51,62), tick=F, labels=c("Arena (AROL)",
+                                                      "Colonel (COOL)",
+                                                      "Adagio (ADOL)",
+                                                      "Madras podding (MABG)",
+                                                      "Rattail (RABG)",
                                                       "Rattail (RAJS)"), line=-1.3, cex.axis=.6)
 dev.off()
