@@ -84,6 +84,10 @@ Assuming all the parts ran correctly, the Figures folder should contain all figu
 
 	Completes flowering time analysis
 
+- 1.3_SummaryStatistics_html.Rmd
+
+	Computes Fst, runs AMOVAs, calculates a number of other summary statistics
+
 #### Genotypic Analysis
 
 ##### STRUCTURE
@@ -125,3 +129,9 @@ Assuming all the parts ran correctly, the Figures folder should contain all figu
 - 3_SmartPCAPlot.R  
 
 	R script for generating SmartPCA plots
+
+- 3.1_SupSmartPCA.R
+
+	R script for building the PCA in the supplement
+
+	
