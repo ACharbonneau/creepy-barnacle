@@ -638,7 +638,7 @@ amova.test
 ### Using PCs instead of raw molecular data
 
 ```{r}
-PCA.dat <- read.table("../MungedData/Marker.pca", skip=11)
+PCA.dat <- read.table("Marker.pca", skip=11)
 
 PCA.ind <- read.table("../MungedData/Marker.ind")
 
