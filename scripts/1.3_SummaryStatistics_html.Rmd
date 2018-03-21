@@ -478,11 +478,13 @@ amova.test
 This is the distribution of N for groups that AMOVA was using. It's not super balanced, but it's not the worst.
 
 ```{r}
-filterstrata <- adegenet::strata(Allpops_filter_ATA) %>%     
-  group_by(Species, Group) %>%
-  summarize(Count = n())
 
-filterstrata 
+table(adegenet::strata(ALLTHEALLELES, ~Group))
+#filterstrata <- adegenet::strata(Allpops_filter_ATA) %>%     
+#  group_by(Species, Group) %>%
+#  summarize(Count = n())
+#
+#filterstrata 
 ```
 
 ### Hypothesis testing AMOVAs

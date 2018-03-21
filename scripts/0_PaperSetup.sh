@@ -9,7 +9,7 @@ mkdir smartPCA
 
 
 cd OriginalData || exit
-wget -L https://www.dropbox.com/s/29snqitigf2pss3/WeedEvo.zip
+wget -L https://www.dropbox.com/s/xeniqqptgmtcy5s/WeedEvo.zip
 unzip WeedEvo.zip
 
 cd ../scripts || exit

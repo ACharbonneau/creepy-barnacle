@@ -46,6 +46,8 @@ From the smartPCA folder:
 
 > module load R/3.2.0
 
+> module load pandoc/1.17.3
+
 > Rscript ../scripts/3_SmartPCAPlot.R
 
 
