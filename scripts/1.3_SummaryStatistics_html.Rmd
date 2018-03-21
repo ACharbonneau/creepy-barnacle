@@ -20,7 +20,7 @@ output:
 
 ```{r, echo=FALSE, message=FALSE}
 
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.path="../Figures/", fig.keep="last")
 
 # Install function for packages    
 packages<-function(x){
@@ -47,6 +47,36 @@ amovaReps <- 500
 
 ```
 
+```{r}
+#Set up plotting colors
+
+## Add an alpha value to a colour
+add.alpha <- function(col, alpha=.7){
+  if(missing(col))
+    stop("Please provide a vector of colours.")
+  apply(sapply(col, col2rgb)/255, 2,
+        function(x)
+          rgb(x[1], x[2], x[3], alpha=alpha))  
+}
+
+col_pal <- brewer.pal(9, "Set1")
+col6 <- brewer.pal(6, "Set2")
+col_pal <- c(col_pal[c(1:5)], col6[6], col_pal[c(8,9)], "gray20", "black")
+
+ALLTHECOLORS <- add.alpha(col_pal)
+
+NonNatives <- ALLTHECOLORS[5]
+Daikon <- ALLTHECOLORS[6]
+European <- ALLTHECOLORS[1]
+lanmar <- ALLTHECOLORS[7]
+Oilseed <- ALLTHECOLORS[3]
+raphNatE <- ALLTHECOLORS[2]
+raphNatW <- ALLTHECOLORS[4]
+Rattail <- ALLTHECOLORS[8]
+rostratus <-  ALLTHECOLORS[10]
+```
+
+
 This script uses the input for STRUCTURE to do some population genetics.
 
 ```{r, echo=FALSE, message=FALSE}
@@ -55,31 +85,19 @@ This script uses the input for STRUCTURE to do some population genetics.
 
 ALLTHEALLELES <- read.structure(file = "../MungedData/1randSS.str", n.ind = 338, n.loc = 21, onerowperind = T, col.lab = 1, col.pop = 2, row.marknames = 1, NA.char = "-9", col.others = c(2,3))
 
-proto_strata <- data.frame(other(ALLTHEALLELES))
+adegenet::strata(ALLTHEALLELES) <- read.csv("../OriginalData/PopStructureAmova.csv", header = FALSE) 
 
-proto_strata$weedcrop <- proto_strata$X.2
-proto_strata$weedcrop <- revalue(proto_strata$weedcrop, c("Oilseed"="crop",
-                                                          "Daikon"="crop",
-                                                          "European"="crop",
-                                                          "Rattail"="crop"))
-proto_strata$weedRRR <- proto_strata$X.2
-proto_strata$weedRRR <- revalue(proto_strata$weedRRR, c("raphNatE"="NatRRR",
-                                                          "raphNatW"="NatRRR"))
-
-
-adegenet::strata(ALLTHEALLELES) <- proto_strata
-
-colnames(adegenet::strata(ALLTHEALLELES)) <- c("Pop", "Group", "weedcrop", "weedRRR")
-
-poppr_ATA <- as.genclone(ALLTHEALLELES)
-
+adegenet::splitStrata(ALLTHEALLELES) <- ~Species/Group/Pop
 
 groupcov <- read.csv("../Figures/GroupCoV.csv")
 expcov <- read.csv("../Figures/ExpCoV.csv")
 popcov <- read.csv("../Figures/PopCoV.csv")
 
+#goodloci <- c( "DWRD_124", "DWRD_112", "DWRD_61", "DWRD_177", "DWRD_107",
+#"DWRD_123", "DWRD_121", "DWRD_158", "DWRD_48", "DWRD_180",
+#"DWRD_97", "DWRD_205", "DWRD_27", "Bn26a", "BRMS005",
+#"Ra1H08", "Ra2E11", "Bn35d", "Na12E05" )
 ```
-
 
 
 ```{r, echo=FALSE,message=FALSE}
@@ -111,7 +129,7 @@ table(adegenet::strata(ALLTHEALLELES, ~Group))
 
 There's a lot of missingness. At one point I ran a manual jackknife of STRUCTURE by both markers and populations to see if dropping any one made a difference. It didn't. I don't understand how it can be robust with that much missing, but it seems to be.
 
-```{r, echo=FALSE, message=FALSE, fig.height=6}
+```{r missingdata, echo=FALSE, message=FALSE, fig.height=6}
 
 bob <- info_table(ALLTHEALLELES, plot=TRUE, scaled=T)
 
@@ -170,7 +188,7 @@ hw.test(ALLTHEALLELES, res='matrix', B=1000)
 
 Blue is population in departure from HWE at marker at a p < .05
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r HWE_pop_marker, echo=FALSE, message=FALSE, warning=FALSE}
 
 #https://grunwaldlab.github.io/Population_Genetics_in_R/Locus_Stats.html
 
@@ -196,7 +214,7 @@ hspop <- as.data.frame(as.matrix(Hs(poplevel)))
 colnames(hspop) <- "ExpHet"
 hspop$Pop <- rownames(hspop)
 
-hspop$Pop <- revalue(hspop$Pop, c(
+hspop$Pop <- plyr::revalue(hspop$Pop, c(
                                "SPEU" = "SPNK",
                                "NELO" = "NEJS",
                                "RACA" = "RAJS"
@@ -226,7 +244,7 @@ The weeds as a group have the highest heterozygosity, but a really low Coeffecie
 
 It seems not.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r hetero_CoV, echo=FALSE, message=FALSE, warning=FALSE}
 popHS_Cov <- full_join(hspop, popcov)
 popHS_Cov$locals[popHS_Cov$Pop=="NCDE"] <- "raphNN"
 
@@ -245,7 +263,7 @@ write.csv(groupHS_Cov, "../Figures/GroupHS_Cov.csv")
 
 A fun little pca that tries to make boundries around pops (using the dudi.pca function from ade4). Labels seem unmoveable though, so I can't get it to format nicely for use. Looks essentially the same as the paper one, even though it's using the dataset in a completely different format/program/etc. So that's nice.
 
-```{r, echo=FALSE}
+```{r dudiPCA, echo=FALSE}
 testpca <- scaleGen(ALLTHEALLELES, NA.method="mean")
 dim(testpca)
 
@@ -287,7 +305,7 @@ add.scatter.eig(ca1$eig,nf=3,xax=1,yax=2,posi="bottomright")
 Makes some expected groupings: landra, weeds(BINY, AUFI, NCDE), most of the crops
 Has Australian weeds clustered with native RRR's instead of other weeds. Sort of like STRUCTURE
 
-```{r, echo=FALSE}
+```{r GenDist_Pop, echo=FALSE}
 sampleDists <- dist.genpop(poplevel, method = 1, diag = T, upper = T)
 sampleDistMatrix <- as.matrix(sampleDists)
 colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
@@ -302,7 +320,7 @@ pheatmap(sampleDistMatrix,
 ## Same clustering method, just using groups instead of pops.
 
 
-```{r, echo=FALSE}
+```{r GenDist_Group, echo=FALSE}
 sampleDists <- dist.genpop(grouplevel, method = 1, diag = T, upper = T)
 sampleDistMatrix <- as.matrix(sampleDists)
 colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
@@ -328,7 +346,7 @@ This is the Fst numbers, just as a clustered heatmap so you can see patterns mor
 
 ```{r, echo=FALSE, warning=FALSE}
 
-popfst <- pairwise.fst(ALLTHEALLELES)
+popfst <- pairwise.fst(ALLTHEALLELES)#[ loc=goodloci ])
 
 attr(popfst, "Labels") <- unique(as.character(ALLTHEALLELES$pop))
 
@@ -338,28 +356,65 @@ write.csv(as.data.frame(as.matrix(popfst)), "../Figures/PairwiseFst.csv", sep = 
 
 
 
-```{r, echo=FALSE}
+```{r FstPop, echo=FALSE}
 
 pheatmap(as.matrix(popfst), cluster_rows = T, cluster_cols = T,
          clustering_distance_rows = "euclidean",
          clustering_distance_cols = "euclidean" )
 ```
 
+```{r FstPopGroup, echo=FALSE}
+grouppopfst <- as.data.frame(as.matrix(popfst))
 
+grouppopfst$group <- unique(as.character(ALLTHEALLELES$pop))
+#grouppopfst$pop <- unique(as.character(ALLTHEALLELES$pop))
+
+grouppopfst$group <- as.factor(plyr::revalue(grouppopfst$group, c("COAU"="WeedRrr", "WEAU"="WeedRrr", 
+"AUFI"="WeedRrr", "BINY"="WeedRrr",
+"SAES"="Rrlandra", "MAES"="NativeRrrW",
+"PBFR"="Rrlandra", "ESNK"="European",
+"AFFR"="NativeRrrW", "AROL"="Oilseed",
+"RACA"="Rattail", "COOL"="Oilseed",
+"ADOL"="Oilseed", "NELO"="Daikon",
+"SPEU"="European", "GMIL"="Rostratus",
+"TYIL"="NativeRrrE", "REIL"="NativeRrrE",
+"CBES"="Rrlandra", "MABG"="Rattail",
+"TOBG"="Daikon", "CBBG"="European",
+"WMBG"="Daikon", "RABG"="Rattail",
+"DAJO"="European", "MYJO"="Daikon",
+"NCDE"="WeedRrr", "GHIL"="NativeRrrE",
+"HZIL"="NativeRrrE", "ZYIL"="NativeRrrE",
+"DEES"="NativeRrrW", "HCES"="NativeRrrW",
+"HMES"="NativeRrrW", "IMES"="NativeRrrW")))
+
+groupnames <- data.frame(grouppopfst[,35])
+rownames(groupnames) <- unique(as.character(ALLTHEALLELES$pop))
+colnames(groupnames) <- "group"
+  
+groupcolors <- list( group = c(Daikon=paste(Daikon), European=paste(European), 
+          NativeRrrE=paste(raphNatE), NativeRrrW=paste(raphNatW), 
+          Oilseed=paste(Oilseed), Rattail=paste(Rattail), Rostratus=paste(rostratus),
+          Rrlandra=paste(lanmar), WeedRrr=paste(NonNatives)))
+
+pheatmap( as.matrix( grouppopfst[,1:34] ), annotation_col = groupnames, 
+          annotation_row = groupnames , cluster_cols = T, cluster_rows = T,
+          annotation_colors = groupcolors)
+
+```
 
 ## Allele by Pop
 
-I don't remember why I made this, but it's a clustered heatmap of the population level allele frequencies. The columns are alleles. A lot of alleles are at low frequency, and then a handful at very high frequency. Columns where it's all blue with one red or yellow row indicate private alleles. Mostly red/yellow columns indicate alleles that are common. Columnes that are mostly blue indicate low frequency alleles.
+I don't remember why I made this, but it's a clustered heatmap of the population level allele frequencies. The columns are alleles. A lot of alleles are at low frequency, and then a handful at very high frequency. Columns where it's all blue with one red or yellow row indicate private alleles. Mostly red/yellow columns indicate alleles that are common. Columns that are mostly blue indicate low frequency alleles.
 
 
-```{r, echo=FALSE}
+```{r AllelePop, echo=FALSE}
 pheatmap(poplevelfreq, cluster_rows=TRUE, show_rownames=TRUE, cluster_cols=T, show_colnames = F)
 ```
 ##Allele by Group
 
 Again, same type of plot, just using groups instead of populations. There are a few alleles private to groups, and a lot of very low frequency alleles.
 
-```{r, echo=FALSE}
+```{r AlleleGroup, echo=FALSE}
 pheatmap(grouplevelfreq, cluster_rows=TRUE, show_rownames=TRUE, cluster_cols=T, show_colnames = F)
 ```
 
@@ -387,27 +442,28 @@ kmeans <- find.clusters(ALLTHEALLELES, n.pca=40, n.clust=NULL,
 
 ```
 
-## AMOVA
+# AMOVA
 
 ### Overall group AMOVA
 
-#### Remove individuals missing 5% or more data
+#### Ignore missing data
 
-For the basic AMOVA, I've dropped individuals missing more than 5% of the markers, dropped the two worst microsats entirely and am looking for difference between groups. Groups are: landra, western raphanistrum, eastern raphanistrum, weeds, European, Daikon, Rattail, Oilseed, and rostratus.
+For the basic AMOVA, I tried both dropping the two worst microsats entirely, and leaving them in. There is basically no difference between the results, so I am ignoring all missingness. (To remove 2 bad markers, uncomment "[ loc=goodloci ]" throughout the script, and uncomment the list of "goodloci" in the thrid code chunk). 
 
-```{r, message=T, error=TRUE, warning=TRUE, fig.height=8}
+I am looking for difference ~Groups/Pop. Groups are: landra, western raphanistrum, eastern raphanistrum, weeds, European, Daikon, Rattail, Oilseed, and rostratus.
+
+In the results "sample" always refers to the smallest unit of the population hierarchy, which is population here.
+
+```{r AmovaAll, message=T, error=TRUE, warning=TRUE, fig.height=8}
 
 #Defaults to ADE4 AMOVA implementation
 
-goodloci <- c("DWRD_124", "DWRD_112", "DWRD_61",  "DWRD_177", "DWRD_107",
-"DWRD_123", "DWRD_121", "DWRD_158", "DWRD_48",  "DWRD_180",
-"DWRD_97",  "DWRD_205", "DWRD_27",  "Bn26a",  "BRMS005",
-"Ra1H08", "Ra2E11", "Bn35d", "Na12E05")
+FilterATA <- ALLTHEALLELES#[ loc=goodloci ]
 
-FilterATA <- ALLTHEALLELES[loc=goodloci]
-Allpops_filter_ATA <- as.genclone(FilterATA)
+Allpops_filter_ATA <- as.genclone( FilterATA )
 
-Allpopsamova <- poppr.amova(Allpops_filter_ATA, ~Group/Pop, filter = T, missing = "geno", cutoff=.05)
+Allpopsamova <- poppr.amova( Allpops_filter_ATA, ~Group/Pop, filter = T, 
+                             missing = "ignore", within = FALSE )
 
 Allpopsamova
 
@@ -415,41 +471,19 @@ amova.test <- randtest( Allpopsamova, nrepet = amovaReps) # Test for significanc
 plot(amova.test)
 amova.test
 
+## The genetic differentiation components measured in AMOVA are really covariances among alleles, not variances, and negative values should be interpreted in that context.  That said, such strongly negative values for between-population differentiation are problematic.  However, obligately outcrossing organisms, or those that suffer from severely reduced viability due to inbreeding, can have substantially negative values for the within-population inbreeding coefficient.  If your analysis isn't estimating the inbreeding coefficient separately, or is estimating it incorrectly (e.g. inflated estimates of inbreeding due to the presence of null alleles), I wonder if these effects could be masquerading as negative allelic covariances between populations in the absence of population structure.
+
 ```
 
-
-As you can see, a large number of individuals get dropped. However, most of them are only missing 5.3% of genotypes. It seems silly to drop so much data over .3%
-
-#### Remove individuals missing 5.5% or more data
-
-This is the same AMOVA, but with a slightly higher missingness cutoff:
+This is the distribution of N for groups that AMOVA was using. It's not super balanced, but it's not the worst.
 
 ```{r}
+filterstrata <- adegenet::strata(Allpops_filter_ATA) %>%     
+  group_by(Species, Group) %>%
+  summarize(Count = n())
 
-
-Allpopsamova <- poppr.amova(Allpops_filter_ATA, ~Group/Pop, filter = T, missing = "geno", cutoff=.055)
-Allpopsamova
-amova.test <- randtest( Allpopsamova, nrepet = amovaReps) # Test for significance
-plot(amova.test)
-amova.test
-
+filterstrata 
 ```
-
-#### Remove individuals missing 20% or more data
-
-This is the same AMOVA, but with a much higher missingness cutoff, that keeps only the very worst indivduals:
-
-
-```{r}
-Allpopsamova <- poppr.amova(Allpops_filter_ATA, ~Group/Pop, filter = T, missing = "geno", cutoff=.2)
-Allpopsamova
-amova.test <- randtest( Allpopsamova, nrepet = amovaReps) # Test for significance
-plot(amova.test)
-amova.test
-
-```
-
-These all appear to have pretty similar results, so we should be able to use the .2 cutoff.
 
 ### Hypothesis testing AMOVAs
 
@@ -467,18 +501,21 @@ Rostratus <- c("GMIL")
 
 The paper has three main hypotheses about weed origin: The weeds could come from the crops, either directly or as hybrids; the weeds could be direct decendants of R.r. raphanistrum natives; or the weeds could be a hybrid of landra and R.r. raphanistrum natives.
 
-#### Weeds from crops
+#### Weeds from crops (In Paper)
 
 If the weeds are feral crops, then they should be similar (not distinguishable by AMOVA).
 This is comparing all crops as one group to all weeds as one group.
 
 
 
-```{r}
+```{r AmovaWeedCrop_InPaper}
 
 goodgroups <- c(RRR_Weed, RS_Daikon, RS_European, RS_Oilseed, RS_Rattail)
 poppr_filter_ATA <- popsub(Allpops_filter_ATA, sublist = goodgroups)
-Allpopsamova <- poppr.amova(poppr_filter_ATA, ~weedcrop/Pop, filter = T, missing = "geno", cutoff=.2)
+
+Allpopsamova <- poppr.amova(poppr_filter_ATA, ~Species/Pop, filter = T, 
+                            missing = "ignore", within = FALSE)
+
 Allpopsamova
 amova.test <- randtest( Allpopsamova, nrepet = amovaReps) # Test for significance
 plot(amova.test)
@@ -491,30 +528,19 @@ amova.test
 
 If the weeds are most closely related to the native R.r. raphanistrum (this is the hypothesis we favor), then they shouldn't be significantly different from each other.
 
-Here I'm comparing all weeds as one group, to native western and eastern R. r. raphanistrum, treated as a single group.
-
-```{r}
-
-goodgroups <- c(RRR_Weed, RRR_Native_West, RRR_Native_East)
-poppr_filter_ATA <- popsub(Allpops_filter_ATA, sublist = goodgroups)
-Allpopsamova <- poppr.amova(poppr_filter_ATA, ~weedRRR/Pop, filter = T, missing = "geno", cutoff=.2)
-Allpopsamova
-amova.test <- randtest( Allpopsamova, nrepet = amovaReps) # Test for significance
-plot(amova.test)
-amova.test
-
-```
 
 ##### Weed - West
 
 Here I'm comparing all weeds as one group, to native western R. r. raphanistrum as one group.
 
 
-```{r}
+```{r AmovaWeedWest}
 
 goodgroups <- c(RRR_Weed, RRR_Native_West)
 poppr_filter_ATA <- popsub(Allpops_filter_ATA, sublist = goodgroups)
-Allpopsamova <- poppr.amova(poppr_filter_ATA, ~Group/Pop, filter = T, missing = "geno", cutoff=.2)
+
+Allpopsamova <- poppr.amova(poppr_filter_ATA, ~Group/Pop, filter = T, 
+                            missing = "ignore", within = FALSE)
 Allpopsamova
 amova.test <- randtest( Allpopsamova, nrepet = amovaReps) # Test for significance
 plot(amova.test)
@@ -526,11 +552,12 @@ amova.test
 
 Here I'm comparing all weeds as one group, to native eastern R. r. raphanistrum as one group.
 
-```{r}
+```{r AmovaWeedEast}
 
 goodgroups <- c(RRR_Weed, RRR_Native_East)
 poppr_filter_ATA <- popsub(Allpops_filter_ATA, sublist = goodgroups)
-Allpopsamova <- poppr.amova(poppr_filter_ATA, ~Group/Pop, filter = T, missing = "geno", cutoff=.2)
+Allpopsamova <- poppr.amova(poppr_filter_ATA, ~Group/Pop, filter = T, 
+                            missing = "ignore", within = FALSE )
 Allpopsamova
 amova.test <- randtest( Allpopsamova, nrepet = amovaReps) # Test for significance
 plot(amova.test)
@@ -539,18 +566,20 @@ amova.test
 ```
 
 
-#### Weeds from hybridization of landra and native R.r. raphanistrum
+#### Weeds from hybridization of landra and native R.r. raphanistrum; In paper
 
 If the weeds are hybrids of landra and native R.r. raphanistrum, then it should group with either in a paired analysis, however landra and native R.r. raphanistrum should be significantly different from one another.
 
 Here I'm comparing all weeds as one group, to native western R. r. landra as one group.
 Weed vs landra
 (Weed vs native R.r. raphanistrum is above)
-```{r}
+
+```{r AmovaWeedLandra_InPaper}
 
 goodgroups <- c(RRR_Weed, Rr_Landra)
 poppr_filter_ATA <- popsub(Allpops_filter_ATA, sublist = goodgroups)
-Allpopsamova <- poppr.amova(poppr_filter_ATA, ~Group/Pop, filter = T, missing = "geno", cutoff=.2)
+Allpopsamova <- poppr.amova(poppr_filter_ATA, ~Group/Pop, filter = T, 
+                            missing = "ignore", within = FALSE )
 Allpopsamova
 amova.test <- randtest( Allpopsamova, nrepet = amovaReps) # Test for significance
 plot(amova.test)
@@ -561,15 +590,19 @@ amova.test
 
 ```
 
-native R.r. raphanistrum vs landra
+##### Native R.r. raphanistrum vs landra
 
-Here I'm comparing all R.r. landra as one group, to native western and easter R. r. raphanistrum as one group.
+Here I'm comparing all R.r. landra as one group, to native western and eastern R. r. raphanistrum as one group.
 
-```{r}
+```{r AmovaLandraRRR}
 
 goodgroups <- c(RRR_Native_East, RRR_Native_West, Rr_Landra)
 poppr_filter_ATA <- popsub(Allpops_filter_ATA, sublist = goodgroups)
-Allpopsamova <- poppr.amova(poppr_filter_ATA, ~weedRRR/Pop, filter = T, missing = "geno", cutoff=.2)
+
+adegenet::strata(poppr_filter_ATA)$Group <- plyr::revalue(adegenet::strata(poppr_filter_ATA)$Group, c("raphNatW"="raphNatWE", "raphNatE"="raphNatWE"))
+
+Allpopsamova <- poppr.amova(poppr_filter_ATA, ~Group/Pop, filter = T, 
+                             missing = "ignore", within = FALSE)
 Allpopsamova
 amova.test <- randtest( Allpopsamova, nrepet = amovaReps) # Test for significance
 plot(amova.test)
@@ -579,6 +612,26 @@ amova.test
 
 
 ```
+
+##### Weed - East and West together; In paper
+
+Here I'm comparing all weeds as one group, to native western and eastern R. r. raphanistrum, treated as a single group.
+
+```{r AmovaWeedRRR_InPaper}
+
+goodgroups <- c(RRR_Weed, RRR_Native_West, RRR_Native_East)
+
+poppr_filter_ATA <- popsub(Allpops_filter_ATA, sublist = goodgroups)
+
+Allpopsamova <- poppr.amova(poppr_filter_ATA, ~Group/Pop, filter = T, 
+                            missing = "ignore", within = FALSE )
+Allpopsamova
+amova.test <- randtest( Allpopsamova, nrepet = amovaReps ) # Test for significance
+plot(amova.test)
+amova.test
+
+```
+
 
 ### Using PCs instead of raw molecular data
 
@@ -655,34 +708,7 @@ MmodCo
 
 If I plot V1 vs V2, it looks essentially like a centroid-only version of the PCA. So I haven't broken anything.
 
-```{r}
-
-#Set up plotting colors
-
-## Add an alpha value to a colour
-add.alpha <- function(col, alpha=.7){
-  if(missing(col))
-    stop("Please provide a vector of colours.")
-  apply(sapply(col, col2rgb)/255, 2,
-        function(x)
-          rgb(x[1], x[2], x[3], alpha=alpha))  
-}
-
-col_pal <- brewer.pal(9, "Set1")
-col6 <- brewer.pal(6, "Set2")
-col_pal <- c(col_pal[c(1:5)], col6[6], col_pal[c(8,9)], "gray20", "black")
-
-ALLTHECOLORS <- add.alpha(col_pal)
-
-NonNatives <- ALLTHECOLORS[5]
-Daikon <- ALLTHECOLORS[6]
-European <- ALLTHECOLORS[1]
-lanmar <- ALLTHECOLORS[7]
-Oilseed <- ALLTHECOLORS[3]
-raphNatE <- ALLTHECOLORS[2]
-raphNatW <- ALLTHECOLORS[4]
-Rattail <- ALLTHECOLORS[8]
-rostratus <-  ALLTHECOLORS[10]
+```{r PCAgroupCentroid}
 
 MmodCo$colors <- c(NonNatives, Daikon, European, lanmar, Oilseed, raphNatE, raphNatW, Rattail, rostratus)
 

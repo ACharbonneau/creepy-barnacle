@@ -16,6 +16,7 @@ output:
 
 ```{r SourcePackages, include=FALSE}
 
+
 # Install function for packages    
 packages<-function(x){
   x<-as.character(match.call()[[2]])
@@ -32,8 +33,10 @@ packages( MCMCglmm ) #modeling
 packages( ggthemes )
 packages( ggplot2 ) #plotting
 packages( reshape2 ) #munging
+packages( plyr )
 packages( dplyr ) #munging
 packages( car ) #anova
+
 
 hmcols <- colorRampPalette(c("black", "white"))(100)
 
@@ -201,7 +204,7 @@ ExtraRawData$Ag <- ExtraRawData$Habitat
 levels(ExtraRawData$Ag) <- c("nonag", "ag", "nonag", "nonag" )
 ExtraRawData <- droplevels( ExtraRawData )
 
-
+table(ExtraRawData$Experiment) # Table in paper
 ```
 
 ```{r unsubsettedmodeldata, echo=FALSE}
@@ -1185,6 +1188,8 @@ ggplot( aes(Experiment, SurviveGTF, col=Experiment)) +
 ```
 
 ```{r SmallExperimentalVar, echo=FALSE, fig.path="../Figures/", fig.keep="all", message=FALSE, warning=FALSE, fig.height=10, fig.width=14, warning=FALSE}
+
+FlowData$Experiment <- plyr::revalue(FlowData$Experiment, c("Cult2013"="G1-13", "field2012"="F-12", "field2013"="F-13", "IS2013"="G2-13", "Lale05"="F-05", "qst2003"="G-03", "qst2004"="G-04", "sum2010"="G-10"))
 
 filter(FlowData, Pop=="BINY"| Pop=="MAES"| Pop=="SAES") %>%
   filter(!is.na(BoltFlower)) %>%
