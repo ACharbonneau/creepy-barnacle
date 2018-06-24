@@ -109,7 +109,7 @@ axis(side=1, at=c(5,16,27,38,49), tick=F, labels=c("Germany (NCDE)",
 par(fig=c(0,.5,.29,.38), new=TRUE)
 barplot(daikon.table, col=col_pal[1:K], xaxt="n", yaxt="n",
         space=c(rep(0,10), 1, rep(0,9), 1, rep(0,9), 1,rep(0,9)) )
-axis(side=3, at=22, labels=paste("Daikon (", expression(italic("R. sativus")),")", sep=""), cex.axis=.9, tick=F, line=-1)
+axis(side=3, at=22, labels=expression(paste("Daikon (", italic("R. sativus"),")")), cex.axis=.9, tick=F, line=-1)
 axis(side=1, at=c(5,16,27,38), tick=F, labels=c("Miyashige (MYJO)",
                                                 "New Crown (NEJS)", #SPEU is now SPNK; NELO now NEJS; RACA now RAJS. -JKC
                                                 "Tokinashi (TOBG)",
@@ -119,7 +119,7 @@ axis(side=1, at=c(5,16,27,38), tick=F, labels=c("Miyashige (MYJO)",
 par(fig=c(.5,1,.29,.38), new=TRUE)
 barplot(european.table, col=col_pal[1:K], xaxt="n", yaxt="n",
         space=c(rep(0,10),1, rep(0,9), 1, rep(0,8), 1,rep(0,9)) )
-axis(side=3, at=22, labels=paste("European (", expression(italic("R. sativus")),")", sep=""), cex.axis=.9, tick=F, line=-1)
+axis(side=3, at=22, labels=expression(paste("European (", italic("R. sativus"),")")), cex.axis=.9, tick=F, line=-1)
 axis(side=1, at=c(5,16,27,37), tick=F, labels=c("Cherry Belle (CBBG)",
                                                 "D'avignon (DAJO)",
                                                 "Early S.G. (ESNK)",
@@ -128,7 +128,7 @@ axis(side=1, at=c(5,16,27,37), tick=F, labels=c("Cherry Belle (CBBG)",
 par(fig=c(0,1,.12,.21), new=TRUE)
 barplot(oilrat.table, col=col_pal[1:K], xaxt="n", yaxt="n",
         space=c(rep(0,10),1, rep(0,9), 1, rep(0,9), 3,rep(0,9), 1, rep(0,9), 1, rep(0,8)) )
-axis(side=3, at=c(16,51), labels=c(paste("Oilseed (", expression(italic("R. sativus")),")", sep=""), paste("Rattail (", expression(italic("R. sativus")),")", sep="")), cex.axis=.9, tick=F, line=-1)
+axis(side=3, at=c(16,51), labels=c(expression(paste("Oilseed (", italic("R. sativus"),")")), expression(paste("Rattail (", italic("R. sativus"),")"))), cex.axis=.9, tick=F, line=-1)
 axis(side=1, at=c(5,16,27,40,51,62), tick=F, labels=c("Arena (AROL)",
                                                       "Colonel (COOL)",
                                                       "Adagio (ADOL)",
